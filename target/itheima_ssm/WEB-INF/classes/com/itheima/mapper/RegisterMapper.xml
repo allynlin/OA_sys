@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.mapper.RegisterMapper">
+    <insert id="teacherRegister" parameterType="teacher">
+        insert into oa_sys.teacher(uid, username, password, realeName, gender, tel, email, departmentUid)
+        values (#{uid}, #{username}, #{password}, #{realeName}, #{gender}, #{tel}, #{email}, #{departmentUid})
+    </insert>
+    <insert id="departmentRegister" parameterType="department">
+        insert into oa_sys.department(uid, username, password, realeName, gender, tel, email, leaderUid)
+        values (#{uid}, #{username}, #{password}, #{realeName}, #{gender}, #{tel}, #{email}, #{leaderUid})
+    </insert>
+    <insert id="leaderRegister" parameterType="leader">
+        insert into oa_sys.leader(uid, username, password, realeName, gender, tel, email)
+        values (#{uid}, #{username}, #{password}, #{realeName}, #{gender}, #{tel}, #{email})
+    </insert>
+</mapper>

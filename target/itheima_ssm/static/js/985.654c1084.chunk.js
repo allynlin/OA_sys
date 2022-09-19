@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunkos_sys=self.webpackChunkos_sys||[]).push([[985],{4985:function(s,t,e){e.r(t);var n=e(7063),u=e(3707),i=(e(2791),e(6871)),r=e(184);t.default=function(){var s=(0,i.s0)();return(0,r.jsx)(n.ZP,{status:"403",title:"403",subTitle:"\u60a8\u6ca1\u6709\u6743\u9650\u8bbf\u95ee\u8be5\u9875\u9762",extra:(0,r.jsx)(u.Z,{type:"primary",onClick:function(){s("/login")},children:"\u767b\u5f55"})})}}}]);
+//# sourceMappingURL=985.654c1084.chunk.js.map
