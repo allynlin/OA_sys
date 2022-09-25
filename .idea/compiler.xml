@@ -7,7 +7,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="ssm" />
-        <module name="itheima_ssm" />
+        <module name="cshbxy" />
       </profile>
     </annotationProcessing>
   </component>

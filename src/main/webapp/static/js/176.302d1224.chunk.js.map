@@ -1,1 +1,0 @@
-{"version":3,"file":"static/js/176.302d1224.chunk.js","mappings":"uKAEe,SAASA,IACpB,OACI,iEAEP,C","sources":["pages/Index/Teacher.js"],"sourcesContent":["import React from \"react\";\r\n\r\nexport default function Teacher() {\r\n    return(\r\n        <div>这是教师首页</div>\r\n    )\r\n}"],"names":["Teacher"],"sourceRoot":""}

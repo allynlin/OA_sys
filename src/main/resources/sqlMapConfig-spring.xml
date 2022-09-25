@@ -6,8 +6,8 @@
 
     <!--定义别名-->
     <typeAliases>
-        <!--<typeAlias type="com.itheima.domain.Account" alias="account"></typeAlias>-->
-        <package name="com.itheima.domain"/>
+        <!--<typeAlias type="com.cshbxy.domain.Account" alias="account"></typeAlias>-->
+        <package name="com.cshbxy.domain"/>
     </typeAliases>
 
 </configuration>

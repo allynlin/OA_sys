@@ -91,6 +91,7 @@ create table changeDepartmentByTeacher
     changeFile    text comment '申请文件',
     status        int      not null default 0 comment '状态，0 正常，-1 删除,1 通过',
     count         int      not null default 0 comment '审批次数',
+    nextUid       char(36) not null comment '下一步处理人编号',
     create_time   datetime not null default now() comment '创建时间',
     update_time   datetime not null default now() comment '更新时间',
     foreign key (releaseUid) references teacher (uid),
@@ -105,7 +106,8 @@ create table changeDepartmentByDepartment
     changeReason text     not null comment '申请原因',
     changeFile   text comment '申请文件',
     status       int      not null default 0 comment '状态，0 正常，-1 删除,1 通过',
-    count         int      not null default 0 comment '审批次数',
+    count        int      not null default 0 comment '审批次数',
+    nextUid      char(36) not null comment '下一步处理人编号',
     create_time  datetime not null default now() comment '创建时间',
     update_time  datetime not null default now() comment '更新时间',
     foreign key (releaseUid) references department (uid),
@@ -122,7 +124,8 @@ create table travelReimbursement
     reason      text     not null comment '申请原因',
     file        text comment '报销单据',
     status      int      not null default 0 comment '状态，0 正常，-1 删除,1 通过',
-    count         int      not null default 0 comment '审批次数',
+    count       int      not null default 0 comment '审批次数',
+    nextUid     char(36) not null comment '下一步处理人编号',
     create_time datetime not null default now() comment '创建时间',
     update_time datetime not null default now() comment '更新时间',
     foreign key (releaseUid) references teacher (uid)
@@ -136,7 +139,8 @@ create table purchasingApplicationTeacher
     price       text     not null comment '申请价格',
     reason      text     not null comment '申请原因',
     status      int      not null default 0 comment '状态，0 正常，-1 删除,1 通过',
-    count         int      not null default 0 comment '审批次数',
+    count       int      not null default 0 comment '审批次数',
+    nextUid     char(36) not null comment '下一步处理人编号',
     create_time datetime not null default now() comment '创建时间',
     update_time datetime not null default now() comment '更新时间',
     foreign key (releaseUid) references teacher (uid)
@@ -148,7 +152,8 @@ create table workReportTeacher
     releaseUid  char(36) not null comment '提交人编号',
     file        text     not null comment '报告文件',
     status      int      not null default 0 comment '状态，0 正常，-1 删除,1 通过',
-    count         int      not null default 0 comment '审批次数',
+    count       int      not null default 0 comment '审批次数',
+    nextUid     char(36) not null comment '下一步处理人编号',
     create_time datetime not null default now() comment '创建时间',
     update_time datetime not null default now() comment '更新时间',
     foreign key (releaseUid) references teacher (uid)
@@ -160,7 +165,8 @@ create table workReportDepartment
     releaseUid  char(36) not null comment '提交人编号',
     file        text     not null comment '报告文件',
     status      int      not null default 0 comment '状态，0 正常，-1 删除,1 通过',
-    count         int      not null default 0 comment '审批次数',
+    count       int      not null default 0 comment '审批次数',
+    nextUid     char(36) not null comment '下一步处理人编号',
     create_time datetime not null default now() comment '创建时间',
     update_time datetime not null default now() comment '更新时间',
     foreign key (releaseUid) references department (uid)
@@ -173,7 +179,8 @@ create table leaveApplyTeacher
     reason      text     not null comment '请假原因',
     leaveTime   text     not null comment '请假时间',
     status      int      not null default 0 comment '状态，0 正常，-1 删除,1 通过',
-    count         int      not null default 0 comment '审批次数',
+    count       int      not null default 0 comment '审批次数',
+    nextUid     char(36) not null comment '下一步处理人编号',
     create_time datetime not null default now() comment '创建时间',
     update_time datetime not null default now() comment '更新时间',
     foreign key (releaseUid) references teacher (uid)
@@ -191,8 +198,39 @@ create table addTeacher
     departmentUid char(36) not null comment '教师部门',
     status        int      not null default 0 comment '状态，0 正常，-1 删除,1 通过',
     count         int      not null default 0 comment '审批次数',
+    nextUid       char(36) not null comment '下一步处理人编号',
     create_time   datetime not null default now() comment '创建时间',
     update_time   datetime not null default now() comment '更新时间',
     foreign key (releaseUid) references teacher (uid),
     foreign key (departmentUid) references department (uid)
 );
+
+INSERT INTO `leader`
+VALUES ('37c1647c-0c0f-465f-977d-3e3f027a7ad3', 'lt', 'adminadmin', '龙涛', '男', '15898764567', '123@qq.com', 0,
+        '2022-09-14 20:15:06', '2022-09-14 20:15:06');
+INSERT INTO `leader`
+VALUES ('c1e7b1ab-4c0c-489f-a8d7-c76317436b75', 'ly', 'adminadmin', '刘洋', '男', '15845677654', '123@qq.com', 0,
+        '2022-09-14 20:15:44', '2022-09-14 20:15:44');
+INSERT INTO `leader`
+VALUES ('c340cd4a-df60-4e19-bf1b-a990f505bbe6', 'jmk', 'adminadmin', '小红', '女', '13987655678', 'asd@163.com', 0,
+        '2022-09-14 20:16:32', '2022-09-14 20:16:32');
+
+INSERT INTO `department`
+VALUES ('285040e7-dbe9-4666-90c0-70b8d0af84fb', 'tp', 'adminadmin', '唐频', '男', '15812344321', 'aaa@qq.com',
+        '37c1647c-0c0f-465f-977d-3e3f027a7ad3', 0, '2022-09-14 20:17:38', '2022-09-14 20:17:38');
+INSERT INTO `department`
+VALUES ('660a58b3-1b68-4348-beb5-5df5e9e5f9ea', 'sy', 'adminadmin', '佘远', '男', '13998766789', 'sy@qq.com',
+        'c1e7b1ab-4c0c-489f-a8d7-c76317436b75', 0, '2022-09-14 20:18:13', '2022-09-14 20:18:13');
+INSERT INTO `department`
+VALUES ('b752d7a0-8373-4c4c-864f-a85d9999f433', 'rr', 'adminadmin', '任睿', '男', '15867894567', 'rr@qq.com',
+        'c340cd4a-df60-4e19-bf1b-a990f505bbe6', 0, '2022-09-14 20:19:03', '2022-09-14 20:19:03');
+
+INSERT INTO `teacher`
+VALUES ('b436bc05-37ec-49ed-b374-2e84b683b380', 'ww', 'adminadmin', '王五', '男', '18967899876', 'ww@163.com',
+        '660a58b3-1b68-4348-beb5-5df5e9e5f9ea', 0, '2022-09-14 20:20:52', '2022-09-14 20:20:52');
+INSERT INTO `teacher`
+VALUES ('e35a9b06-3506-48e4-8f3c-4cfbfe7e8cdb', 'zs', 'adminadmin', '张三', '男', '15834566543', 'zs@qq.com',
+        'b752d7a0-8373-4c4c-864f-a85d9999f433', 0, '2022-09-14 20:19:50', '2022-09-14 20:19:50');
+INSERT INTO `teacher`
+VALUES ('ed4160ed-59d6-4c59-b17f-5584a920135c', 'ls', 'adminadmin', '李四', '男', '15856781234', 'ls@outlook.com',
+        '285040e7-dbe9-4666-90c0-70b8d0af84fb', 0, '2022-09-14 20:20:17', '2022-09-14 20:20:17');

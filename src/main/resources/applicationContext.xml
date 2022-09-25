@@ -14,7 +14,7 @@ http://www.springframework.org/schema/context
 http://www.springframework.org/schema/context/spring-context.xsd">
 
     <!--组件扫描 扫描service和mapper-->
-    <context:component-scan base-package="com.itheima">
+    <context:component-scan base-package="com.cshbxy">
         <!--排除controller的扫描-->
         <context:exclude-filter type="annotation"
                                 expression="org.springframework.stereotype.Controller"/>
@@ -40,7 +40,7 @@ http://www.springframework.org/schema/context/spring-context.xsd">
 
     <!--扫描mapper所在的包 为mapper创建实现类-->
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="com.itheima.mapper"/>
+        <property name="basePackage" value="com.cshbxy.mapper"/>
     </bean>
 
 
@@ -59,7 +59,7 @@ http://www.springframework.org/schema/context/spring-context.xsd">
 
     <!--事务的aop织入-->
     <aop:config>
-        <aop:advisor advice-ref="txAdvice" pointcut="execution(* com.itheima.service.impl.*.*(..))"/>
+        <aop:advisor advice-ref="txAdvice" pointcut="execution(* com.cshbxy.service.impl.*.*(..))"/>
     </aop:config>
 
 </beans>
