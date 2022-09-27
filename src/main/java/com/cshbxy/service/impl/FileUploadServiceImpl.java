@@ -20,8 +20,8 @@ public class FileUploadServiceImpl implements FileUploadService {
     }
 
     @Override
-    public int dropUploadFile(String fileName) {
-        return fileUploadMapper.dropUploadFile(fileName);
+    public int dropUploadFile(String uid) {
+        return fileUploadMapper.dropUploadFile(uid);
     }
 
     @Override
@@ -32,5 +32,10 @@ public class FileUploadServiceImpl implements FileUploadService {
     @Override
     public List<FileName> checkLastTimeUploadFiles(FileName fileName) {
         return fileUploadMapper.checkLastTimeUploadFiles(fileName);
+    }
+
+    @Override
+    public String findFileOldNameByFileName(String fileName) {
+        return fileUploadMapper.findFileOldNameByFileName(fileName);
     }
 }

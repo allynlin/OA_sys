@@ -11,6 +11,6 @@
         select count(*)
         from oa_sys.changedepartmentbyteacher
         where releaseUid = #{releaseUid}
-          and status = 0
+        and status = 0
     </select>
 </mapper>

@@ -10,20 +10,25 @@
     <delete id="dropUploadFile" parameterType="FileName">
         delete
         from oa_sys.filename
-        where FileName = #{fileName}
+        where uid = #{uid}
     </delete>
     <update id="updateUploadFile" parameterType="FileName">
         update oa_sys.filename
         set RowUid = #{RowUid}
         where TableUid = #{TableUid}
-          and ReleaseUid = #{ReleaseUid}
-          and RowUid is null
+        and ReleaseUid = #{ReleaseUid}
+        and RowUid is null
     </update>
     <select id="checkLastTimeUploadFiles" parameterType="FileName" resultType="FileName">
         select uid, oldFileName, FileName
         from filename
         where ReleaseUid = #{ReleaseUid}
-          and TableUid = #{TableUid}
-          and RowUid is null
+        and TableUid = #{TableUid}
+        and RowUid is null
+    </select>
+    <select id="findFileOldNameByFileName" parameterType="String" resultType="String">
+        select oldFileName
+        from filename
+        where FileName = #{FileName}
     </select>
 </mapper>

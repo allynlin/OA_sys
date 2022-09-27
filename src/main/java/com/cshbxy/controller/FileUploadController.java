@@ -5,19 +5,24 @@ import com.cshbxy.Util.JwtUtil;
 import com.cshbxy.domain.FileName;
 import com.cshbxy.domain.Message;
 import com.cshbxy.service.FileUploadService;
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
@@ -26,7 +31,7 @@ import java.util.UUID;
 @Controller
 @RequestMapping("/api")
 @CrossOrigin(origins = "*")
-public class FileUploadController{
+public class FileUploadController {
     @Autowired
     private FileUploadService fileUploadService;
 
@@ -94,30 +99,28 @@ public class FileUploadController{
             if (!JwtUtil.isTokenTrue(request.getHeader("Authorization"))) {
                 return new Message(403, "身份验证失败");
             }
-            // 在 upload 目录下的所有文件夹中查找文件
-            File fileDir = new File("C:\\upload");
-            File[] files = fileDir.listFiles();
+            // 在 upload 目录下的所有文件夹中找到文件，删除
+            File file = new File("C:\\upload\\");
+            File[] files = file.listFiles();
             assert files != null;
-            for (File file : files) {
-                File[] files1 = file.listFiles();
+            for (File file1 : files) {
+                File[] files1 = file1.listFiles();
                 assert files1 != null;
-                for (File file1 : files1) {
-                    if (file1.getName().equals(fileName)) {
-                        // 删除文件
-                        boolean delete = file1.delete();
-                        if (delete) {
-                            // 删除数据库中的文件名
-                            int i = fileUploadService.dropUploadFile(fileName);
-                            if (i != 1) {
-                                return new Message(400, "文件删除失败");
-                            }
-                            return new Message(200, "文件删除成功");
-                        }
-                        return new Message(400, "文件删除失败");
+                for (File file2 : files1) {
+                    if (file2.getName().equals(fileName)) {
+                        file2.delete();
+                        break;
                     }
                 }
             }
-            return new Message(400, "文件删除失败");
+            // 将文件名后缀去除
+            String uid = fileName.substring(0, fileName.lastIndexOf("."));
+            // 删除数据库中的文件名
+            int i = fileUploadService.dropUploadFile(uid);
+            if (i != 1) {
+                return new Message(400, "文件删除失败");
+            }
+            return new Message(200, "文件删除成功");
         } catch (Exception e) {
             e.printStackTrace();
             return new Message(500, "未知错误");
@@ -149,4 +152,58 @@ public class FileUploadController{
             return new Message(500, "未知错误");
         }
     }
+
+    @RequestMapping(value = "/downloadFile", method = RequestMethod.GET)
+    public ResponseEntity<byte[]> fileDownload(HttpServletRequest request,
+                                               String filename) throws Exception {
+        // 指定要下载的文件所在路径,C:\\upload\\
+        StringBuilder path = new StringBuilder("C:\\upload\\");
+        // 遍历 upload 目录下的所有文件夹，找到文件
+        File file = new File(path.toString());
+        File[] files = file.listFiles();
+        assert files != null;
+        for (File file1 : files) {
+            File[] files1 = file1.listFiles();
+            assert files1 != null;
+            for (File file2 : files1) {
+                if (file2.getName().equals(filename)) {
+                    path.append(file1.getName()).append("\\").append(filename);
+                    break;
+                }
+            }
+        }
+        String oldFileName = fileUploadService.findFileOldNameByFileName(filename);
+        // 创建该文件对象
+        File file1 = new File(String.valueOf(path));
+        filename = this.getFilename(request, oldFileName);
+        // 设置响应头
+        HttpHeaders headers = new HttpHeaders();
+        // 通知浏览器以下载的方式打开文件
+        headers.setContentDispositionFormData("attachment", filename);
+        // 定义以流的形式下载返回文件数据
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        // 使用 Sring MVC 框架的 ResponseEntity 对象封装返回下载数据
+        return new ResponseEntity<byte[]>(FileUtils.readFileToByteArray(file1),
+                headers, HttpStatus.OK);
+    }
+
+    /**
+     * 根据浏览器的不同进行编码设置，返回编码后的文件名
+     */
+    public String getFilename(HttpServletRequest request,
+                              String filename) throws Exception {
+        // IE不同版本User-Agent中出现的关键词
+        String[] IEBrowserKeyWords = {"MSIE", "Trident", "Edge"};
+        // 获取请求头代理信息
+        String userAgent = request.getHeader("User-Agent");
+        for (String keyWord : IEBrowserKeyWords) {
+            if (userAgent.contains(keyWord)) {
+                //IE内核浏览器，统一为UTF-8编码显示
+                return URLEncoder.encode(filename, "UTF-8");
+            }
+        }
+        //火狐等其它浏览器统一为ISO-8859-1编码显示
+        return new String(filename.getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1);
+    }
+
 }
