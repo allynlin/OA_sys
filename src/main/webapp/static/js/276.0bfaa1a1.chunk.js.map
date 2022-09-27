@@ -1,1 +1,0 @@
-{"version":3,"file":"static/js/276.0bfaa1a1.chunk.js","mappings":"kIAQA,UAN4B,WACxB,OACI,yFAEP,C","sources":["pages/Apply/TravelReimbursement.tsx"],"sourcesContent":["import React from \"react\";\r\n\r\nconst TravelReimbursement = () => {\r\n    return (\r\n        <div>这是差旅报销申请页面</div>\r\n    )\r\n}\r\n\r\nexport default TravelReimbursement;"],"names":[],"sourceRoot":""}

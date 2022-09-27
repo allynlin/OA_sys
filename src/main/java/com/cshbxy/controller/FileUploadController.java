@@ -11,11 +11,14 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -23,8 +26,7 @@ import java.util.UUID;
 @Controller
 @RequestMapping("/api")
 @CrossOrigin(origins = "*")
-public class FileUploadController {
-
+public class FileUploadController{
     @Autowired
     private FileUploadService fileUploadService;
 
@@ -43,27 +45,31 @@ public class FileUploadController {
             response.setCharacterEncoding("utf-8");
             response.setHeader("content-type", "text/html;charset=utf-8");
             if (!file.isEmpty()) {
+                // 以当前日期创建一个文件夹，避免单个文件夹中文件过多
+                Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+                // 截取年月日：2020-11-02
+                String substring = timestamp.toString().substring(0, 10);
+                //获取存放文件在服务器中的路径,C 盘下的 upload 文件夹
+                String realPath = "C:\\upload\\" + substring;
+                //判断文件夹是否存在，不存在则创建
+                File file1 = new File(realPath);
+                if (!file1.exists()) {
+                    file1.mkdirs();
+                }
                 // 获取文件名
                 String upFileName = file.getOriginalFilename();
-                // 重命名文件
-                String fileName = UUID.randomUUID().toString();
+                // 获取 UUID，防止文件名重复，并设置数据表主键
+                String uuid = UUID.randomUUID().toString();
                 // 获取文件后缀名
                 String suffixName =
                         Objects.requireNonNull(file.getOriginalFilename()).substring(file.getOriginalFilename().lastIndexOf("."));
                 // 拼接新文件名
-                fileName = fileName + suffixName;
-                // 看 D 盘是否有 upload 文件夹，没有就创建
-                File fileDir = new File("D:\\upload");
-                if (!fileDir.exists()) {
-                    fileDir.mkdir();
-                }
-                // 文件保存路径
-                String filePath = "D:\\upload\\" + fileName;
+                String fileName = uuid + suffixName;
                 // 转存文件
-                file.transferTo(new File(filePath));
+                file.transferTo(new File(realPath + "\\" + fileName));
                 // 存储文件名到数据库
                 FileName fn = new FileName();
-                fn.setUid(UUID.randomUUID().toString());
+                fn.setUid(uuid);
                 fn.setReleaseUid(userUid);
                 fn.setTableUid(tableUid);
                 fn.setFileName(fileName);
@@ -88,17 +94,30 @@ public class FileUploadController {
             if (!JwtUtil.isTokenTrue(request.getHeader("Authorization"))) {
                 return new Message(403, "身份验证失败");
             }
-            // 在 D 盘下的 upload 文件夹中删除文件
-            File fileDir = new File("D:\\upload\\" + fileName);
-            if (fileDir.exists()) {
-                fileDir.delete();
+            // 在 upload 目录下的所有文件夹中查找文件
+            File fileDir = new File("C:\\upload");
+            File[] files = fileDir.listFiles();
+            assert files != null;
+            for (File file : files) {
+                File[] files1 = file.listFiles();
+                assert files1 != null;
+                for (File file1 : files1) {
+                    if (file1.getName().equals(fileName)) {
+                        // 删除文件
+                        boolean delete = file1.delete();
+                        if (delete) {
+                            // 删除数据库中的文件名
+                            int i = fileUploadService.dropUploadFile(fileName);
+                            if (i != 1) {
+                                return new Message(400, "文件删除失败");
+                            }
+                            return new Message(200, "文件删除成功");
+                        }
+                        return new Message(400, "文件删除失败");
+                    }
+                }
             }
-            int i = fileUploadService.dropUploadFile(fileName);
-            if (i == 1) {
-                return new Message(200, "文件删除成功");
-            } else {
-                return new Message(400, "文件删除失败");
-            }
+            return new Message(400, "文件删除失败");
         } catch (Exception e) {
             e.printStackTrace();
             return new Message(500, "未知错误");

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cshbxy.mapper.ApplyMapper">
+    <insert id="teacherChangeDepartment" parameterType="ChangeDepartmentByTeacher">
+        insert into oa_sys.changedepartmentbyteacher(uid, releaseUid, departmentUid, changeReason, nextUid)
+        values (#{uid}, #{releaseUid}, #{departmentUid}, #{changeReason}, #{nextUid})
+    </insert>
+    <select id="checkTeacherChangeDepartment" parameterType="ChangeDepartmentByTeacher" resultType="int">
+        select count(*)
+        from oa_sys.changedepartmentbyteacher
+        where releaseUid = #{releaseUid}
+          and status = 0
+    </select>
+</mapper>

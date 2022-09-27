@@ -13,6 +13,7 @@ public class FileUploadServiceImpl implements FileUploadService {
 
     @Autowired
     private FileUploadMapper fileUploadMapper;
+
     @Override
     public int addUploadFile(FileName fileName) {
         return fileUploadMapper.addUploadFile(fileName);
@@ -29,7 +30,7 @@ public class FileUploadServiceImpl implements FileUploadService {
     }
 
     @Override
-    public List<FileName> checkLastTimeUploadFiles(FileName fileName){
+    public List<FileName> checkLastTimeUploadFiles(FileName fileName) {
         return fileUploadMapper.checkLastTimeUploadFiles(fileName);
     }
 }

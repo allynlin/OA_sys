@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cshbxy.mapper.LoginMapper">
+    <select id="teacherLogin" resultType="teacher">
+        select uid,
+               username,
+               realeName,
+               gender,
+               tel,
+               email,
+               departmentUid,
+               status,
+               create_time,
+               update_time
+        from oa_sys.teacher
+        where username = #{username}
+          and password = #{password}
+    </select>
+    <select id="departmentLogin" resultType="department">
+        select uid,
+               username,
+               realeName,
+               gender,
+               tel,
+               email,
+               leaderUid,
+               status,
+               create_time,
+               update_time
+        from oa_sys.department
+        where username = #{username}
+          and password = #{password}
+    </select>
+    <select id="leaderLogin" resultType="leader">
+        select uid,
+               username,
+               realeName,
+               gender,
+               tel,
+               email,
+               status,
+               create_time,
+               update_time
+        from oa_sys.leader
+        where username = #{username}
+          and password = #{password}
+    </select>
+</mapper>

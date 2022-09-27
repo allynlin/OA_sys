@@ -18,7 +18,7 @@ public class ApplyServiceImpl implements ApplyService {
     }
 
     @Override
-    public int checkTeacherChangeDepartment(String releaseUid){
+    public int checkTeacherChangeDepartment(String releaseUid) {
         return applyMapper.checkTeacherChangeDepartment(releaseUid);
     }
 }
