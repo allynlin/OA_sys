@@ -1,8 +1,8 @@
 package com.cshbxy.service;
 
-import com.cshbxy.domain.Department;
-import com.cshbxy.domain.Leader;
-import com.cshbxy.domain.Teacher;
+import com.cshbxy.dao.Department;
+import com.cshbxy.dao.Leader;
+import com.cshbxy.dao.Teacher;
 
 public interface RegisterService {
 

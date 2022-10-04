@@ -206,23 +206,26 @@ create table addTeacher
 );
 
 INSERT INTO `leader`
-VALUES ('37c1647c-0c0f-465f-977d-3e3f027a7ad3', 'lt', 'adminadmin', '龙涛', '男', '15898764567', '123@qq.com', 0,
+VALUES ('37c1647c-0c0f-465f-977d-3e3f027a7ad3', 'test1', 'adminadmin', '测试领导1', '男', '15898764567', '123@qq.com',
+        0,
         '2022-09-14 20:15:06', '2022-09-14 20:15:06');
 INSERT INTO `leader`
-VALUES ('c1e7b1ab-4c0c-489f-a8d7-c76317436b75', 'ly', 'adminadmin', '刘洋', '男', '15845677654', '123@qq.com', 0,
+VALUES ('c1e7b1ab-4c0c-489f-a8d7-c76317436b75', 'test2', 'adminadmin', '测试领导2', '男', '15845677654', '123@qq.com',
+        0,
         '2022-09-14 20:15:44', '2022-09-14 20:15:44');
 INSERT INTO `leader`
-VALUES ('c340cd4a-df60-4e19-bf1b-a990f505bbe6', 'jmk', 'adminadmin', '小红', '女', '13987655678', 'asd@163.com', 0,
+VALUES ('c340cd4a-df60-4e19-bf1b-a990f505bbe6', 'test3', 'adminadmin', '测试领导3', '女', '13987655678', 'asd@163.com',
+        0,
         '2022-09-14 20:16:32', '2022-09-14 20:16:32');
 
 INSERT INTO `department`
-VALUES ('285040e7-dbe9-4666-90c0-70b8d0af84fb', 'tp', 'adminadmin', '唐频', '男', '15812344321', 'aaa@qq.com',
+VALUES ('285040e7-dbe9-4666-90c0-70b8d0af84fb', 'test1', 'adminadmin', '测试部门1', '男', '15812344321', 'aaa@qq.com',
         '37c1647c-0c0f-465f-977d-3e3f027a7ad3', 0, '2022-09-14 20:17:38', '2022-09-14 20:17:38');
 INSERT INTO `department`
-VALUES ('660a58b3-1b68-4348-beb5-5df5e9e5f9ea', 'sy', 'adminadmin', '佘远', '男', '13998766789', 'sy@qq.com',
+VALUES ('660a58b3-1b68-4348-beb5-5df5e9e5f9ea', 'test2', 'adminadmin', '测试部门2', '男', '13998766789', 'sy@qq.com',
         'c1e7b1ab-4c0c-489f-a8d7-c76317436b75', 0, '2022-09-14 20:18:13', '2022-09-14 20:18:13');
 INSERT INTO `department`
-VALUES ('b752d7a0-8373-4c4c-864f-a85d9999f433', 'rr', 'adminadmin', '任睿', '男', '15867894567', 'rr@qq.com',
+VALUES ('b752d7a0-8373-4c4c-864f-a85d9999f433', 'test3', 'adminadmin', '测试部门3', '男', '15867894567', 'rr@qq.com',
         'c340cd4a-df60-4e19-bf1b-a990f505bbe6', 0, '2022-09-14 20:19:03', '2022-09-14 20:19:03');
 
 INSERT INTO `teacher`
@@ -234,3 +237,38 @@ VALUES ('e35a9b06-3506-48e4-8f3c-4cfbfe7e8cdb', 'zs', 'adminadmin', '张三', '�
 INSERT INTO `teacher`
 VALUES ('ed4160ed-59d6-4c59-b17f-5584a920135c', 'ls', 'adminadmin', '李四', '男', '15856781234', 'ls@outlook.com',
         '285040e7-dbe9-4666-90c0-70b8d0af84fb', 0, '2022-09-14 20:20:17', '2022-09-14 20:20:17');
+
+create table filename
+(
+    uid         char(36) primary key   not null comment '文件唯一UID',
+    ReleaseUid  char(36)               not null comment '上传人编号',
+    TableUid    char(36)               not null comment '表编号',
+    RowUid      char(36)               null comment '行编号',
+    FileName    text                   not null comment '文件名',
+    oldFileName text                   not null comment '原文件名',
+    create_time datetime default now() not null comment '创建时间',
+    update_time datetime default now() not null comment '更新时间'
+);
+
+create table Process
+(
+    uid         char(36) primary key   not null comment '唯一编号',
+    name        text                   not null comment '流程名称',
+    process     text                   not null comment '流程',
+    create_time datetime default now() not null comment '创建时间',
+    update_time datetime default now() not null comment '更新时间'
+);
+
+select c.uid,
+       d.realeName as departmentUid,
+       c.changeReason,
+       c.status,
+       c.count,
+       c.nextUid,
+       c.create_time,
+       c.update_time
+from changedepartmentbyteacher as c,
+     department as d,
+     leader as l
+where c.releaseUid = 'e35a9b06-3506-48e4-8f3c-4cfbfe7e8cdb'
+order by update_time desc

@@ -1,6 +1,6 @@
 package com.cshbxy.service.impl;
 
-import com.cshbxy.domain.FileName;
+import com.cshbxy.dao.FileName;
 import com.cshbxy.mapper.FileUploadMapper;
 import com.cshbxy.service.FileUploadService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +25,11 @@ public class FileUploadServiceImpl implements FileUploadService {
     }
 
     @Override
+    public int dropUploadFileByRowUid(FileName fileName){
+        return fileUploadMapper.dropUploadFileByRowUid(fileName);
+    }
+
+    @Override
     public int updateUploadFile(FileName fileName) {
         return fileUploadMapper.updateUploadFile(fileName);
     }
@@ -37,5 +42,10 @@ public class FileUploadServiceImpl implements FileUploadService {
     @Override
     public String findFileOldNameByFileName(String fileName) {
         return fileUploadMapper.findFileOldNameByFileName(fileName);
+    }
+
+    @Override
+    public List<FileName> findUploadFilesByUid(FileName fileName){
+        return fileUploadMapper.findUploadFilesByUid(fileName);
     }
 }

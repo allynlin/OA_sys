@@ -49,10 +49,10 @@ public class CheckToken {
     public static boolean checkIsTeacher(String token) {
         try {
             // 解析 token，校验 token 是否为 teacher
-            return Objects.equals(JwtUtil.getUsertype(token), "teacher");
+            return !Objects.equals(JwtUtil.getUsertype(token), "teacher");
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
+            return true;
         }
     }
 

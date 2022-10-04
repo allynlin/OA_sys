@@ -1,7 +1,7 @@
 package com.cshbxy.service.impl;
 
-import com.cshbxy.domain.Department;
-import com.cshbxy.domain.Leader;
+import com.cshbxy.dao.Department;
+import com.cshbxy.dao.Leader;
 import com.cshbxy.mapper.QueryMapper;
 import com.cshbxy.service.QueryService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,9 +1,9 @@
 package com.cshbxy.controller;
 
-import com.cshbxy.domain.Department;
-import com.cshbxy.domain.Leader;
-import com.cshbxy.domain.Message;
-import com.cshbxy.domain.Teacher;
+import com.cshbxy.dao.Department;
+import com.cshbxy.dao.Leader;
+import com.cshbxy.dao.Message;
+import com.cshbxy.dao.Teacher;
 import com.cshbxy.service.RegisterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -35,6 +35,7 @@ public class RegisterController {
             }
             return new Message(200, "注册成功");
         } catch (Exception e) {
+            e.printStackTrace();
             return new Message(500, "未知错误");
         }
     }
@@ -51,6 +52,7 @@ public class RegisterController {
             }
             return new Message(200, "注册成功");
         } catch (Exception e) {
+            e.printStackTrace();
             return new Message(500, "未知错误");
         }
     }
@@ -66,7 +68,7 @@ public class RegisterController {
             }
             return new Message(200, "注册成功");
         } catch (Exception e) {
-            System.out.println(e);
+            e.printStackTrace();
             return new Message(500, "未知错误");
         }
     }

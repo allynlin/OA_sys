@@ -1,9 +1,9 @@
 package com.cshbxy.controller;
 
-import com.cshbxy.Util.CheckToken;
 import com.cshbxy.Util.JwtUtil;
-import com.cshbxy.domain.FileName;
-import com.cshbxy.domain.Message;
+import com.cshbxy.dao.FileName;
+import com.cshbxy.dao.Message;
+import com.cshbxy.dao.Message_body;
 import com.cshbxy.service.FileUploadService;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,11 +37,8 @@ public class FileUploadController {
 
     @RequestMapping(value = "/uploadFile", method = RequestMethod.POST)
     @ResponseBody
-    public Message uploadFile(HttpServletRequest request, MultipartFile file, HttpServletResponse response) {
+    public Message_body uploadFile(HttpServletRequest request, MultipartFile file, HttpServletResponse response) {
         try {
-            if (!JwtUtil.isTokenTrue(request.getHeader("Authorization"))) {
-                return new Message(403, "身份验证失败");
-            }
             // 解析 token，获取 uid
             String token = request.getHeader("Authorization");
             String userUid = JwtUtil.getUserUid(token);
@@ -81,14 +78,14 @@ public class FileUploadController {
                 fn.setOldFileName(upFileName);
                 int i = fileUploadService.addUploadFile(fn);
                 if (i != 1) {
-                    return new Message(400, "文件上传失败");
+                    return new Message_body(400, "文件上传失败");
                 }
-                return new Message(200, upFileName + "文件上传成功", fileName);
+                return new Message_body(200, upFileName + "文件上传成功", fileName);
             }
-            return new Message(400, "文件上传失败");
+            return new Message_body(400, "文件上传失败");
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message(500, "未知错误");
+            return new Message_body(500, "未知错误");
         }
     }
 
@@ -96,9 +93,6 @@ public class FileUploadController {
     @ResponseBody
     public Message deleteUploadFile(HttpServletRequest request, String fileName) {
         try {
-            if (!JwtUtil.isTokenTrue(request.getHeader("Authorization"))) {
-                return new Message(403, "身份验证失败");
-            }
             // 在 upload 目录下的所有文件夹中找到文件，删除
             File file = new File("C:\\upload\\");
             File[] files = file.listFiles();
@@ -129,11 +123,8 @@ public class FileUploadController {
 
     @RequestMapping(value = "/checkLastTimeUploadFiles", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public Message checkLastTimeUploadFiles(HttpServletRequest request) {
+    public Message_body checkLastTimeUploadFiles(HttpServletRequest request) {
         try {
-            if (!CheckToken.checkIsTeacher(request.getHeader("Authorization"))) {
-                return new Message(403, "身份验证失败");
-            }
             // 解析 token，获取 uid
             String token = request.getHeader("Authorization");
             String releaseUid = JwtUtil.getUserUid(token);
@@ -143,13 +134,34 @@ public class FileUploadController {
             fileName.setTableUid(tableUid);
             List<FileName> fileNames = fileUploadService.checkLastTimeUploadFiles(fileName);
             if (fileNames.size() > 0) {
-                return new Message(200, "已获取到上次上传的文件列表", fileNames);
+                return new Message_body(200, "已获取到上次上传的文件列表", fileNames);
             } else {
-                return new Message(300, "上次没有上传文件");
+                return new Message_body(300, "上次没有上传文件");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message(500, "未知错误");
+            return new Message_body(500, "未知错误");
+        }
+    }
+
+    // 根据关联 UID 查询文件列表
+    @RequestMapping(value = "/findUploadFilesByUid", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public Message_body findUploadFilesByUid(HttpServletRequest request, String RowUid) {
+        try {
+            String tableUid = request.getHeader("tableUid");
+            FileName fileName = new FileName();
+            fileName.setTableUid(tableUid);
+            fileName.setRowUid(RowUid);
+            List<FileName> fileNames = fileUploadService.findUploadFilesByUid(fileName);
+            if (fileNames.size() > 0) {
+                return new Message_body(200, "已获取到文件列表", fileNames);
+            } else {
+                return new Message_body(300, "没有文件");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Message_body(500, "未知错误");
         }
     }
 
