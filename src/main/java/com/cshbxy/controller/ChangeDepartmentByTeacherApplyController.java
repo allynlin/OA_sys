@@ -223,6 +223,7 @@ public class ChangeDepartmentByTeacherApplyController {
     @ResponseBody
     public Message deleteChangeDepartmentByTeacher(HttpServletRequest request, String uid) {
         try {
+            String tableUid = request.getHeader("tableUid");
             // 通过接收到的 uid 查询本条申请记录
             ChangeDepartmentByTeacher changeDepartmentByTeacher = changeDepartmentByTeacherApplyService.findChangeDepartmentByTeacher(uid);
             // 判断是否为提交人
@@ -232,7 +233,7 @@ public class ChangeDepartmentByTeacherApplyController {
                 // 通过 fileUploadService 下的 findUploadFilesByUid 方法，查询本条申请记录的附件
                 FileName fileName = new FileName();
                 fileName.setRowUid(uid);
-                fileName.setTableUid("changedepartmentbyteacher");
+                fileName.setTableUid(tableUid);
                 List<FileName> list = fileUploadService.findUploadFilesByUid(fileName);
                 // 如果有附件，删除附件
                 boolean result = true;

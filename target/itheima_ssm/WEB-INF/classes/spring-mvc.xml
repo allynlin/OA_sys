@@ -61,22 +61,6 @@ http://www.springframework.org/schema/context/spring-context.xsd">
             <mvc:mapping path="/apply/findTeacherChangeDepartmentList"/>
             <mvc:mapping path="/apply/findChangeDepartmentByTeacherProcess"/>
             <mvc:mapping path="/apply/deleteChangeDepartmentByTeacher"/>
-            <!--配置登录接口不被拦截-->
-            <!--            <mvc:exclude-mapping path="/login/teacher"/>-->
-            <!--            <mvc:exclude-mapping path="/login/department"/>-->
-            <!--            <mvc:exclude-mapping path="/login/leader"/>-->
-            <!--            <mvc:exclude-mapping path="/login/checkTeacher"/>-->
-            <!--            <mvc:exclude-mapping path="/login/checkDepartment"/>-->
-            <!--            <mvc:exclude-mapping path="/login/checkLeader"/>-->
-            <!--            <mvc:exclude-mapping path="/register/teacher"/>-->
-            <!--            <mvc:exclude-mapping path="/register/department"/>-->
-            <!--            <mvc:exclude-mapping path="/register/leader"/>-->
-            <!--            <mvc:exclude-mapping path="/query/teacher"/>-->
-            <!--            <mvc:exclude-mapping path="/query/department"/>-->
-            <!--            <mvc:exclude-mapping path="/query/leader"/>-->
-            <!--            <mvc:exclude-mapping path="/query/departmentMessage"/>-->
-            <!--            <mvc:exclude-mapping path="/query/leaderMessage"/>-->
-            <!--            <mvc:exclude-mapping path="/query/getUUID"/>-->
             <!--指定拦截器类路径-->
             <bean class="com.cshbxy.interceptor.Interceptor_Token_Teacher"/>
         </mvc:interceptor>
