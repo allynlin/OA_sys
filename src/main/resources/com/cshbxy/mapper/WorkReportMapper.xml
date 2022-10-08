@@ -23,7 +23,7 @@
                nextUid,
                create_time,
                update_time
-        from workreportteacher
+        from oa_sys.workreportteacher
         where releaseUid = #{releaseUid}
           and status >= 0
     </select>
@@ -35,13 +35,12 @@
                nextUid,
                create_time,
                update_time
-        from workreportteacher
+        from oa_sys.workreportteacher
         where uid = #{uid}
     </select>
     <update id="deleteByUid" parameterType="String">
-        update workreportteacher
-        set status     = -1,
-            update_time=now()
+        update oa_sys.workreportteacher
+        set status = -1
         where uid = #{uid}
     </update>
 </mapper>

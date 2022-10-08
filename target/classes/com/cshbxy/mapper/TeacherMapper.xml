@@ -5,12 +5,12 @@
 <mapper namespace="com.cshbxy.mapper.TeacherMapper">
     <select id="findDepartmentUid" resultType="String" parameterType="String">
         select departmentUid
-        from teacher
+        from oa_sys.teacher
         where uid = #{uid}
     </select>
     <select id="findRealeName" resultType="String" parameterType="String">
         select realeName
-        from teacher
+        from oa_sys.teacher
         where uid = #{uid}
     </select>
 </mapper>

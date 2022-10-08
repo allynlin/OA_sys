@@ -172,18 +172,19 @@ create table workReportDepartment
     foreign key (releaseUid) references department (uid)
 );
 
-create table leaveApplyTeacher
+create table `leave`
 (
-    uid         char(36) not null primary key comment '申请编号',
-    releaseUid  char(36) not null comment '请假人编号',
-    reason      text     not null comment '请假原因',
-    leaveTime   text     not null comment '请假时间',
-    status      int      not null default 0 comment '状态，0 正常，-1 删除,1 通过',
-    count       int      not null default 0 comment '审批次数',
-    nextUid     char(36) not null comment '下一步处理人编号',
-    create_time datetime not null default now() comment '创建时间',
-    update_time datetime not null default now() comment '更新时间',
-    foreign key (releaseUid) references teacher (uid)
+    uid           char(36) not null primary key comment '申请编号',
+    releaseUid    char(36) not null comment '请假人编号',
+    reason        text     not null comment '请假原因',
+    start_time    text     not null comment '请假时间',
+    end_time      text     not null comment '销假时间',
+    status        int      not null default 0 comment '状态，0 正常，-1 删除,1 通过',
+    count         int      not null default 0 comment '审批次数',
+    nextUid       char(36) not null comment '下一步处理人编号',
+    reject_reason text comment '驳回原因',
+    create_time   datetime not null default now() comment '创建时间',
+    update_time   datetime not null default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP comment '更新时间'
 );
 
 create table addTeacher
@@ -258,17 +259,3 @@ create table Process
     create_time datetime default now() not null comment '创建时间',
     update_time datetime default now() not null comment '更新时间'
 );
-
-select c.uid,
-       d.realeName as departmentUid,
-       c.changeReason,
-       c.status,
-       c.count,
-       c.nextUid,
-       c.create_time,
-       c.update_time
-from changedepartmentbyteacher as c,
-     department as d,
-     leader as l
-where c.releaseUid = 'e35a9b06-3506-48e4-8f3c-4cfbfe7e8cdb'
-order by update_time desc

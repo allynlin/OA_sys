@@ -72,7 +72,7 @@ public class ChangeDepartmentByTeacherApplyController {
 
     public String[] getProcess(ChangeDepartmentByTeacher changeDepartmentByTeacher) {
         // 通过 uid 查询变更部门申请流程
-        Process process = processService.processQueryByUid("abc");
+        Process process = processService.processQueryByUid("ab0c4b48-0651-4f22-ba23-4587ae502e89");
         String pro = process.getProcess();
         // 将查询到的数据分离，以 || 分隔
         String[] pros = pro.split("\\|\\|");
@@ -157,9 +157,9 @@ public class ChangeDepartmentByTeacherApplyController {
             String releaseUid = JwtUtil.getUserUid(token);
             int i = changeDepartmentByTeacherApplyService.checkTeacherChangeDepartment(releaseUid);
             if (i > 0) {
-                return new Message(300, "当前有正在审批的部门变更申请");
+                return new Message(300, "当前有正在审批的部门变更记录");
             } else {
-                return new Message(200, "没有正在审批的部门变更申请");
+                return new Message(200, "没有正在审批的部门变更记录");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -186,9 +186,9 @@ public class ChangeDepartmentByTeacherApplyController {
                 changeDepartmentByTeacher.setNextUid(findRealeName.findName(changeDepartmentByTeacher.getNextUid()));
             }
             if (list.size() != 0) {
-                return new Message_body(200, "查询部门变更申请记录成功", list);
+                return new Message_body(200, "查询部门变更记录成功", list);
             } else {
-                return new Message_body(300, "暂无记录");
+                return new Message_body(300, "暂无部门变更记录");
             }
         } catch (Exception e) {
             e.printStackTrace();

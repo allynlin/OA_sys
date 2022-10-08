@@ -5,28 +5,27 @@
 <mapper namespace="com.cshbxy.mapper.ProcessMapper">
     <select id="processQueryByUid" resultType="Process">
         select uid, name, process, create_time, update_time
-        from process
+        from oa_sys.process
         where uid = #{uid}
     </select>
     <select id="processQueryByName" resultType="Process">
         select uid, name, process, create_time, update_time
-        from process
+        from oa_sys.process
         where name = #{name}
     </select>
     <update id="processUpdate" parameterType="Process">
-        update process
+        update oa_sys.process
         set name=#{name},
-            process=#{process},
-            update_time=now()
+            process=#{process}
         where uid = #{uid}
     </update>
     <insert id="processInsert" parameterType="Process">
-        insert into process(uid, name, process)
+        insert into oa_sys.process(uid, name, process)
         values (#{uid}, #{name}, #{process})
     </insert>
     <delete id="processDelete">
         delete
-        from process
+        from oa_sys.process
         where uid = #{uid}
     </delete>
 </mapper>

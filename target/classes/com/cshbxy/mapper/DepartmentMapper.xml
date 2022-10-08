@@ -5,7 +5,7 @@
 <mapper namespace="com.cshbxy.mapper.DepartmentMapper">
     <select id="findRealeName" resultType="String" parameterType="String">
         select realeName
-        from department
+        from oa_sys.department
         where uid = #{uid}
     </select>
 </mapper>

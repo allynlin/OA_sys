@@ -5,7 +5,7 @@
 <mapper namespace="com.cshbxy.mapper.LeaderMapper">
     <select id="findRealeName" resultType="String" parameterType="String">
         select realeName
-        from leader
+        from oa_sys.leader
         where uid = #{uid}
     </select>
 </mapper>
