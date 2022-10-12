@@ -26,6 +26,7 @@
         from oa_sys.workreportteacher
         where releaseUid = #{releaseUid}
           and status >= 0
+        order by create_time desc
     </select>
     <select id="findWorkReportByUid" resultType="WorkReport">
         select uid,
@@ -38,7 +39,7 @@
         from oa_sys.workreportteacher
         where uid = #{uid}
     </select>
-    <update id="deleteByUid" parameterType="String">
+    <update id="deleteByUid">
         update oa_sys.workreportteacher
         set status = -1
         where uid = #{uid}

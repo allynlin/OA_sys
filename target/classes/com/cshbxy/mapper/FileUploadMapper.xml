@@ -20,10 +20,11 @@
     </delete>
     <update id="updateUploadFile" parameterType="FileName">
         update oa_sys.filename
-        set RowUid     = #{RowUid}
+        set RowUid = #{RowUid}
         where TableUid = #{TableUid}
           and ReleaseUid = #{ReleaseUid}
           and RowUid is null
+        order by create_time desc
     </update>
     <select id="checkLastTimeUploadFiles" parameterType="FileName" resultType="FileName">
         select uid, oldFileName, FileName
@@ -31,8 +32,9 @@
         where ReleaseUid = #{ReleaseUid}
           and TableUid = #{TableUid}
           and RowUid is null
+        order by create_time desc
     </select>
-    <select id="findFileOldNameByFileName" parameterType="String" resultType="String">
+    <select id="findFileOldNameByFileName">
         select oldFileName
         from oa_sys.filename
         where FileName = #{FileName}

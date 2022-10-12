@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cshbxy.mapper.FileUploadMapper">
+    <insert id="addUploadFile" parameterType="FileName">
+        insert into oa_sys.filename(uid, ReleaseUid, TableUid, FileName, oldFileName)
+        values (#{uid}, #{ReleaseUid}, #{TableUid}, #{FileName}, #{oldFileName})
+    </insert>
+    <delete id="dropUploadFile" parameterType="FileName">
+        delete
+        from oa_sys.filename
+        where uid = #{uid}
+    </delete>
+    <delete id="dropUploadFileByRowUid" parameterType="FileName">
+        delete
+        from oa_sys.filename
+        where TableUid = #{TableUid}
+          and RowUid = #{RowUid}
+    </delete>
+    <update id="updateUploadFile" parameterType="FileName">
+        update oa_sys.filename
+        set RowUid = #{RowUid}
+        where TableUid = #{TableUid}
+          and ReleaseUid = #{ReleaseUid}
+          and RowUid is null
+        order by create_time desc
+    </update>
+    <select id="checkLastTimeUploadFiles" parameterType="FileName" resultType="FileName">
+        select uid, oldFileName, FileName
+        from oa_sys.filename
+        where ReleaseUid = #{ReleaseUid}
+          and TableUid = #{TableUid}
+          and RowUid is null
+        order by create_time desc
+    </select>
+    <select id="findFileOldNameByFileName">
+        select oldFileName
+        from oa_sys.filename
+        where FileName = #{FileName}
+    </select>
+    <select id="findUploadFilesByUid" resultType="FileName" parameterType="FileName">
+        select uid, oldFileName, FileName
+        from oa_sys.filename
+        where TableUid = #{TableUid}
+          and RowUid = #{RowUid}
+    </select>
+</mapper>

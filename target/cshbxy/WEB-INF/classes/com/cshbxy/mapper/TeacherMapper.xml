@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cshbxy.mapper.TeacherMapper">
+    <select id="findDepartmentUid" resultType="String">
+        select departmentUid
+        from oa_sys.teacher
+        where uid = #{uid}
+    </select>
+    <select id="findRealeName" resultType="String">
+        select realeName
+        from oa_sys.teacher
+        where uid = #{uid}
+    </select>
+</mapper>

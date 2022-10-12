@@ -8,6 +8,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="ssm" />
         <module name="cshbxy" />
+        <module name="OA_sys" />
       </profile>
     </annotationProcessing>
   </component>

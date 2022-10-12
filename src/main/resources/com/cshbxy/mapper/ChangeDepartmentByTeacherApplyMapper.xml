@@ -8,10 +8,12 @@
         values (#{uid}, #{releaseUid}, #{departmentUid}, #{changeReason}, #{nextUid})
     </insert>
     <select id="checkTeacherChangeDepartment" parameterType="ChangeDepartmentByTeacher" resultType="int">
-        select count(*)
+        select count(1)
         from oa_sys.changedepartmentbyteacher
         where releaseUid = #{releaseUid}
           and status = 0
+        order by update_time desc
+        limit 1
     </select>
     <select id="findChangeDepartmentByTeacherList" resultType="ChangeDepartmentByTeacher">
         select uid,
@@ -25,6 +27,7 @@
         from oa_sys.changedepartmentbyteacher
         where releaseUid = #{releaseUid}
           and status >= 0
+        order by create_time desc
     </select>
     <select id="findChangeDepartmentByTeacher" resultType="ChangeDepartmentByTeacher">
         select uid,
@@ -39,9 +42,9 @@
         from oa_sys.changedepartmentbyteacher
         where uid = #{uid}
     </select>
-    <update id="deleteByUid" parameterType="String">
+    <update id="deleteByUid">
         update oa_sys.changedepartmentbyteacher
-        set status     = -1
+        set status = -1
         where uid = #{uid}
     </update>
 </mapper>
