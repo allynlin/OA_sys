@@ -20,12 +20,12 @@ public class Interceptor_Version extends HandlerInterceptorAdapter {
         String version = request.getHeader("version");
         // 判断 version 是否为空
         if (version == null) {
-            response.getWriter().write(new Message(101, "版本校验失败").toString());
+            response.getWriter().write("{\"code\":101,\"message\":\"版本校验失败\"}");
             return false;
         }
         // 判断 version 是否低于 ver
         if (version.compareTo(Version.getVersion()) < 0) {
-            response.getWriter().write(new Message(103, "版本过低").toString());
+            response.getWriter().write("{\"code\":103,\"message\":\"版本过低\"}");
             return false;
         }
         return true;

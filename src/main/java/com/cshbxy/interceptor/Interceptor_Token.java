@@ -20,12 +20,12 @@ public class Interceptor_Token extends HandlerInterceptorAdapter {
         String token = request.getHeader("Authorization");
         // 判断 token 是否为空
         if (token == null) {
-            response.getWriter().write(new Message(401, "未登录").toString());
+            response.getWriter().write("{\"code\":401,\"message\":\"未登录\"}");
             return false;
         }
         // 判断 token 是否正确
         if (!JwtUtil.isTokenTrue(token)) {
-            response.getWriter().write(new Message(403, "token校验失败").toString());
+            response.getWriter().write("{\"code\":403,\"message\":\"token校验失败\"}");
             return false;
         }
         return true;

@@ -18,7 +18,7 @@ public class Interceptor_Token_Teacher extends HandlerInterceptorAdapter {
         response.setCharacterEncoding("utf-8");
         // 判断是否 teacher
         if (CheckToken.checkIsTeacher(request.getHeader("Authorization"))) {
-            response.getWriter().write(new Message(403, "token校验失败").toString());
+            response.getWriter().write("{\"code\":403,\"message\":\"token校验失败\"}");
             return false;
         }
         return true;
