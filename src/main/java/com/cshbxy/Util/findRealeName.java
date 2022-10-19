@@ -41,15 +41,5 @@ public class findRealeName {
         } else {
             return null;
         }
-//        String name = findRealeName.departmentService.findRealeName(uid);
-//        if (name != null) {
-//            return name;
-//        }
-//        name = findRealeName.leaderService.findRealeName(uid);
-//        if (name != null) {
-//            return name;
-//        }
-//        name = findRealeName.teacherService.findRealeName(uid);
-//        return name;
     }
 }

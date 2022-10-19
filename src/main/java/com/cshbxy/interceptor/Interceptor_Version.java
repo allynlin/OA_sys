@@ -1,7 +1,6 @@
 package com.cshbxy.interceptor;
 
 import com.cshbxy.Util.Version;
-import com.cshbxy.dao.Message;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,10 +22,10 @@ public class Interceptor_Version extends HandlerInterceptorAdapter {
             response.getWriter().write("{\"code\":101,\"message\":\"版本校验失败\"}");
             return false;
         }
-        // 判断 version 是否低于 ver
-        if (version.compareTo(Version.getVersion()) < 0) {
+        // 判断 version 是否低于 lowVersion
+        if (version.compareTo(Version.getLowVersion()) < 0) {
             response.getWriter().write("{\"code\":103,\"message\":\"版本过低\"}");
-            return false;
+            return true;
         }
         return true;
     }

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cshbxy.mapper.TravelReimbursementApplyMapper">
+    <insert id="addTravelReimbursement" parameterType="TravelReimbursement">
+        insert into oa_sys.travelreimbursement(uid, releaseUid, destination, expenses, reason, nextUid)
+        values (#{uid}, #{releaseUid}, #{destination}, #{expenses}, #{reason}, #{nextUid})
+    </insert>
+    <select id="findTravelReimbursementApplyList" parameterType="TravelReimbursement" resultType="TravelReimbursement">
+        select uid,
+        releaseUid,
+        destination,
+        expenses,
+        reason,
+        status,
+        nextUid,
+        create_time,
+        update_time
+        from oa_sys.travelreimbursement
+        where releaseUid = #{releaseUid}
+        and status >= 0
+        <where>
+            <if test="destination != null and destination != ''">
+                and destination like concat('%', #{destination}, '%')
+            </if>
+            <if test="expenses != null and expenses != ''">
+                and expenses like concat('%', #{expenses}, '%')
+            </if>
+            <if test="reason != null and reason != ''">
+                and reason like concat('%', #{reason}, '%')
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+    <select id="findTravelProcess" resultType="TravelReimbursement">
+        select uid,
+               releaseUid,
+               destination,
+               expenses,
+               reason,
+               status,
+               nextUid,
+               create_time,
+               update_time
+        from oa_sys.travelreimbursement
+        where uid = #{uid}
+    </select>
+    <update id="updateTravelReimbursementApply" parameterType="TravelReimbursement">
+        update oa_sys.travelreimbursement
+        set destination=#{destination},
+            expenses=#{expenses},
+            reason=#{reason},
+            nextUid=#{nextUid},
+            status=#{status}
+        where uid = #{uid}
+    </update>
+    <update id="deleteTravelReimbursementApply">
+        update oa_sys.travelreimbursement
+        set status = -1
+        where uid = #{uid}
+    </update>
+</mapper>

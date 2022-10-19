@@ -3,7 +3,6 @@ package com.cshbxy.dao;
 public class TravelReimbursement {
     String uid;
     String releaseUid;
-    String type;
     String destination;
     String expenses;
     String reason;
@@ -27,14 +26,6 @@ public class TravelReimbursement {
 
     public void setReleaseUid(String releaseUid) {
         this.releaseUid = releaseUid;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 
     public String getDestination() {
@@ -106,7 +97,6 @@ public class TravelReimbursement {
         return "TravelReimbursement{" +
                 "uid='" + uid + '\'' +
                 ", releaseUid='" + releaseUid + '\'' +
-                ", type='" + type + '\'' +
                 ", destination='" + destination + '\'' +
                 ", expenses='" + expenses + '\'' +
                 ", reason='" + reason + '\'' +

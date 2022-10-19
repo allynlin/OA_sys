@@ -217,5 +217,4 @@ public class FileUploadController {
         //火狐等其它浏览器统一为ISO-8859-1编码显示
         return new String(filename.getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1);
     }
-
 }

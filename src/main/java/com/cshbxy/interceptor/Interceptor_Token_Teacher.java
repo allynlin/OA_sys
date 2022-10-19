@@ -1,7 +1,6 @@
 package com.cshbxy.interceptor;
 
 import com.cshbxy.Util.CheckToken;
-import com.cshbxy.dao.Message;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;

@@ -129,7 +129,6 @@ public class ChangeDepartmentByTeacherApplyController {
             // 生成 uuid
             String uid = UUID.randomUUID().toString();
             changeDepartmentByTeacher.setUid(uid);
-            changeDepartmentByTeacher.setReleaseUid(releaseUid);
             changeDepartmentByTeacher.setNextUid(nextProcessPerson);
             int result = changeDepartmentByTeacherApplyService.teacherChangeDepartment(changeDepartmentByTeacher);
             // 更新文件表

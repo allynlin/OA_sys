@@ -34,7 +34,7 @@
           and RowUid is null
         order by create_time desc
     </select>
-    <select id="findFileOldNameByFileName">
+    <select id="findFileOldNameByFileName" resultType="String">
         select oldFileName
         from oa_sys.filename
         where FileName = #{FileName}
