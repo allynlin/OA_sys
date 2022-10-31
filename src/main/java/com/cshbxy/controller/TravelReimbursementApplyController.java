@@ -2,11 +2,11 @@ package com.cshbxy.controller;
 
 import com.cshbxy.Util.JwtUtil;
 import com.cshbxy.Util.findRealeName;
-import com.cshbxy.dao.Process;
-import com.cshbxy.dao.*;
+import com.cshbxy.dao.FileName;
+import com.cshbxy.dao.Message;
+import com.cshbxy.dao.Message_body;
+import com.cshbxy.dao.TravelReimbursement;
 import com.cshbxy.service.FileUploadService;
-import com.cshbxy.service.ProcessService;
-import com.cshbxy.service.TeacherService;
 import com.cshbxy.service.TravelReimbursementApplyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,94 +16,27 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import static com.cshbxy.Util.DeleteFiles.deleteFiles;
+import static com.cshbxy.Util.DeleteFiles.updateFiles;
+import static com.cshbxy.Util.Process.findNextProcessPerson;
+import static com.cshbxy.Util.Process.getProcess;
 
 @Controller
 @RequestMapping("/apply")
 @CrossOrigin(origins = "*")
 public class TravelReimbursementApplyController {
 
+    String processUid = "4d4b1437-acaa-4eb5-a1ab-9cad78564fed";
+
     @Autowired
     private TravelReimbursementApplyService travelReimbursementApplyService;
 
     @Autowired
     private FileUploadService fileUploadService;
-
-    @Autowired
-    private ProcessService processService;
-
-    @Autowired
-    private TeacherService teacherService;
-
-    // 关联上传的文件
-    public boolean updateFiles(String uid, String tableUid, String releaseUid) {
-        FileName fileName = new FileName();
-        fileName.setRowUid(uid);
-        fileName.setTableUid(tableUid);
-        fileName.setReleaseUid(releaseUid);
-        int i = fileUploadService.updateUploadFile(fileName);
-        return i > 0;
-    }
-
-    public boolean deleteFiles(String fileName) {
-        // 在 upload 目录下的所有文件夹中找到文件，删除
-        File file = new File("C:\\upload\\");
-        File[] files = file.listFiles();
-        assert files != null;
-        for (File file1 : files) {
-            File[] files1 = file1.listFiles();
-            assert files1 != null;
-            for (File file2 : files1) {
-                if (file2.getName().equals(fileName)) {
-                    file2.delete();
-                    break;
-                }
-            }
-        }
-        // 将文件名后缀去除
-        String uid = fileName.substring(0, fileName.lastIndexOf("."));
-        // 删除数据库中的文件名
-        int i = fileUploadService.dropUploadFile(uid);
-        return i > 0;
-    }
-
-    public String[] getProcess(TravelReimbursement travelReimbursement) {
-        // 通过 uid 查询变更部门申请流程
-        Process process = processService.processQueryByUid("4d4b1437-acaa-4eb5-a1ab-9cad78564fed");
-        String pro = process.getProcess();
-        // 将查询到的数据分离，以 || 分隔
-        String[] pros = pro.split("\\|\\|");
-        // 修改数组中的 nowDepartment 为当前部门，nextDepartment 为下一部门
-        for (int i = 0; i < pros.length; i++) {
-            if (pros[i].equals("nowDepartment")) {
-                pros[i] = teacherService.findDepartmentUid(travelReimbursement.getReleaseUid());
-            }
-        }
-        return pros;
-    }
-
-    // 查找下一级审批人
-    public String findNextProcessPerson(TravelReimbursement travelReimbursement) {
-        try {
-            String[] pros = getProcess(travelReimbursement);
-            if (travelReimbursement.getNextUid() == null) {
-                return pros[0];
-            }
-            // 遍历数组，根据 NowUid 寻找下一级审批人
-            for (int i = 0; i < pros.length; i++) {
-                if (pros[i].equals(travelReimbursement.getNextUid())) {
-                    return pros[i + 1];
-                }
-            }
-            return null;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
 
     // 提交差旅报销申请
     @RequestMapping(value = "/addTravelReimbursement", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
@@ -116,7 +49,7 @@ public class TravelReimbursementApplyController {
             travelReimbursement.setReleaseUid(releaseUid);
             String tableUid = request.getHeader("tableUid");
             // 查询流程
-            String nextProcessPerson = findNextProcessPerson(travelReimbursement);
+            String nextProcessPerson = findNextProcessPerson(processUid, releaseUid, travelReimbursement.getNextUid(), null);
             // 生成 uuid
             String uid = UUID.randomUUID().toString();
             travelReimbursement.setUid(uid);
@@ -167,7 +100,7 @@ public class TravelReimbursementApplyController {
             // 通过接收到的 uid 查询本条申请记录
             TravelReimbursement travelReimbursement = travelReimbursementApplyService.findTravelProcess(uid);
             // 查询审批流程
-            String[] pros = getProcess(travelReimbursement);
+            String[] pros = getProcess(processUid, travelReimbursement.getReleaseUid(), null);
             // 将 list 中的每个 uid 都在 findName 中查询，返回真是姓名
             List<String> list = new ArrayList<>();
             for (String pro : pros) {
@@ -192,10 +125,9 @@ public class TravelReimbursementApplyController {
             String tableUid = request.getHeader("tableUid");
             travelReimbursement.setStatus(0);
             travelReimbursement.setCount(0);
-            travelReimbursement.setNextUid(null);
             travelReimbursement.setReleaseUid(releaseUid);
             // 查询流程
-            String nextProcessPerson = findNextProcessPerson(travelReimbursement);
+            String nextProcessPerson = findNextProcessPerson(processUid, releaseUid, null, null);
             travelReimbursement.setNextUid(nextProcessPerson);
             int result = travelReimbursementApplyService.updateTravelReimbursementApply(travelReimbursement);
             // 更新文件表

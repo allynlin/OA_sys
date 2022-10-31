@@ -4,8 +4,8 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.cshbxy.mapper.FileUploadMapper">
     <insert id="addUploadFile" parameterType="FileName">
-        insert into oa_sys.filename(uid, ReleaseUid, TableUid, FileName, oldFileName)
-        values (#{uid}, #{ReleaseUid}, #{TableUid}, #{FileName}, #{oldFileName})
+        insert into oa_sys.filename(uid, ReleaseUid, TableUid, FileName, oldFileName, create_time)
+        values (#{uid}, #{ReleaseUid}, #{TableUid}, #{FileName}, #{oldFileName}, #{create_time})
     </insert>
     <delete id="dropUploadFile" parameterType="FileName">
         delete
@@ -44,5 +44,10 @@
         from oa_sys.filename
         where TableUid = #{TableUid}
           and RowUid = #{RowUid}
+    </select>
+    <select id="findFileCreateTimeByFileName" resultType="String">
+        select create_time
+        from oa_sys.filename
+        where FileName = #{FileName}
     </select>
 </mapper>

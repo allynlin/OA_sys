@@ -17,7 +17,7 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     @Override
-    public String findRealeName(String uid){
+    public String findRealeName(String uid) {
         return teacherMapper.findRealeName(uid);
     }
 }

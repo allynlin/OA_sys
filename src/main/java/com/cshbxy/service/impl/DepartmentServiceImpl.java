@@ -12,7 +12,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     private DepartmentMapper departmentMapper;
 
     @Override
-    public String findRealeName(String uid){
+    public String findRealeName(String uid) {
         return departmentMapper.findRealeName(uid);
     }
 }

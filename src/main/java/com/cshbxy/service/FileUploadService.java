@@ -20,4 +20,6 @@ public interface FileUploadService {
 
     public List<FileName> findUploadFilesByUid(FileName fileName);
 
+    public String findFileCreateTimeByFileName(String fileName);
+
 }

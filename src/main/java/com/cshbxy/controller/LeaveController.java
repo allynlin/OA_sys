@@ -5,10 +5,7 @@ import com.cshbxy.Util.findRealeName;
 import com.cshbxy.dao.Leave;
 import com.cshbxy.dao.Message;
 import com.cshbxy.dao.Message_body;
-import com.cshbxy.dao.Process;
 import com.cshbxy.service.LeaveSerivce;
-import com.cshbxy.service.ProcessService;
-import com.cshbxy.service.TeacherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -21,54 +18,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static com.cshbxy.Util.Process.findNextProcessPerson;
+import static com.cshbxy.Util.Process.getProcess;
+
 @Controller
 @RequestMapping("/leave")
 @CrossOrigin(origins = "*")
 public class LeaveController {
 
+    String processUid = "64c0e0cc-8c3b-40de-aff3-3d293b6ac868";
+
     @Autowired
     private LeaveSerivce leaveSerivce;
-
-    @Autowired
-    private ProcessService processService;
-
-    @Autowired
-    private TeacherService teacherService;
-
-    public String[] getProcess(Leave leave) {
-        // 通过 uid 查询变更部门申请流程
-        Process process = processService.processQueryByUid("64c0e0cc-8c3b-40de-aff3-3d293b6ac868");
-        String pro = process.getProcess();
-        // 将查询到的数据分离，以 || 分隔
-        String[] pros = pro.split("\\|\\|");
-        // 修改数组中的 nowDepartment 为当前部门
-        for (int i = 0; i < pros.length; i++) {
-            if (pros[i].equals("nowDepartment")) {
-                pros[i] = teacherService.findDepartmentUid(leave.getReleaseUid());
-            }
-        }
-        return pros;
-    }
-
-    // 查找下一级审批人
-    public String findNextProcessPerson(Leave leave) {
-        try {
-            String[] pros = getProcess(leave);
-            if (leave.getNextUid() == null) {
-                return pros[0];
-            }
-            // 遍历数组，根据 NowUid 寻找下一级审批人
-            for (int i = 0; i < pros.length; i++) {
-                if (pros[i].equals(leave.getNextUid())) {
-                    return pros[i + 1];
-                }
-            }
-            return null;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
 
     // 提交请假申请
     @RequestMapping(value = "/addLeave", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
@@ -79,8 +40,7 @@ public class LeaveController {
             String token = request.getHeader("Authorization");
             String releaseUid = JwtUtil.getUserUid(token);
             // 查询流程
-            leave.setReleaseUid(releaseUid);
-            String nextProcessPerson = findNextProcessPerson(leave);
+            String nextProcessPerson = findNextProcessPerson(processUid, releaseUid, leave.getNextUid(), null);
             // 生成 uuid
             String uid = UUID.randomUUID().toString();
             leave.setUid(uid);
@@ -126,7 +86,7 @@ public class LeaveController {
             // 通过接收到的 uid 查询本条申请记录
             Leave leave = leaveSerivce.findLeaveByUid(uid);
             // 查询审批流程
-            String[] pros = getProcess(leave);
+            String[] pros = getProcess(processUid, leave.getReleaseUid(), null);
             // 将 list 中的每个 uid 都在 findName 中查询，返回真是姓名
             List<String> list = new ArrayList<>();
             for (String pro : pros) {
@@ -191,10 +151,11 @@ public class LeaveController {
     @ResponseBody
     public Message updateLeave(HttpServletRequest request, Leave leave) {
         try {
+            String releaseUid = JwtUtil.getUserUid(request.getHeader("Authorization"));
             leave.setCount(0);
             leave.setStatus(0);
-            leave.setReleaseUid(JwtUtil.getUserUid(request.getHeader("Authorization")));
-            String nextProcessPerson = findNextProcessPerson(leave);
+            leave.setReleaseUid(releaseUid);
+            String nextProcessPerson = findNextProcessPerson(processUid, leave.getReleaseUid(), null, null);
             leave.setNextUid(nextProcessPerson);
             // 修改数据库
             int i = leaveSerivce.updateLeave(leave);

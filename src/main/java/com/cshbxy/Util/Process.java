@@ -3,7 +3,9 @@ package com.cshbxy.Util;
 import com.cshbxy.service.ProcessService;
 import com.cshbxy.service.TeacherService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class Process {
     private static ProcessService processService;
 
@@ -31,8 +33,11 @@ public class Process {
                 pros[i] = teacherService.findDepartmentUid(releaseUid);
                 continue;
             }
-            if (pros[i].equals("nextDepartment")) {
-                pros[i] = departmentUid;
+            // 如果传递了 departmentUid,则执行后续判断
+            if (departmentUid != null) {
+                if (pros[i].equals("nextDepartment")) {
+                    pros[i] = departmentUid;
+                }
             }
         }
         return pros;

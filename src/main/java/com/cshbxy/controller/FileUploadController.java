@@ -21,9 +21,11 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -34,6 +36,51 @@ import java.util.UUID;
 public class FileUploadController {
     @Autowired
     private FileUploadService fileUploadService;
+
+    private String upload(String userUid, String tableUid, MultipartFile file) {
+        try {
+            // 以当前日期创建一个文件夹，避免单个文件夹中文件过多
+            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String time = simpleDateFormat.format(timestamp);
+            // 截取年月日：2020-11-02
+            String substring = timestamp.toString().substring(0, 10);
+            //获取存放文件在服务器中的路径,C 盘下的 upload 文件夹
+            String realPath = "C:\\upload\\" + substring;
+            //判断文件夹是否存在，不存在则创建
+            File file1 = new File(realPath);
+            if (!file1.exists()) {
+                file1.mkdirs();
+            }
+            // 获取文件名
+            String upFileName = file.getOriginalFilename();
+            // 获取 UUID，防止文件名重复，并设置数据表主键
+            String uuid = UUID.randomUUID().toString();
+            // 获取文件后缀名
+            String suffixName =
+                    Objects.requireNonNull(file.getOriginalFilename()).substring(file.getOriginalFilename().lastIndexOf("."));
+            // 拼接新文件名
+            String fileName = uuid + suffixName;
+            // 转存文件
+            file.transferTo(new File(realPath + "\\" + fileName));
+            // 存储文件名到数据库
+            FileName fn = new FileName();
+            fn.setUid(uuid);
+            fn.setReleaseUid(userUid);
+            fn.setTableUid(tableUid);
+            fn.setFileName(fileName);
+            fn.setOldFileName(upFileName);
+            fn.setCreate_time(time);
+            int i = fileUploadService.addUploadFile(fn);
+            if (i != 1) {
+                return "文件上传失败";
+            }
+            return fileName;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "文件上传失败";
+        }
+    }
 
     @RequestMapping(value = "/uploadFile", method = RequestMethod.POST)
     @ResponseBody
@@ -47,40 +94,11 @@ public class FileUploadController {
             response.setCharacterEncoding("utf-8");
             response.setHeader("content-type", "text/html;charset=utf-8");
             if (!file.isEmpty()) {
-                // 以当前日期创建一个文件夹，避免单个文件夹中文件过多
-                Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-                // 截取年月日：2020-11-02
-                String substring = timestamp.toString().substring(0, 10);
-                //获取存放文件在服务器中的路径,C 盘下的 upload 文件夹
-                String realPath = "C:\\upload\\" + substring;
-                //判断文件夹是否存在，不存在则创建
-                File file1 = new File(realPath);
-                if (!file1.exists()) {
-                    file1.mkdirs();
+                String uploadResult = upload(userUid, tableUid, file);
+                if (uploadResult.equals("文件上传失败")) {
+                    return new Message_body(400, "文件上传失败", null);
                 }
-                // 获取文件名
-                String upFileName = file.getOriginalFilename();
-                // 获取 UUID，防止文件名重复，并设置数据表主键
-                String uuid = UUID.randomUUID().toString();
-                // 获取文件后缀名
-                String suffixName =
-                        Objects.requireNonNull(file.getOriginalFilename()).substring(file.getOriginalFilename().lastIndexOf("."));
-                // 拼接新文件名
-                String fileName = uuid + suffixName;
-                // 转存文件
-                file.transferTo(new File(realPath + "\\" + fileName));
-                // 存储文件名到数据库
-                FileName fn = new FileName();
-                fn.setUid(uuid);
-                fn.setReleaseUid(userUid);
-                fn.setTableUid(tableUid);
-                fn.setFileName(fileName);
-                fn.setOldFileName(upFileName);
-                int i = fileUploadService.addUploadFile(fn);
-                if (i != 1) {
-                    return new Message_body(400, "文件上传失败");
-                }
-                return new Message_body(200, upFileName + "文件上传成功", fileName);
+                return new Message_body(200, "文件上传成功", uploadResult);
             }
             return new Message_body(400, "文件上传失败");
         } catch (Exception e) {
@@ -93,19 +111,15 @@ public class FileUploadController {
     @ResponseBody
     public Message deleteUploadFile(HttpServletRequest request, String fileName) {
         try {
-            // 在 upload 目录下的所有文件夹中找到文件，删除
-            File file = new File("C:\\upload\\");
-            File[] files = file.listFiles();
-            assert files != null;
-            for (File file1 : files) {
-                File[] files1 = file1.listFiles();
-                assert files1 != null;
-                for (File file2 : files1) {
-                    if (file2.getName().equals(fileName)) {
-                        file2.delete();
-                        break;
-                    }
-                }
+            String create_time = fileUploadService.findFileCreateTimeByFileName(fileName);
+            // 分离 create_time 中的日期 yyyy-MM-dd
+            String substring = create_time.substring(0, 10);
+            // 获取存放文件在服务器中的路径,C 盘下的 upload 文件夹
+            String realPath = "C:\\upload\\" + substring;
+            // 在当前路径下删除文件
+            File file = new File(realPath + "\\" + fileName);
+            if (file.exists()) {
+                file.delete();
             }
             // 将文件名后缀去除
             String uid = fileName.substring(0, fileName.lastIndexOf("."));
@@ -168,25 +182,14 @@ public class FileUploadController {
     @RequestMapping(value = "/downloadFile", method = RequestMethod.GET)
     public ResponseEntity<byte[]> fileDownload(HttpServletRequest request,
                                                String filename) throws Exception {
-        // 指定要下载的文件所在路径,C:\\upload\\
-        StringBuilder path = new StringBuilder("C:\\upload\\");
-        // 遍历 upload 目录下的所有文件夹，找到文件
-        File file = new File(path.toString());
-        File[] files = file.listFiles();
-        assert files != null;
-        for (File file1 : files) {
-            File[] files1 = file1.listFiles();
-            assert files1 != null;
-            for (File file2 : files1) {
-                if (file2.getName().equals(filename)) {
-                    path.append(file1.getName()).append("\\").append(filename);
-                    break;
-                }
-            }
-        }
+        String create_time = fileUploadService.findFileCreateTimeByFileName(filename);
+        // 分离 create_time 中的日期 yyyy-MM-dd
+        String substring = create_time.substring(0, 10);
+        // 在路径后面拼接日期
+        String realPath = "C:\\upload\\" + substring + "\\" + filename;
         String oldFileName = fileUploadService.findFileOldNameByFileName(filename);
         // 创建该文件对象
-        File file1 = new File(String.valueOf(path));
+        File file = new File(realPath);
         filename = this.getFilename(request, oldFileName);
         // 设置响应头
         HttpHeaders headers = new HttpHeaders();
@@ -195,7 +198,7 @@ public class FileUploadController {
         // 定义以流的形式下载返回文件数据
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
         // 使用 Sring MVC 框架的 ResponseEntity 对象封装返回下载数据
-        return new ResponseEntity<byte[]>(FileUtils.readFileToByteArray(file1),
+        return new ResponseEntity<byte[]>(FileUtils.readFileToByteArray(file),
                 headers, HttpStatus.OK);
     }
 

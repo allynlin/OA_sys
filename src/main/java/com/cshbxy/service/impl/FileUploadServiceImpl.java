@@ -25,7 +25,7 @@ public class FileUploadServiceImpl implements FileUploadService {
     }
 
     @Override
-    public int dropUploadFileByRowUid(FileName fileName){
+    public int dropUploadFileByRowUid(FileName fileName) {
         return fileUploadMapper.dropUploadFileByRowUid(fileName);
     }
 
@@ -45,7 +45,12 @@ public class FileUploadServiceImpl implements FileUploadService {
     }
 
     @Override
-    public List<FileName> findUploadFilesByUid(FileName fileName){
+    public List<FileName> findUploadFilesByUid(FileName fileName) {
         return fileUploadMapper.findUploadFilesByUid(fileName);
+    }
+
+    @Override
+    public String findFileCreateTimeByFileName(String fileName) {
+        return fileUploadMapper.findFileCreateTimeByFileName(fileName);
     }
 }

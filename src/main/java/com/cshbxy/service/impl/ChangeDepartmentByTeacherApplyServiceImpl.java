@@ -30,12 +30,12 @@ public class ChangeDepartmentByTeacherApplyServiceImpl implements ChangeDepartme
     }
 
     @Override
-    public ChangeDepartmentByTeacher findChangeDepartmentByTeacher(String uid){
+    public ChangeDepartmentByTeacher findChangeDepartmentByTeacher(String uid) {
         return changeDepartmentByTeacherApplyMapper.findChangeDepartmentByTeacher(uid);
     }
 
     @Override
-    public int deleteByUid(String uid){
+    public int deleteByUid(String uid) {
         return changeDepartmentByTeacherApplyMapper.deleteByUid(uid);
     }
 }

@@ -2,11 +2,11 @@ package com.cshbxy.controller;
 
 import com.cshbxy.Util.JwtUtil;
 import com.cshbxy.Util.findRealeName;
-import com.cshbxy.dao.Process;
-import com.cshbxy.dao.*;
+import com.cshbxy.dao.FileName;
+import com.cshbxy.dao.Message;
+import com.cshbxy.dao.Message_body;
+import com.cshbxy.dao.WorkReport;
 import com.cshbxy.service.FileUploadService;
-import com.cshbxy.service.ProcessService;
-import com.cshbxy.service.TeacherService;
 import com.cshbxy.service.WorkReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,27 +16,26 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
+import static com.cshbxy.Util.DeleteFiles.deleteFiles;
+import static com.cshbxy.Util.DeleteFiles.updateFiles;
+import static com.cshbxy.Util.Process.findNextProcessPerson;
+import static com.cshbxy.Util.Process.getProcess;
 
 @Controller
 @RequestMapping("/workReport")
 @CrossOrigin(origins = "*")
 public class WorkReportController {
 
+    String processUid = "5c4a2ce8-6c37-402b-bff3-998da0cc3376";
+
     @Autowired
     private WorkReportService workReportService;
 
     @Autowired
     private FileUploadService fileUploadService;
-
-    @Autowired
-    private ProcessService processService;
-
-    @Autowired
-    private TeacherService teacherService;
-
 
     //判断选择的日期是否是今天
     public static boolean isToday(long time) {
@@ -66,73 +65,6 @@ public class WorkReportController {
         return param.equals(now);
     }
 
-    // 关联上传的文件
-    public boolean updateFiles(String uid, String tableUid, String releaseUid) {
-        FileName fileName = new FileName();
-        fileName.setRowUid(uid);
-        fileName.setTableUid(tableUid);
-        fileName.setReleaseUid(releaseUid);
-        int i = fileUploadService.updateUploadFile(fileName);
-        return i > 0;
-    }
-
-    public boolean deleteFiles(String fileName) {
-        // 在 upload 目录下的所有文件夹中找到文件，删除
-        File file = new File("C:\\upload\\");
-        File[] files = file.listFiles();
-        assert files != null;
-        for (File file1 : files) {
-            File[] files1 = file1.listFiles();
-            assert files1 != null;
-            for (File file2 : files1) {
-                if (file2.getName().equals(fileName)) {
-                    file2.delete();
-                    break;
-                }
-            }
-        }
-        // 将文件名后缀去除
-        String uid = fileName.substring(0, fileName.lastIndexOf("."));
-        // 删除数据库中的文件名
-        int i = fileUploadService.dropUploadFile(uid);
-        return i > 0;
-    }
-
-    public String[] getProcess(WorkReport workReport) {
-        // 通过 uid 查询变更部门申请流程
-        Process process = processService.processQueryByUid("5c4a2ce8-6c37-402b-bff3-998da0cc3376");
-        String pro = process.getProcess();
-        // 将查询到的数据分离，以 || 分隔
-        String[] pros = pro.split("\\|\\|");
-        // 修改数组中的 nowDepartment 为当前部门
-        for (int i = 0; i < pros.length; i++) {
-            if (pros[i].equals("nowDepartment")) {
-                pros[i] = teacherService.findDepartmentUid(workReport.getReleaseUid());
-            }
-        }
-        return pros;
-    }
-
-    // 查找下一级审批人
-    public String findNextProcessPerson(WorkReport workReport) {
-        try {
-            String[] pros = getProcess(workReport);
-            if (workReport.getNextUid() == null) {
-                return pros[0];
-            }
-            // 遍历数组，根据 NowUid 寻找下一级审批人
-            for (int i = 0; i < pros.length; i++) {
-                if (pros[i].equals(workReport.getNextUid())) {
-                    return pros[i + 1];
-                }
-            }
-            return null;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
     // 提交工作报告
     @RequestMapping(value = "/addWorkReport", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
@@ -158,8 +90,7 @@ public class WorkReportController {
             }
             // 查询流程
             WorkReport wr = new WorkReport();
-            wr.setReleaseUid(releaseUid);
-            String nextProcessPerson = findNextProcessPerson(wr);
+            String nextProcessPerson = findNextProcessPerson(processUid, releaseUid, null, null);
             // 生成 uuid
             String uid = UUID.randomUUID().toString();
             wr.setUid(uid);
@@ -240,7 +171,7 @@ public class WorkReportController {
             // 通过接收到的 uid 查询本条申请记录
             WorkReport workReport = workReportService.findWorkReportByUid(uid);
             // 查询审批流程
-            String[] pros = getProcess(workReport);
+            String[] pros = getProcess(processUid, workReport.getReleaseUid(), null);
             // 将 list 中的每个 uid 都在 findName 中查询，返回真是姓名
             List<String> list = new ArrayList<>();
             for (String pro : pros) {

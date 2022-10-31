@@ -17,4 +17,10 @@ public class VersionController {
     public Message_body getVersion() {
         return new Message_body(200, "获取服务器版本成功", Version.getVersion());
     }
+
+    @RequestMapping(value = "/getLowVersion", method = RequestMethod.GET)
+    @ResponseBody
+    public Message_body getLowVersion() {
+        return new Message_body(200, "获取服务器最低版本成功", Version.getLowVersion());
+    }
 }
