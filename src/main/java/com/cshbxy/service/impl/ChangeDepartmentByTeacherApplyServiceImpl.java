@@ -38,4 +38,19 @@ public class ChangeDepartmentByTeacherApplyServiceImpl implements ChangeDepartme
     public int deleteByUid(String uid) {
         return changeDepartmentByTeacherApplyMapper.deleteByUid(uid);
     }
+
+    @Override
+    public List<ChangeDepartmentByTeacher> findWaitList(String nextUid) {
+        return changeDepartmentByTeacherApplyMapper.findWaitList(nextUid);
+    }
+
+    @Override
+    public int resolveApply(ChangeDepartmentByTeacher changeDepartmentByTeacher) {
+        return changeDepartmentByTeacherApplyMapper.resolveApply(changeDepartmentByTeacher);
+    }
+
+    @Override
+    public int rejectApply(ChangeDepartmentByTeacher changeDepartmentByTeacher) {
+        return changeDepartmentByTeacherApplyMapper.rejectApply(changeDepartmentByTeacher);
+    }
 }

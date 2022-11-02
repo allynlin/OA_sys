@@ -13,4 +13,9 @@ public interface LoginMapper {
 
     public Leader leaderLogin(@Param("username") String username, @Param("password") String password);
 
+    public Teacher getTeacherInfo(String uid);
+
+    public Department getDepartmentInfo(String uid);
+
+    public Leader getLeaderInfo(String uid);
 }

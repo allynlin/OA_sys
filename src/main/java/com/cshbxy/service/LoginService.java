@@ -12,4 +12,10 @@ public interface LoginService {
 
     public Leader leaderLogin(String username, String password);
 
+    public Teacher getTeacherInfo(String uid);
+
+    public Department getDepartmentInfo(String uid);
+
+    public Leader getLeaderInfo(String uid);
+
 }

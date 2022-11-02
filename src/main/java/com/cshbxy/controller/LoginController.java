@@ -2,7 +2,11 @@ package com.cshbxy.controller;
 
 import com.cshbxy.Util.CheckToken;
 import com.cshbxy.Util.JwtUtil;
-import com.cshbxy.dao.*;
+import com.cshbxy.Util.findRealeName;
+import com.cshbxy.dao.Department;
+import com.cshbxy.dao.Leader;
+import com.cshbxy.dao.Message_all;
+import com.cshbxy.dao.Teacher;
 import com.cshbxy.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -34,6 +38,7 @@ public class LoginController {
                     case 0:
                         // 生成 token，附带用户类型和用户 uid
                         String token = JwtUtil.sign(teacher.getUid(), "teacher");
+//                        teacher.setDepartmentUid(findRealeName.findName(teacher.getDepartmentUid()));
                         return new Message_all(200, "登录成功", teacher, token);
                     default:
                         return new Message_all(400, "账号异常");
@@ -59,6 +64,7 @@ public class LoginController {
                     case 0:
                         // 生成 token，附带用户类型和用户 uid
                         String token = JwtUtil.sign(department.getUid(), "department");
+//                        department.setLeaderUid(findRealeName.findName(department.getLeaderUid()));
                         return new Message_all(200, "登录成功", department, token);
                     default:
                         return new Message_all(400, "账号异常");
@@ -99,52 +105,57 @@ public class LoginController {
 
     @RequestMapping(value = "/checkTeacher", produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public Message_token checkTeacher(HttpServletRequest request) {
+    public Message_all checkTeacher(HttpServletRequest request) {
         try {
             // 获取请求头 Authorization 中的 token
             String token = request.getHeader("Authorization");
             if (CheckToken.isTeacher(token) != null) {
-                return new Message_token(200, "身份验证成功", CheckToken.isTeacher(token));
+                Teacher teacher = loginService.getTeacherInfo(JwtUtil.getUserUid(token));
+//                teacher.setDepartmentUid(findRealeName.findName(teacher.getDepartmentUid()));
+                return new Message_all(200, "身份验证成功", teacher, CheckToken.isTeacher(token));
             } else {
-                return new Message_token(403, "身份验证失败");
+                return new Message_all(403, "身份验证失败");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message_token(500, "未知错误");
+            return new Message_all(500, "未知错误");
         }
     }
 
     @RequestMapping(value = "/checkDepartment", produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public Message_token checkDepartment(HttpServletRequest request) {
+    public Message_all checkDepartment(HttpServletRequest request) {
         try {
             // 获取请求头 Authorization 中的 token
             String token = request.getHeader("Authorization");
             if (CheckToken.isDepartment(token) != null) {
-                return new Message_token(200, "身份验证成功", CheckToken.isDepartment(token));
+                Department department = loginService.getDepartmentInfo(JwtUtil.getUserUid(token));
+//                department.setLeaderUid(findRealeName.findName(department.getLeaderUid()));
+                return new Message_all(200, "身份验证成功", department, CheckToken.isDepartment(token));
             } else {
-                return new Message_token(403, "身份验证失败");
+                return new Message_all(403, "身份验证失败");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message_token(500, "未知错误");
+            return new Message_all(500, "未知错误");
         }
     }
 
     @RequestMapping(value = "/checkLeader", produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public Message_token checkLeader(HttpServletRequest request) {
+    public Message_all checkLeader(HttpServletRequest request) {
         try {
             // 获取请求头 Authorization 中的 token
             String token = request.getHeader("Authorization");
             if (CheckToken.isLeader(token) != null) {
-                return new Message_token(200, "身份验证成功", CheckToken.isLeader(token));
+                Leader leader = loginService.getLeaderInfo(JwtUtil.getUserUid(token));
+                return new Message_all(200, "身份验证成功", leader, CheckToken.isLeader(token));
             } else {
-                return new Message_token(403, "身份验证失败");
+                return new Message_all(403, "身份验证失败");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message_token(500, "未知错误");
+            return new Message_all(500, "未知错误");
         }
     }
 }

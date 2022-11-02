@@ -59,7 +59,7 @@ public class CheckToken {
     public static boolean checkIsDepartment(String token) {
         try {
             // 解析 token，校验 token 是否为 department
-            return Objects.equals(JwtUtil.getUsertype(token), "department");
+            return !Objects.equals(JwtUtil.getUsertype(token), "department");
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -69,7 +69,7 @@ public class CheckToken {
     public static boolean checkIsLeader(String token) {
         try {
             // 解析 token，校验 token 是否为 leader
-            return Objects.equals(JwtUtil.getUsertype(token), "leader");
+            return !Objects.equals(JwtUtil.getUsertype(token), "leader");
         } catch (Exception e) {
             e.printStackTrace();
             return false;

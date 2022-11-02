@@ -25,11 +25,11 @@
         order by update_time desc
         limit 1
     </select>
-    <delete id="deleteLeave">
-        delete
-        from oa_sys.leave
+    <update id="deleteLeave">
+        update oa_sys.leave
+        set status = -1
         where uid = #{uid}
-    </delete>
+    </update>
     <select id="findLeaveList" resultType="Leave">
         select uid,
                reason,

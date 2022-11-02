@@ -2,12 +2,10 @@ package com.cshbxy.controller;
 
 import com.cshbxy.Util.JwtUtil;
 import com.cshbxy.Util.findRealeName;
-import com.cshbxy.dao.ChangeDepartmentByTeacher;
-import com.cshbxy.dao.FileName;
-import com.cshbxy.dao.Message;
-import com.cshbxy.dao.Message_body;
+import com.cshbxy.dao.*;
 import com.cshbxy.service.ChangeDepartmentByTeacherApplyService;
 import com.cshbxy.service.FileUploadService;
+import com.cshbxy.service.TeacherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -36,6 +34,9 @@ public class ChangeDepartmentByTeacherApplyController {
     private ChangeDepartmentByTeacherApplyService changeDepartmentByTeacherApplyService;
 
     @Autowired
+    private TeacherService teacherService;
+
+    @Autowired
     private FileUploadService fileUploadService;
 
     // 提交部门变更申请
@@ -54,7 +55,7 @@ public class ChangeDepartmentByTeacherApplyController {
                 return new Message(401, "您已提交过部门变更申请，请勿重复提交");
             }
             // 查询流程
-            String nextProcessPerson = findNextProcessPerson(processUid, releaseUid, changeDepartmentByTeacher.getDepartmentUid(), changeDepartmentByTeacher.getDepartmentUid());
+            String nextProcessPerson = findNextProcessPerson(processUid, releaseUid, null, changeDepartmentByTeacher.getDepartmentUid());
             // 生成 uuid
             String uid = UUID.randomUUID().toString();
             changeDepartmentByTeacher.setUid(uid);
@@ -180,6 +181,137 @@ public class ChangeDepartmentByTeacherApplyController {
             } else {
                 return new Message(403, "只能删除自己提交的申请");
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Message(500, "未知错误");
+        }
+    }
+
+    // 根据下一级审批人查询部门变更申请
+    @RequestMapping(value = "/findWaitList", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public Message_body findWaitList(HttpServletRequest request) {
+        try {
+            // 获取 token
+            String token = request.getHeader("Authorization");
+            // 通过 token 获取用户 uid
+            String nextUid = JwtUtil.getUserUid(token);
+            // 根据 uid 查询数据库
+            List<ChangeDepartmentByTeacher> list = changeDepartmentByTeacherApplyService.findWaitList(nextUid);
+            // 遍历 list，将 departmentUid 通过 findRealeName.findName 转换成真实姓名
+            for (ChangeDepartmentByTeacher changeDepartmentByTeacher : list) {
+                changeDepartmentByTeacher.setDepartmentUid(findRealeName.findName(changeDepartmentByTeacher.getDepartmentUid()));
+            }
+            // 遍历 list，将 releaseUid 通过 findRealeName.findName 转换成真实姓名
+            for (ChangeDepartmentByTeacher changeDepartmentByTeacher : list) {
+                changeDepartmentByTeacher.setReleaseUid(findRealeName.findName(changeDepartmentByTeacher.getReleaseUid()));
+            }
+            if (list.size() != 0) {
+                return new Message_body(200, "查询部门变更申请成功", list);
+            } else {
+                return new Message_body(300, "暂无部门变更申请");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Message_body(500, "未知错误");
+        }
+    }
+
+    // 通过部门变更申请
+    @RequestMapping(value = "/resolveApply", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public Message resolveApply(HttpServletRequest request, String uid) {
+        try {
+            String token = request.getHeader("Authorization");
+            String nowUid = JwtUtil.getUserUid(token);
+            // 通过接收到的 uid 查询本条申请记录
+            ChangeDepartmentByTeacher apply = changeDepartmentByTeacherApplyService.findChangeDepartmentByTeacher(uid);
+            // 如果不是下一级审人，不能审批
+            if (!apply.getNextUid().equals(nowUid)) {
+                return new Message(403, "只能审批下一级审批人的申请");
+            }
+            // 查询审批流程
+            String[] pros = getProcess(processUid, apply.getReleaseUid(), apply.getDepartmentUid());
+            // 遍历 props，如果 nowUid 在其中就返回为 true
+            boolean result = false;
+            for (String pro : pros) {
+                if (pro.equals(nowUid)) {
+                    result = true;
+                    break;
+                }
+            }
+            if (!result)
+                return new Message(403, "您不是审批人，无法审批");
+            for (String pro : pros) {
+                // 判断是否为最后一个审批人
+                if (pro.equals(pros[pros.length - 1])) {
+                    // 如果审批通过，修改本条申请记录的状态为 1
+                    apply.setStatus(1);
+                    apply.setNextUid(null);
+                    System.out.println(apply);
+                    int i = changeDepartmentByTeacherApplyService.resolveApply(apply);
+                    // 修改教师表中的部门
+                    Teacher teacher = new Teacher();
+                    teacher.setUid(apply.getReleaseUid());
+                    teacher.setDepartmentUid(apply.getDepartmentUid());
+                    int j = teacherService.updateDepartment(teacher);
+                    if (i > 0 && j > 0) {
+                        return new Message(200, "审批通过");
+                    } else if (i > 0) {
+                        return new Message(200, "审批通过，修改部门失败");
+                    } else {
+                        return new Message(400, "审批失败");
+                    }
+                } else {
+                    String nextProcessPerson = findNextProcessPerson(processUid, apply.getReleaseUid(), nowUid, apply.getDepartmentUid());
+                    apply.setNextUid(nextProcessPerson);
+                    // 如果不是最后一个审批人，修改本条申请记录的下一级审批人为下一个审批人
+                    int i = changeDepartmentByTeacherApplyService.resolveApply(apply);
+                    if (i > 0) {
+                        return new Message(200, "审批成功");
+                    } else {
+                        return new Message(300, "审批失败");
+                    }
+                }
+            }
+            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Message(500, "未知错误");
+        }
+    }
+
+    // 驳回部门变更申请
+    @RequestMapping(value = "/rejectApply", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public Message rejectApply(HttpServletRequest request, ChangeDepartmentByTeacher changeDepartmentByTeacher) {
+        try {
+            String token = request.getHeader("Authorization");
+            String nowUid = JwtUtil.getUserUid(token);
+            // 通过接收到的 uid 查询本条申请记录
+            ChangeDepartmentByTeacher apply = changeDepartmentByTeacherApplyService.findChangeDepartmentByTeacher(changeDepartmentByTeacher.getUid());
+            // 如果不是下一级审人，不能审批
+            if (!apply.getNextUid().equals(nowUid)) {
+                return new Message(403, "只能审批下一级审批人的申请");
+            }
+            // 查询审批流程
+            String[] pros = getProcess(processUid, apply.getReleaseUid(), apply.getDepartmentUid());
+            // 遍历 props，如果 nowUid 在其中就返回为 true
+            boolean result = false;
+            for (String pro : pros) {
+                if (pro.equals(nowUid)) {
+                    result = true;
+                    break;
+                }
+            }
+            if (!result)
+                return new Message(403, "您不是审批人，无法审批");
+            apply.setReject_reason(changeDepartmentByTeacher.getReject_reason());
+            int i = changeDepartmentByTeacherApplyService.rejectApply(apply);
+            if (i > 0) {
+                return new Message(200, "驳回成功");
+            }
+            return new Message(400, "驳回失败");
         } catch (Exception e) {
             e.printStackTrace();
             return new Message(500, "未知错误");

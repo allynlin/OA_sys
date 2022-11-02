@@ -28,4 +28,19 @@ public class LoginServiceImpl implements LoginService {
     public Leader leaderLogin(String username, String password) {
         return loginMapper.leaderLogin(username, password);
     }
+
+    @Override
+    public Teacher getTeacherInfo(String uid) {
+        return loginMapper.getTeacherInfo(uid);
+    }
+
+    @Override
+    public Department getDepartmentInfo(String uid) {
+        return loginMapper.getDepartmentInfo(uid);
+    }
+
+    @Override
+    public Leader getLeaderInfo(String uid) {
+        return loginMapper.getLeaderInfo(uid);
+    }
 }

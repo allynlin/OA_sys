@@ -64,6 +64,14 @@ http://www.springframework.org/schema/context/spring-context.xsd">
             <!--指定拦截器类路径-->
             <bean class="com.cshbxy.interceptor.Interceptor_Token_Teacher"/>
         </mvc:interceptor>
+        <mvc:interceptor>
+            <!--配置要拦截的路径-->
+            <mvc:mapping path="/apply/rejectApply"/>
+            <mvc:mapping path="/apply/resolveApply"/>
+            <mvc:mapping path="/apply/findWaitList"/>
+            <!--指定拦截器类路径-->
+            <bean class="com.cshbxy.interceptor.Interceptor_Token_DepartmentOrLeader"/>
+        </mvc:interceptor>
     </mvc:interceptors>
 
 </beans>

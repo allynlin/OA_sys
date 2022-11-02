@@ -44,6 +44,7 @@ public class LeaveController {
             // 生成 uuid
             String uid = UUID.randomUUID().toString();
             leave.setUid(uid);
+            leave.setReleaseUid(releaseUid);
             leave.setNextUid(nextProcessPerson);
             int result = leaveSerivce.addLeave(leave);
             if (result == 1) {

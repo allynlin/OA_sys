@@ -1,5 +1,6 @@
 package com.cshbxy.controller;
 
+import com.cshbxy.Util.findRealeName;
 import com.cshbxy.dao.Department;
 import com.cshbxy.dao.Leader;
 import com.cshbxy.dao.Message;
@@ -101,5 +102,20 @@ public class QueryController {
     @ResponseBody
     public Message_body getUUID() {
         return new Message_body(200, "获取UUID成功", UUID.randomUUID().toString());
+    }
+
+    @RequestMapping(value = "/getRealeName", method = RequestMethod.POST)
+    @ResponseBody
+    public Message_body getRealeName(String uid) {
+        try {
+            String realName = findRealeName.findName(uid);
+            if (realName != null) {
+                return new Message_body(200, "获取真实姓名成功", realName);
+            }
+            return new Message_body(400, "获取真实姓名失败");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Message_body(500, "未知错误");
+        }
     }
 }

@@ -16,4 +16,10 @@ public interface ChangeDepartmentByTeacherApplyMapper {
 
     public int deleteByUid(String uid);
 
+    public List<ChangeDepartmentByTeacher> findWaitList(String nextUid);
+
+    public int resolveApply(ChangeDepartmentByTeacher changeDepartmentByTeacher);
+
+    public int rejectApply(ChangeDepartmentByTeacher changeDepartmentByTeacher);
+
 }

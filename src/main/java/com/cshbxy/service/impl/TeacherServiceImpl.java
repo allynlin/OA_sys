@@ -1,5 +1,6 @@
 package com.cshbxy.service.impl;
 
+import com.cshbxy.dao.Teacher;
 import com.cshbxy.mapper.TeacherMapper;
 import com.cshbxy.service.TeacherService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,5 +20,10 @@ public class TeacherServiceImpl implements TeacherService {
     @Override
     public String findRealeName(String uid) {
         return teacherMapper.findRealeName(uid);
+    }
+
+    @Override
+    public int updateDepartment(Teacher teacher) {
+        return teacherMapper.updateDepartment(teacher);
     }
 }

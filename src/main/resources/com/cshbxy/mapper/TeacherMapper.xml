@@ -13,4 +13,9 @@
         from oa_sys.teacher
         where uid = #{uid}
     </select>
+    <update id="updateDepartment" parameterType="Teacher">
+        update oa_sys.teacher
+        set departmentUid = #{departmentUid}
+        where uid = #{uid}
+    </update>
 </mapper>

@@ -5,9 +5,10 @@ public class ChangeDepartmentByTeacher {
     String releaseUid;
     String departmentUid;
     String changeReason;
-    String status;
-    String count;
+    int status;
+    int count;
     String nextUid;
+    String reject_reason;
     String create_time;
     String update_time;
 
@@ -43,19 +44,19 @@ public class ChangeDepartmentByTeacher {
         this.changeReason = changeReason;
     }
 
-    public String getStatus() {
+    public int getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(int status) {
         this.status = status;
     }
 
-    public String getCount() {
+    public int getCount() {
         return count;
     }
 
-    public void setCount(String count) {
+    public void setCount(int count) {
         this.count = count;
     }
 
@@ -65,6 +66,14 @@ public class ChangeDepartmentByTeacher {
 
     public void setNextUid(String nextUid) {
         this.nextUid = nextUid;
+    }
+
+    public String getReject_reason() {
+        return reject_reason;
+    }
+
+    public void setReject_reason(String reject_reason) {
+        this.reject_reason = reject_reason;
     }
 
     public String getCreate_time() {
@@ -85,14 +94,15 @@ public class ChangeDepartmentByTeacher {
 
     @Override
     public String toString() {
-        return "changedepartmentbyteacher{" +
+        return "ChangeDepartmentByTeacher{" +
                 "uid='" + uid + '\'' +
                 ", releaseUid='" + releaseUid + '\'' +
                 ", departmentUid='" + departmentUid + '\'' +
                 ", changeReason='" + changeReason + '\'' +
-                ", status='" + status + '\'' +
-                ", count='" + count + '\'' +
+                ", status=" + status +
+                ", count=" + count +
                 ", nextUid='" + nextUid + '\'' +
+                ", reject_reason='" + reject_reason + '\'' +
                 ", create_time='" + create_time + '\'' +
                 ", update_time='" + update_time + '\'' +
                 '}';

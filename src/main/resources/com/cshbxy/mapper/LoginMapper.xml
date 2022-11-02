@@ -47,4 +47,45 @@
         where username = #{username}
           and password = #{password}
     </select>
+    <select id="getTeacherInfo" resultType="teacher">
+        select uid,
+               username,
+               realeName,
+               gender,
+               tel,
+               email,
+               departmentUid,
+               status,
+               create_time,
+               update_time
+        from oa_sys.teacher
+        where uid = #{uid}
+    </select>
+    <select id="getDepartmentInfo" resultType="department">
+        select uid,
+               username,
+               realeName,
+               gender,
+               tel,
+               email,
+               leaderUid,
+               status,
+               create_time,
+               update_time
+        from oa_sys.department
+        where uid = #{uid}
+    </select>
+    <select id="getLeaderInfo" resultType="leader">
+        select uid,
+               username,
+               realeName,
+               gender,
+               tel,
+               email,
+               status,
+               create_time,
+               update_time
+        from oa_sys.leader
+        where uid = #{uid}
+    </select>
 </mapper>
