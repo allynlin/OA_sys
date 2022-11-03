@@ -242,39 +242,35 @@ public class ChangeDepartmentByTeacherApplyController {
             }
             if (!result)
                 return new Message(403, "您不是审批人，无法审批");
-            for (String pro : pros) {
-                // 判断是否为最后一个审批人
-                if (pro.equals(pros[pros.length - 1])) {
-                    // 如果审批通过，修改本条申请记录的状态为 1
-                    apply.setStatus(1);
-                    apply.setNextUid(null);
-                    System.out.println(apply);
-                    int i = changeDepartmentByTeacherApplyService.resolveApply(apply);
-                    // 修改教师表中的部门
-                    Teacher teacher = new Teacher();
-                    teacher.setUid(apply.getReleaseUid());
-                    teacher.setDepartmentUid(apply.getDepartmentUid());
-                    int j = teacherService.updateDepartment(teacher);
-                    if (i > 0 && j > 0) {
-                        return new Message(200, "审批通过");
-                    } else if (i > 0) {
-                        return new Message(200, "审批通过，修改部门失败");
-                    } else {
-                        return new Message(400, "审批失败");
-                    }
+            // 查询 nowUid 是不是 props 的最后一个
+            if (pros[pros.length - 1].equals(nowUid)) {
+                // 如果审批通过，修改本条申请记录的状态为 1
+                apply.setStatus(1);
+                apply.setNextUid(null);
+                int i = changeDepartmentByTeacherApplyService.resolveApply(apply);
+                // 修改教师表中的部门
+                Teacher teacher = new Teacher();
+                teacher.setUid(apply.getReleaseUid());
+                teacher.setDepartmentUid(apply.getDepartmentUid());
+                int j = teacherService.updateDepartment(teacher);
+                if (i > 0 && j > 0) {
+                    return new Message(200, "审批通过");
+                } else if (i > 0) {
+                    return new Message(200, "审批通过，修改部门失败");
                 } else {
-                    String nextProcessPerson = findNextProcessPerson(processUid, apply.getReleaseUid(), nowUid, apply.getDepartmentUid());
-                    apply.setNextUid(nextProcessPerson);
-                    // 如果不是最后一个审批人，修改本条申请记录的下一级审批人为下一个审批人
-                    int i = changeDepartmentByTeacherApplyService.resolveApply(apply);
-                    if (i > 0) {
-                        return new Message(200, "审批成功");
-                    } else {
-                        return new Message(300, "审批失败");
-                    }
+                    return new Message(400, "审批失败");
+                }
+            } else {
+                String nextProcessPerson = findNextProcessPerson(processUid, apply.getReleaseUid(), nowUid, apply.getDepartmentUid());
+                apply.setNextUid(nextProcessPerson);
+                // 如果不是最后一个审批人，修改本条申请记录的下一级审批人为下一个审批人
+                int i = changeDepartmentByTeacherApplyService.resolveApply(apply);
+                if (i > 0) {
+                    return new Message(200, "审批成功");
+                } else {
+                    return new Message(300, "审批失败");
                 }
             }
-            return null;
         } catch (Exception e) {
             e.printStackTrace();
             return new Message(500, "未知错误");
