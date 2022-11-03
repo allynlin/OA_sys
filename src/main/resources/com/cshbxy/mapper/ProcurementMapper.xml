@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cshbxy.mapper.ProcurementMapper">
+    <insert id="addProcurement" parameterType="Procurement">
+        insert into oa_sys.Procurement (uid, releaseUid, items, price, reason, nextUid)
+        values (#{uid}, #{releaseUid}, #{items}, #{price}, #{reason}, #{nextUid})
+    </insert>
+    <update id="deleteProcurement">
+        update oa_sys.Procurement
+        set status = -1
+        where uid = #{uid}
+    </update>
+    <select id="findProcurementList" resultType="Procurement">
+        select uid,
+               items,
+               price,
+               reason,
+               status,
+               count,
+               nextUid,
+               reject_reason,
+               create_time,
+               update_time
+        from oa_sys.Procurement
+        where releaseUid = #{releaseUid}
+          and status >= 0
+        order by update_time desc
+    </select>
+    <select id="findProcurementByUid" resultType="Procurement">
+        select uid,
+               releaseUid,
+               items,
+               price,
+               reason,
+               status,
+               count,
+               nextUid,
+               reject_reason,
+               create_time,
+               update_time
+        from oa_sys.Procurement
+        where uid = #{uid}
+    </select>
+    <update id="updateProcurement" parameterType="Procurement">
+        update oa_sys.Procurement
+        set items  = #{items},
+            price  = #{price},
+            reason = #{reason},
+            status = #{status},
+            count  = #{count},
+            nextUid= #{nextUid}
+        where uid = #{uid}
+    </update>
+</mapper>
