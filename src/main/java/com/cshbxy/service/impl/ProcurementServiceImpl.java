@@ -38,4 +38,19 @@ public class ProcurementServiceImpl implements ProcurementSerivce {
     public int updateProcurement(Procurement procurement) {
         return procurementMapper.updateProcurement(procurement);
     }
+
+    @Override
+    public List<Procurement> findProcurementWaitList(String nextUid) {
+        return procurementMapper.findProcurementWaitList(nextUid);
+    }
+
+    @Override
+    public int resolveProcurement(Procurement procurement) {
+        return procurementMapper.resolveProcurement(procurement);
+    }
+
+    @Override
+    public int rejectProcurement(Procurement procurement) {
+        return procurementMapper.rejectProcurement(procurement);
+    }
 }

@@ -64,7 +64,7 @@
                update_time
         from oa_sys.travelreimbursement
         where nextUid = #{nextUid}
-          and status >= 0
+          and status = 0
         order by create_time desc
     </select>
     <update id="resolveTravelReimbursement" parameterType="TravelReimbursement">

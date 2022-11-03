@@ -6,6 +6,7 @@ import com.cshbxy.dao.Message;
 import com.cshbxy.dao.Message_body;
 import com.cshbxy.dao.Procurement;
 import com.cshbxy.service.ProcurementSerivce;
+import com.cshbxy.service.TeacherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -30,6 +31,9 @@ public class ProcurementController {
 
     @Autowired
     private ProcurementSerivce procurementSerivce;
+
+    @Autowired
+    private TeacherService teacherService;
 
     // 提交采购申请
     @RequestMapping(value = "/addProcurement", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
@@ -143,6 +147,100 @@ public class ProcurementController {
                 return new Message(200, "修改成功");
             } else {
                 return new Message(400, "修改失败");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Message(500, "未知错误");
+        }
+    }
+
+    // 根据下一级审批人查询采购申请
+    @RequestMapping(value = "/findProcurementByNextUid", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public Message_body findProcurementByNextUid(HttpServletRequest request) {
+        try {
+            // 解析 token，获取 uid
+            String token = request.getHeader("Authorization");
+            String nextUid = JwtUtil.getUserUid(token);
+            // 根据下一级审批人查询数据库
+            List<Procurement> list = procurementSerivce.findProcurementWaitList(nextUid);
+            // 遍历 list，将 releaseUid 通过 findRealeName.findName 转换成真实姓名
+            for (Procurement procurement : list) {
+                procurement.setReleaseUid(findRealeName.findName(procurement.getReleaseUid()));
+            }
+            if (list.size() != 0) {
+                return new Message_body(200, "查询采购申请成功", list);
+            } else {
+                return new Message_body(300, "暂无采购申请");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Message_body(500, "未知错误");
+        }
+    }
+
+    // 通过采购申请
+    @RequestMapping(value = "/resolveProcurement", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public Message resolveProcurement(HttpServletRequest request, String uid) {
+        try {
+            // 解析 token，获取 uid
+            String token = request.getHeader("Authorization");
+            String nowUid = JwtUtil.getUserUid(token);
+            // 通过接收到的 uid 查询本条申请记录
+            Procurement procurement = procurementSerivce.findProcurementByUid(uid);
+            // 判断是否为下一级审批人
+            if (!procurement.getNextUid().equals(nowUid)) {
+                return new Message(403, "您不是当前审批人，无法审批");
+            }
+            // 查询审批流程
+            String[] props = getProcess(processUid, procurement.getReleaseUid(), teacherService.findDepartmentUid(procurement.getReleaseUid()));
+            // 查询 nowUid 是不是 props 的最后一个
+            if (nowUid.equals(props[props.length - 1])) {
+                procurement.setStatus(1);
+                procurement.setNextUid(null);
+                int i = procurementSerivce.resolveProcurement(procurement);
+                if (i == 1) {
+                    return new Message(200, "审批成功");
+                } else {
+                    return new Message(400, "审批失败");
+                }
+            } else {
+                String nextProcessPerson = findNextProcessPerson(processUid, procurement.getReleaseUid(), nowUid, null);
+                procurement.setNextUid(nextProcessPerson);
+                procurement.setCount(procurement.getCount() + 1);
+                int i = procurementSerivce.resolveProcurement(procurement);
+                if (i == 1) {
+                    return new Message(200, "审批成功");
+                } else {
+                    return new Message(400, "审批失败");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Message(500, "未知错误");
+        }
+    }
+
+    // 驳回采购申请
+    @RequestMapping(value = "/rejectProcurement", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public Message rejectProcurement(HttpServletRequest request, Procurement procurement) {
+        try {
+            // 解析 token，获取 uid
+            String token = request.getHeader("Authorization");
+            String nowUid = JwtUtil.getUserUid(token);
+            // 通过接收到的 uid 查询本条申请记录
+            Procurement apply = procurementSerivce.findProcurementByUid(procurement.getUid());
+            // 判断是否为下一级审批人
+            if (!apply.getNextUid().equals(nowUid)) {
+                return new Message(403, "您不是当前审批人，无法审批");
+            }
+            int i = procurementSerivce.rejectProcurement(procurement);
+            if (i == 1) {
+                return new Message(200, "驳回成功");
+            } else {
+                return new Message(400, "驳回失败");
             }
         } catch (Exception e) {
             e.printStackTrace();

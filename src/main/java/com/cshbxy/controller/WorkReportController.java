@@ -7,6 +7,7 @@ import com.cshbxy.dao.Message;
 import com.cshbxy.dao.Message_body;
 import com.cshbxy.dao.WorkReport;
 import com.cshbxy.service.FileUploadService;
+import com.cshbxy.service.TeacherService;
 import com.cshbxy.service.WorkReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -36,6 +37,9 @@ public class WorkReportController {
 
     @Autowired
     private FileUploadService fileUploadService;
+
+    @Autowired
+    private TeacherService teacherService;
 
     //判断选择的日期是否是今天
     public static boolean isToday(long time) {
@@ -94,6 +98,7 @@ public class WorkReportController {
             // 生成 uuid
             String uid = UUID.randomUUID().toString();
             wr.setUid(uid);
+            wr.setReleaseUid(releaseUid);
             wr.setNextUid(nextProcessPerson);
             int result = workReportService.addWorkReport(wr);
             // 更新文件表
@@ -218,6 +223,101 @@ public class WorkReportController {
                 }
             } else {
                 return new Message(403, "只能删除自己提交的申请");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Message(500, "未知错误");
+        }
+    }
+
+    // 根据下一级审批人查询工作报告记录
+    @RequestMapping(value = "/findWorkReportByNextUid", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public Message_body findWorkReportByNextUid(HttpServletRequest request) {
+        try {
+            // 解析 token，获取 uid
+            String token = request.getHeader("Authorization");
+            String nextUid = JwtUtil.getUserUid(token);
+            // 根据下一级审批人查询数据库
+            List<WorkReport> list = workReportService.findWorkReportWaitList(nextUid);
+            // 遍历 list，将 releaseUid 通过 findRealeName.findName 转换成真实姓名
+            for (WorkReport workReport : list) {
+                workReport.setReleaseUid(findRealeName.findName(workReport.getReleaseUid()));
+            }
+            if (list.size() != 0) {
+                return new Message_body(200, "查询工作报告记录成功", list);
+            } else {
+                return new Message_body(300, "暂无记录");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Message_body(500, "未知错误");
+        }
+    }
+
+    // 通过工作报告
+    @RequestMapping(value = "/resolveWorkReport", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public Message resolveWorkReport(HttpServletRequest request, String uid) {
+        try {
+            // 解析 token，获取 uid
+            String token = request.getHeader("Authorization");
+            String nowUid = JwtUtil.getUserUid(token);
+            // 通过 uid 查询本条申请记录
+            WorkReport workReport = workReportService.findWorkReportByUid(uid);
+            // 判断是否为下一级审批人
+            if (!workReport.getNextUid().equals(nowUid)) {
+                return new Message(403, "只能审批自己的申请");
+            }
+            // 查询审批流程
+            String[] props = getProcess(processUid, workReport.getReleaseUid(), teacherService.findDepartmentUid(workReport.getReleaseUid()));// 判断是否为最后一级审批人
+            if (nowUid.equals(props[props.length - 1])) {
+                // 如果是最后一级审批人，审批通过
+                workReport.setStatus(1);
+                int i = workReportService.resolveWorkReport(workReport);
+                if (i > 0) {
+                    return new Message(200, "审批通过");
+                } else {
+                    return new Message(400, "审批失败");
+                }
+            } else {
+                // 如果不是最后一级审批人，将下一级审批人改为下一级审批人
+                String nextProcessPerson = findNextProcessPerson(processUid, workReport.getReleaseUid(), nowUid, null);
+                workReport.setNextUid(nextProcessPerson);
+                workReport.setCount(workReport.getCount() + 1);
+                int i = workReportService.resolveWorkReport(workReport);
+                if (i > 0) {
+                    return new Message(200, "审批通过");
+                } else {
+                    return new Message(400, "审批失败");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Message(500, "未知错误");
+        }
+    }
+
+    // 驳回工作报告
+    @RequestMapping(value = "/rejectWorkReport", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public Message rejectWorkReport(HttpServletRequest request, WorkReport workReport) {
+        try {
+            // 解析 token，获取 uid
+            String token = request.getHeader("Authorization");
+            String nowUid = JwtUtil.getUserUid(token);
+            // 通过 uid 查询本条申请记录
+            WorkReport apply = workReportService.findWorkReportByUid(workReport.getUid());
+            // 判断是否为下一级审批人
+            if (!apply.getNextUid().equals(nowUid)) {
+                return new Message(403, "只能审批自己的申请");
+            }
+            // 驳回
+            int i = workReportService.rejectWorkReport(workReport);
+            if (i > 0) {
+                return new Message(200, "驳回成功");
+            } else {
+                return new Message(400, "驳回失败");
             }
         } catch (Exception e) {
             e.printStackTrace();

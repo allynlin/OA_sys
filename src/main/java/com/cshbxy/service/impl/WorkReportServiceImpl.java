@@ -38,4 +38,19 @@ public class WorkReportServiceImpl implements WorkReportService {
     public int deleteByUid(String uid) {
         return workReportMapper.deleteByUid(uid);
     }
+
+    @Override
+    public List<WorkReport> findWorkReportWaitList(String nextUid) {
+        return workReportMapper.findWorkReportWaitList(nextUid);
+    }
+
+    @Override
+    public int resolveWorkReport(WorkReport workReport) {
+        return workReportMapper.resolveWorkReport(workReport);
+    }
+
+    @Override
+    public int rejectWorkReport(WorkReport workReport) {
+        return workReportMapper.rejectWorkReport(workReport);
+    }
 }

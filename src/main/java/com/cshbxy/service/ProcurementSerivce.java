@@ -14,4 +14,10 @@ public interface ProcurementSerivce {
     public Procurement findProcurementByUid(String uid);
 
     public int updateProcurement(Procurement procurement);
+
+    public List<Procurement> findProcurementWaitList(String nextUid);
+
+    public int resolveProcurement(Procurement procurement);
+
+    public int rejectProcurement(Procurement procurement);
 }

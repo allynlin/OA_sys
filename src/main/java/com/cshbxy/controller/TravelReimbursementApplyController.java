@@ -234,12 +234,11 @@ public class TravelReimbursementApplyController {
             if (nowUid.equals(props[props.length - 1])) {
                 // 是最后一个，审批通过
                 travelReimbursement.setStatus(1);
-                travelReimbursement.setNextUid(null);
                 int i = travelReimbursementApplyService.resolveTravelReimbursement(travelReimbursement);
                 if (i > 0) {
                     return new Message(200, "审批通过");
                 } else {
-                    return new Message(300, "审批失败");
+                    return new Message(400, "审批失败");
                 }
             } else {
                 // 不是最后一个，继续审批
@@ -250,7 +249,7 @@ public class TravelReimbursementApplyController {
                 if (i > 0) {
                     return new Message(200, "审批通过");
                 } else {
-                    return new Message(300, "审批失败");
+                    return new Message(400, "审批失败");
                 }
             }
         } catch (Exception e) {

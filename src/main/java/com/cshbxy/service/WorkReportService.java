@@ -14,4 +14,10 @@ public interface WorkReportService {
     public WorkReport findWorkReportByUid(String uid);
 
     public int deleteByUid(String uid);
+
+    public List<WorkReport> findWorkReportWaitList(String nextUid);
+
+    public int resolveWorkReport(WorkReport workReport);
+
+    public int rejectWorkReport(WorkReport workReport);
 }
