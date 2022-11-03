@@ -39,4 +39,19 @@ public class TravelReimbursementApplyServiceImpl implements TravelReimbursementA
     public TravelReimbursement findTravelProcess(String uid) {
         return travelReimbursementApplyMapper.findTravelProcess(uid);
     }
+
+    @Override
+    public List<TravelReimbursement> findTravelReimbursementWaitList(String nextUid) {
+        return travelReimbursementApplyMapper.findTravelReimbursementWaitList(nextUid);
+    }
+
+    @Override
+    public int resolveTravelReimbursement(TravelReimbursement travelReimbursement) {
+        return travelReimbursementApplyMapper.resolveTravelReimbursement(travelReimbursement);
+    }
+
+    @Override
+    public int rejectTravelReimbursement(TravelReimbursement travelReimbursement) {
+        return travelReimbursementApplyMapper.rejectTravelReimbursement(travelReimbursement);
+    }
 }

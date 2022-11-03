@@ -71,4 +71,33 @@
             nextUid= #{nextUid}
         where uid = #{uid}
     </update>
+    <select id="findLeaveWaitList" resultType="Leave">
+        select uid,
+               releaseUid,
+               reason,
+               start_time,
+               end_time,
+               status,
+               count,
+               create_time,
+               update_time
+        from oa_sys.leave
+        where nextUid = #{nextUid}
+          and status = 0
+        order by update_time desc
+    </select>
+    <update id="resolveLeave" parameterType="Leave">
+        update oa_sys.leave
+        set status = #{status},
+            count  =#{count},
+            nextUid= #{nextUid}
+        where uid = #{uid}
+    </update>
+    <update id="rejectLeave" parameterType="Leave">
+        update oa_sys.leave
+        set status        = 2,
+            nextUid= null,
+            reject_reason = #{reject_reason}
+        where uid = #{uid}
+    </update>
 </mapper>

@@ -1,5 +1,6 @@
 package com.cshbxy.mapper;
 
+import com.cshbxy.dao.Leave;
 import com.cshbxy.dao.TravelReimbursement;
 
 import java.util.List;
@@ -20,5 +21,11 @@ public interface TravelReimbursementApplyMapper {
 
     // 查询审批流程
     public TravelReimbursement findTravelProcess(String uid);
+
+    public List<TravelReimbursement> findTravelReimbursementWaitList(String nextUid);
+
+    public int resolveTravelReimbursement(TravelReimbursement travelReimbursement);
+
+    public int rejectTravelReimbursement(TravelReimbursement travelReimbursement);
 
 }

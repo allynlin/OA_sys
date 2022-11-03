@@ -9,6 +9,7 @@ public class TravelReimbursement {
     int status;
     int count;
     String nextUid;
+    String reject_reason;
     String create_time;
     String update_time;
 
@@ -76,6 +77,14 @@ public class TravelReimbursement {
         this.nextUid = nextUid;
     }
 
+    public String getReject_reason() {
+        return reject_reason;
+    }
+
+    public void setReject_reason(String reject_reason) {
+        this.reject_reason = reject_reason;
+    }
+
     public String getCreate_time() {
         return create_time;
     }
@@ -103,6 +112,7 @@ public class TravelReimbursement {
                 ", status=" + status +
                 ", count=" + count +
                 ", nextUid='" + nextUid + '\'' +
+                ", reject_reason='" + reject_reason + '\'' +
                 ", create_time='" + create_time + '\'' +
                 ", update_time='" + update_time + '\'' +
                 '}';

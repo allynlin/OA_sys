@@ -56,7 +56,6 @@
                changeReason,
                status,
                count,
-               reject_reason,
                create_time,
                update_time
         from oa_sys.changedepartmentbyteacher
@@ -66,7 +65,7 @@
     </select>
     <update id="resolveApply" parameterType="ChangeDepartmentByTeacher">
         update oa_sys.changedepartmentbyteacher
-        set count   = count + 1,
+        set count   = #{count},
             status  = #{status},
             nextUid = #{nextUid}
         where uid = #{uid}

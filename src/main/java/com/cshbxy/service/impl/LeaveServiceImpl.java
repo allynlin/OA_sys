@@ -43,4 +43,19 @@ public class LeaveServiceImpl implements LeaveSerivce {
     public int updateLeave(Leave leave) {
         return leaveMapper.updateLeave(leave);
     }
+
+    @Override
+    public List<Leave> findLeaveWaitList(String nextUid) {
+        return leaveMapper.findLeaveWaitList(nextUid);
+    }
+
+    @Override
+    public int resolveLeave(Leave leave) {
+        return leaveMapper.resolveLeave(leave);
+    }
+
+    @Override
+    public int rejectLeave(Leave leave) {
+        return leaveMapper.rejectLeave(leave);
+    }
 }

@@ -7,30 +7,20 @@
         insert into oa_sys.travelreimbursement(uid, releaseUid, destination, expenses, reason, nextUid)
         values (#{uid}, #{releaseUid}, #{destination}, #{expenses}, #{reason}, #{nextUid})
     </insert>
-    <select id="findTravelReimbursementApplyList" parameterType="TravelReimbursement" resultType="TravelReimbursement">
+    <select id="findTravelReimbursementApplyList" resultType="TravelReimbursement">
         select uid,
-        releaseUid,
-        destination,
-        expenses,
-        reason,
-        status,
-        nextUid,
-        create_time,
-        update_time
+               destination,
+               expenses,
+               reason,
+               status,
+               count,
+               nextUid,
+               reject_reason,
+               create_time,
+               update_time
         from oa_sys.travelreimbursement
         where releaseUid = #{releaseUid}
-        and status >= 0
-        <where>
-            <if test="destination != null and destination != ''">
-                and destination like concat('%', #{destination}, '%')
-            </if>
-            <if test="expenses != null and expenses != ''">
-                and expenses like concat('%', #{expenses}, '%')
-            </if>
-            <if test="reason != null and reason != ''">
-                and reason like concat('%', #{reason}, '%')
-            </if>
-        </where>
+          and status >= 0
         order by create_time desc
     </select>
     <select id="findTravelProcess" resultType="TravelReimbursement">
@@ -40,7 +30,9 @@
                expenses,
                reason,
                status,
+               count,
                nextUid,
+               reject_reason,
                create_time,
                update_time
         from oa_sys.travelreimbursement
@@ -58,6 +50,35 @@
     <update id="deleteTravelReimbursementApply">
         update oa_sys.travelreimbursement
         set status = -1
+        where uid = #{uid}
+    </update>
+    <select id="findTravelReimbursementWaitList" resultType="TravelReimbursement">
+        select uid,
+               releaseUid,
+               destination,
+               expenses,
+               reason,
+               status,
+               reject_reason,
+               create_time,
+               update_time
+        from oa_sys.travelreimbursement
+        where nextUid = #{nextUid}
+          and status >= 0
+        order by create_time desc
+    </select>
+    <update id="resolveTravelReimbursement" parameterType="TravelReimbursement">
+        update oa_sys.travelreimbursement
+        set status = #{status},
+            count  =#{count},
+            nextUid= #{nextUid}
+        where uid = #{uid}
+    </update>
+    <update id="rejectTravelReimbursement" parameterType="TravelReimbursement">
+        update oa_sys.travelreimbursement
+        set status        = 2,
+            nextUid= null,
+            reject_reason = #{reject_reason}
         where uid = #{uid}
     </update>
 </mapper>

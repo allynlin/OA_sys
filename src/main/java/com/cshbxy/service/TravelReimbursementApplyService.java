@@ -19,4 +19,10 @@ public interface TravelReimbursementApplyService {
     public int deleteTravelReimbursementApply(String uid);
 
     public TravelReimbursement findTravelProcess(String uid);
+
+    public List<TravelReimbursement> findTravelReimbursementWaitList(String nextUid);
+
+    public int resolveTravelReimbursement(TravelReimbursement travelReimbursement);
+
+    public int rejectTravelReimbursement(TravelReimbursement travelReimbursement);
 }

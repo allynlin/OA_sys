@@ -155,6 +155,8 @@ public class ChangeDepartmentByTeacherApplyController {
             String tableUid = request.getHeader("tableUid");
             // 通过接收到的 uid 查询本条申请记录
             ChangeDepartmentByTeacher changeDepartmentByTeacher = changeDepartmentByTeacherApplyService.findChangeDepartmentByTeacher(uid);
+            if (changeDepartmentByTeacher.getStatus() != 0)
+                return new Message(400, "当前状态不可删除");
             // 判断是否为提交人
             if (changeDepartmentByTeacher.getReleaseUid().equals(JwtUtil.getUserUid(request.getHeader("Authorization")))) {
                 // 删除本条申请记录
@@ -228,20 +230,10 @@ public class ChangeDepartmentByTeacherApplyController {
             ChangeDepartmentByTeacher apply = changeDepartmentByTeacherApplyService.findChangeDepartmentByTeacher(uid);
             // 如果不是下一级审人，不能审批
             if (!apply.getNextUid().equals(nowUid)) {
-                return new Message(403, "只能审批下一级审批人的申请");
+                return new Message(403, "您不是当前审批人，无法审批");
             }
             // 查询审批流程
             String[] pros = getProcess(processUid, apply.getReleaseUid(), apply.getDepartmentUid());
-            // 遍历 props，如果 nowUid 在其中就返回为 true
-            boolean result = false;
-            for (String pro : pros) {
-                if (pro.equals(nowUid)) {
-                    result = true;
-                    break;
-                }
-            }
-            if (!result)
-                return new Message(403, "您不是审批人，无法审批");
             // 查询 nowUid 是不是 props 的最后一个
             if (pros[pros.length - 1].equals(nowUid)) {
                 // 如果审批通过，修改本条申请记录的状态为 1
@@ -263,6 +255,7 @@ public class ChangeDepartmentByTeacherApplyController {
             } else {
                 String nextProcessPerson = findNextProcessPerson(processUid, apply.getReleaseUid(), nowUid, apply.getDepartmentUid());
                 apply.setNextUid(nextProcessPerson);
+                apply.setCount(apply.getCount() + 1);
                 // 如果不是最后一个审批人，修改本条申请记录的下一级审批人为下一个审批人
                 int i = changeDepartmentByTeacherApplyService.resolveApply(apply);
                 if (i > 0) {
@@ -288,20 +281,8 @@ public class ChangeDepartmentByTeacherApplyController {
             ChangeDepartmentByTeacher apply = changeDepartmentByTeacherApplyService.findChangeDepartmentByTeacher(changeDepartmentByTeacher.getUid());
             // 如果不是下一级审人，不能审批
             if (!apply.getNextUid().equals(nowUid)) {
-                return new Message(403, "只能审批下一级审批人的申请");
+                return new Message(403, "您不是当前审批人，无法审批");
             }
-            // 查询审批流程
-            String[] pros = getProcess(processUid, apply.getReleaseUid(), apply.getDepartmentUid());
-            // 遍历 props，如果 nowUid 在其中就返回为 true
-            boolean result = false;
-            for (String pro : pros) {
-                if (pro.equals(nowUid)) {
-                    result = true;
-                    break;
-                }
-            }
-            if (!result)
-                return new Message(403, "您不是审批人，无法审批");
             apply.setReject_reason(changeDepartmentByTeacher.getReject_reason());
             int i = changeDepartmentByTeacherApplyService.rejectApply(apply);
             if (i > 0) {

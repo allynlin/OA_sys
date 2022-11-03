@@ -16,4 +16,10 @@ public interface LeaveSerivce {
     public Leave findLeaveByUid(String uid);
 
     public int updateLeave(Leave leave);
+
+    public List<Leave> findLeaveWaitList(String nextUid);
+
+    public int resolveLeave(Leave leave);
+
+    public int rejectLeave(Leave leave);
 }
