@@ -21,6 +21,7 @@
                status,
                count,
                nextUid,
+               reject_reason,
                create_time,
                update_time
         from oa_sys.workreportteacher
@@ -34,6 +35,7 @@
                status,
                count,
                nextUid,
+               reject_reason,
                create_time,
                update_time
         from oa_sys.workreportteacher
@@ -42,6 +44,34 @@
     <update id="deleteByUid">
         update oa_sys.workreportteacher
         set status = -1
+        where uid = #{uid}
+    </update>
+    <select id="findWorkReportWaitList" resultType="WorkReport">
+        select uid,
+               releaseUid,
+               status,
+               count,
+               nextUid,
+               reject_reason,
+               create_time,
+               update_time
+        from oa_sys.workreportteacher
+        where nextUid = #{nextUid}
+          and status = 0
+        order by create_time desc
+    </select>
+    <update id="resolveWorkReport" parameterType="WorkReport">
+        update oa_sys.workreportteacher
+        set status  = #{status},
+            count   = #{count},
+            nextUid = #{nextUid}
+        where uid = #{uid}
+    </update>
+    <update id="rejectWorkReport" parameterType="WorkReport">
+        update oa_sys.workreportteacher
+        set status        = 2,
+            nextUid       = null,
+            reject_reason = #{reject_reason}
         where uid = #{uid}
     </update>
 </mapper>
