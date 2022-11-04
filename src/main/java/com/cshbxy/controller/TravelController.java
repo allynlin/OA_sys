@@ -3,10 +3,12 @@ package com.cshbxy.controller;
 import com.cshbxy.Util.JwtUtil;
 import com.cshbxy.Util.Process;
 import com.cshbxy.Util.findRealeName;
-import com.cshbxy.dao.*;
-import com.cshbxy.service.DepartmentChangeService;
+import com.cshbxy.dao.FileName;
+import com.cshbxy.dao.Message;
+import com.cshbxy.dao.Message_body;
+import com.cshbxy.dao.Travel;
 import com.cshbxy.service.FileUploadService;
-import com.cshbxy.service.TeacherService;
+import com.cshbxy.service.TravelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -19,50 +21,39 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static com.cshbxy.Util.DeleteFiles.*;
+import static com.cshbxy.Util.DeleteFiles.hideFiles;
+import static com.cshbxy.Util.DeleteFiles.updateFiles;
 
 @Controller
-@RequestMapping("/apply/departmentChange")
+@RequestMapping("/apply/travel")
 @CrossOrigin(origins = "*")
-public class DepartmentChangeController {
+public class TravelController {
 
-    String processName = "ChangeDepartment";
-
-    @Autowired
-    private DepartmentChangeService departmentChangeService;
+    String processName = "Travel";
 
     @Autowired
-    private TeacherService teacherService;
+    private TravelService travelService;
 
     @Autowired
     private FileUploadService fileUploadService;
 
-    // 提交部门变更申请
+    // 提交差旅报销申请
     @RequestMapping(value = "/add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public Message add(HttpServletRequest request, DepartmentChange apply) {
+    public Message addTravelReimbursement(HttpServletRequest request, Travel apply) {
         try {
-            // 解析 token，获取 uid
+            /// 解析 token，获取 uid
             String releaseUid = JwtUtil.getUserUid(request.getHeader("Authorization"));
-            // 检查是否有正在审批中的部门申请，如果有，不能再次提交
-            int i = departmentChangeService.checkLastTime(releaseUid);
-            if (i > 0) {
-                return new Message(401, "您已提交过部门变更申请，请勿重复提交");
-            }
             apply.setReleaseUid(releaseUid);
             String tableUid = request.getHeader("tableUid");
             // 获取审批流程
             String process = Process.getProcess(processName, releaseUid);
-            // 如果字符串中有 nextDepartment，则替换成当前部门
-            if (process.contains("nextDepartment")) {
-                process = process.replace("nextDepartment", apply.getDepartmentUid());
-            }
             apply.setProcess(process);
             apply.setNextUid(Process.getProcessFirst(process));
             // 生成 uuid
             String uid = UUID.randomUUID().toString();
             apply.setUid(uid);
-            int result = departmentChangeService.add(apply);
+            int result = travelService.add(apply);
             // 更新文件表
             boolean res = updateFiles(uid, tableUid, releaseUid);
             if (res && result == 1) {
@@ -78,26 +69,7 @@ public class DepartmentChangeController {
         }
     }
 
-    // 检查是否有正在审批中的部门申请，如果有，不能再次提交
-    @RequestMapping(value = "/checkLastTime", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    @ResponseBody
-    public Message checkLastTime(HttpServletRequest request) {
-        try {
-            // 解析 token，获取 uid
-            String releaseUid = JwtUtil.getUserUid(request.getHeader("Authorization"));
-            int i = departmentChangeService.checkLastTime(releaseUid);
-            if (i > 0) {
-                return new Message(300, "当前有正在审批的部门变更记录");
-            } else {
-                return new Message(200, "没有正在审批的部门变更记录");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new Message(500, "未知错误");
-        }
-    }
-
-    // 查询提交过的部门变更申请
+    // 查询提交过的差旅报销申请记录
     @RequestMapping(value = "/findApplyList", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public Message_body findApplyList(HttpServletRequest request) {
@@ -105,19 +77,15 @@ public class DepartmentChangeController {
             // 解析 token，获取 uid
             String releaseUid = JwtUtil.getUserUid(request.getHeader("Authorization"));
             // 根据提交人查询数据库
-            List<DepartmentChange> list = departmentChangeService.findApplyList(releaseUid);
-            // 遍历 list，将 departmentUid 通过 findRealeName.findName 转换成真实姓名
-            for (DepartmentChange departmentChange : list) {
-                departmentChange.setDepartmentUid(findRealeName.findName(departmentChange.getDepartmentUid()));
-            }
+            List<Travel> list = travelService.findApplyList(releaseUid);
             // 遍历 list，将 nextUid 通过 findRealeName.findName 转换成真实姓名
-            for (DepartmentChange departmentChange : list) {
-                departmentChange.setNextUid(findRealeName.findName(departmentChange.getNextUid()));
+            for (Travel travel : list) {
+                travel.setNextUid(findRealeName.findName(travel.getNextUid()));
             }
             if (list.size() != 0) {
-                return new Message_body(200, "查询部门变更记录成功", list);
+                return new Message_body(200, "查询差旅报销申请记录成功", list);
             } else {
-                return new Message_body(300, "暂无部门变更记录");
+                return new Message_body(300, "暂无差旅报销申请记录");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -125,13 +93,13 @@ public class DepartmentChangeController {
         }
     }
 
-    // 查询当前审批流程
+    // 查询审批流程
     @RequestMapping(value = "/findProcess", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public Message_body findProcess(String uid) {
         try {
             // 通过接收到的 uid 查询本条申请记录
-            DepartmentChange apply = departmentChangeService.findDepartmentChangeByUid(uid);
+            Travel apply = travelService.findTravelByUid(uid);
             // 查询审批流程，将查询到的流程按照 || 分割
             String[] processList = apply.getProcess().split("\\|\\|");
             // 将 list 中的每个 uid 都在 findName 中查询，返回真是姓名
@@ -147,14 +115,14 @@ public class DepartmentChangeController {
         }
     }
 
-    // 删除提交的部门变更申请
+    // 删除提交的差旅报销申请
     @RequestMapping(value = "/delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public Message delete(HttpServletRequest request, String uid) {
         try {
             String tableUid = request.getHeader("tableUid");
             // 通过接收到的 uid 查询本条申请记录
-            DepartmentChange apply = departmentChangeService.findDepartmentChangeByUid(uid);
+            Travel apply = travelService.findTravelByUid(uid);
             if (apply.getStatus() != 0)
                 return new Message(400, "当前状态不可删除");
             // 判断是否为提交人
@@ -162,7 +130,7 @@ public class DepartmentChangeController {
                 return new Message(403, "只能删除自己提交的申请");
             }
             // 删除本条申请记录
-            int i = departmentChangeService.delete(uid);
+            int i = travelService.delete(uid);
             // 通过 fileUploadService 下的 findUploadFilesByUid 方法，查询本条申请记录的附件
             FileName fileName = new FileName();
             fileName.setRowUid(uid);
@@ -188,7 +156,7 @@ public class DepartmentChangeController {
         }
     }
 
-    // 根据下一级审批人查询部门变更申请
+    // 根据下一级审批人查询差旅报销记录
     @RequestMapping(value = "/findWaitList", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public Message_body findWaitList(HttpServletRequest request) {
@@ -196,19 +164,15 @@ public class DepartmentChangeController {
             // 解析 token，获取 uid
             String nextUid = JwtUtil.getUserUid(request.getHeader("Authorization"));
             // 根据 uid 查询数据库
-            List<DepartmentChange> list = departmentChangeService.findWaitList(nextUid);
-            // 遍历 list，将 departmentUid 通过 findRealeName.findName 转换成真实姓名
-            for (DepartmentChange departmentChange : list) {
-                departmentChange.setDepartmentUid(findRealeName.findName(departmentChange.getDepartmentUid()));
-            }
+            List<Travel> list = travelService.findWaitList(nextUid);
             // 遍历 list，将 releaseUid 通过 findRealeName.findName 转换成真实姓名
-            for (DepartmentChange departmentChange : list) {
-                departmentChange.setReleaseUid(findRealeName.findName(departmentChange.getReleaseUid()));
+            for (Travel travel : list) {
+                travel.setReleaseUid(findRealeName.findName(travel.getReleaseUid()));
             }
             if (list.size() != 0) {
-                return new Message_body(200, "查询部门变更申请成功", list);
+                return new Message_body(200, "查询差旅报销申请记录成功", list);
             } else {
-                return new Message_body(300, "暂无部门变更申请");
+                return new Message_body(300, "暂无差旅报销申请记录");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -216,18 +180,18 @@ public class DepartmentChangeController {
         }
     }
 
-    // 通过部门变更申请
+    // 通过差旅报销申请
     @RequestMapping(value = "/resolve", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public Message resolve(HttpServletRequest request, String uid) {
         try {
             // 解析 token，获取 uid
             String nowUid = JwtUtil.getUserUid(request.getHeader("Authorization"));
-            // 通过接收到的 uid 查询本条申请记录
-            DepartmentChange apply = departmentChangeService.findDepartmentChangeByUid(uid);
-            // 如果不是下一级审人，不能审批
+            // 查询数据库
+            Travel apply = travelService.findTravelByUid(uid);
+            // 判断是否为下一级审批人
             if (!apply.getNextUid().equals(nowUid)) {
-                return new Message(403, "您不是当前审批人，无法审批");
+                return new Message(403, "只能审批自己的申请");
             }
             // 查询审批流程
             String[] pros = apply.getProcess().split("\\|\\|");
@@ -236,19 +200,6 @@ public class DepartmentChangeController {
                 // 是最后一个，审批通过
                 apply.setStatus(1);
                 apply.setNextUid(null);
-                int i = departmentChangeService.resolve(apply);
-                // 修改教师表中的部门
-                Teacher teacher = new Teacher();
-                teacher.setUid(apply.getReleaseUid());
-                teacher.setDepartmentUid(apply.getDepartmentUid());
-                int j = teacherService.updateDepartment(teacher);
-                if (i > 0 && j > 0) {
-                    return new Message(200, "审批通过");
-                } else if (i > 0) {
-                    return new Message(200, "审批通过，修改部门失败");
-                } else {
-                    return new Message(400, "审批失败");
-                }
             } else {
                 // 在 pros 中查找下一个审批人
                 for (int i = 0; i < pros.length; i++) {
@@ -258,12 +209,12 @@ public class DepartmentChangeController {
                     }
                 }
                 apply.setCount(apply.getCount() + 1);
-                int i = departmentChangeService.resolve(apply);
-                if (i > 0) {
-                    return new Message(200, "审批成功");
-                } else {
-                    return new Message(300, "审批失败");
-                }
+            }
+            int i = travelService.resolve(apply);
+            if (i > 0) {
+                return new Message(200, "审批通过");
+            } else {
+                return new Message(400, "审批失败");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -271,24 +222,26 @@ public class DepartmentChangeController {
         }
     }
 
-    // 驳回部门变更申请
+    // 驳回差旅报销申请
     @RequestMapping(value = "/reject", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public Message reject(HttpServletRequest request, DepartmentChange apply) {
+    public Message reject(HttpServletRequest request, Travel apply) {
         try {
             // 解析 token，获取 uid
             String nowUid = JwtUtil.getUserUid(request.getHeader("Authorization"));
-            // 通过接收到的 uid 查询本条申请记录
-            DepartmentChange now = departmentChangeService.findDepartmentChangeByUid(apply.getUid());
+            // 查询数据库
+            Travel now = travelService.findTravelByUid(apply.getUid());
             // 如果不是下一级审人，不能审批
             if (!now.getNextUid().equals(nowUid)) {
-                return new Message(403, "您不是当前审批人，无法审批");
+                return new Message(403, "只能审批自己的申请");
             }
-            int i = departmentChangeService.reject(apply);
+            // 修改数据库
+            int i = travelService.reject(apply);
             if (i > 0) {
                 return new Message(200, "驳回成功");
+            } else {
+                return new Message(300, "驳回失败");
             }
-            return new Message(400, "驳回失败");
         } catch (Exception e) {
             e.printStackTrace();
             return new Message(500, "未知错误");

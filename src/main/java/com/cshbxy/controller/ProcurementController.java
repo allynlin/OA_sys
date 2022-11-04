@@ -1,12 +1,12 @@
 package com.cshbxy.controller;
 
 import com.cshbxy.Util.JwtUtil;
+import com.cshbxy.Util.Process;
 import com.cshbxy.Util.findRealeName;
 import com.cshbxy.dao.Message;
 import com.cshbxy.dao.Message_body;
 import com.cshbxy.dao.Procurement;
 import com.cshbxy.service.ProcurementSerivce;
-import com.cshbxy.service.TeacherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -17,44 +17,39 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
-import static com.cshbxy.Util.Process.findNextProcessPerson;
-import static com.cshbxy.Util.Process.getProcess;
-
 @Controller
-@RequestMapping("/procurement")
+@RequestMapping("/apply/procurement")
 @CrossOrigin(origins = "*")
 public class ProcurementController {
 
-    String processUid = "ebd453af-2773-449b-8ece-b09b23e99d76";
+    String processName = "Procurement";
 
     @Autowired
     private ProcurementSerivce procurementSerivce;
 
-    @Autowired
-    private TeacherService teacherService;
-
     // 提交采购申请
-    @RequestMapping(value = "/addProcurement", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public Message addProcurement(HttpServletRequest request, Procurement procurement) {
+    public Message add(HttpServletRequest request, Procurement apply) {
         try {
             // 解析 token，获取 uid
-            String token = request.getHeader("Authorization");
-            String releaseUid = JwtUtil.getUserUid(token);
-            // 查询流程
-            String nextProcessPerson = findNextProcessPerson(processUid, releaseUid, procurement.getNextUid(), null);
+            String releaseUid = JwtUtil.getUserUid(request.getHeader("Authorization"));
+            // 获取审批流程
+            String process = Process.getProcess(processName, releaseUid);
+            apply.setProcess(process);
+            apply.setNextUid(Process.getProcessFirst(process));
             // 生成 uuid
             String uid = UUID.randomUUID().toString();
-            procurement.setUid(uid);
-            procurement.setReleaseUid(releaseUid);
-            procurement.setNextUid(nextProcessPerson);
-            int result = procurementSerivce.addProcurement(procurement);
+            apply.setUid(uid);
+            apply.setReleaseUid(releaseUid);
+            int result = procurementSerivce.add(apply);
             if (result == 1) {
-                return new Message(200, "提交成功采购申请成功");
+                return new Message(200, "提交成功");
             } else {
-                return new Message(400, "提交采购申请失败");
+                return new Message(400, "提交失败");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -63,15 +58,18 @@ public class ProcurementController {
     }
 
     // 查询采购记录
-    @RequestMapping(value = "/findProcurementList", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/findApplyList", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public Message_body findProcurementList(HttpServletRequest request) {
+    public Message_body findApplyList(HttpServletRequest request) {
         try {
             // 解析 token，获取 uid
-            String token = request.getHeader("Authorization");
-            String releaseUid = JwtUtil.getUserUid(token);
+            String releaseUid = JwtUtil.getUserUid(request.getHeader("Authorization"));
             // 根据提交人查询数据库
-            List<Procurement> list = procurementSerivce.findProcurementList(releaseUid);
+            List<Procurement> list = procurementSerivce.findApplyList(releaseUid);
+            // 遍历 list，将 nextUid 通过 findRealeName.findName 转换成真实姓名
+            for (Procurement procurement : list) {
+                procurement.setNextUid(findRealeName.findName(procurement.getNextUid()));
+            }
             if (list.size() != 0) {
                 return new Message_body(200, "查询采购记录成功", list);
             } else {
@@ -84,17 +82,16 @@ public class ProcurementController {
     }
 
     // 查询采购流程
-    @RequestMapping(value = "/findProcurementProcess", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/findProcess", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public Message_body findProcurementProcess(String uid) {
+    public Message_body findProcess(String uid) {
         try {
             // 通过接收到的 uid 查询本条申请记录
-            Procurement procurement = procurementSerivce.findProcurementByUid(uid);
-            // 查询审批流程
-            String[] pros = getProcess(processUid, procurement.getReleaseUid(), null);
-            // 将 list 中的每个 uid 都在 findName 中查询，返回真是姓名
+            Procurement apply = procurementSerivce.findProcurementByUid(uid);
+            // 查询审批流程，将查询到的流程按照 || 分割
+            String[] processList = apply.getProcess().split("\\|\\|");
             List<String> list = new ArrayList<>();
-            for (String pro : pros) {
+            for (String pro : processList) {
                 String name = findRealeName.findName(pro);
                 list.add(name);
             }
@@ -106,23 +103,22 @@ public class ProcurementController {
     }
 
     // 删除提交的采购申请
-    @RequestMapping(value = "/deleteProcurement", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public Message deleteProcurement(HttpServletRequest request, String uid) {
+    public Message delete(HttpServletRequest request, String uid) {
         try {
             // 通过接收到的 uid 查询本条申请记录
-            Procurement procurement = procurementSerivce.findProcurementByUid(uid);
+            Procurement apply = procurementSerivce.findProcurementByUid(uid);
             // 判断是否为提交人
-            if (procurement.getReleaseUid().equals(JwtUtil.getUserUid(request.getHeader("Authorization")))) {
-                // 删除本条申请记录
-                int result = procurementSerivce.deleteProcurement(uid);
-                if (result == 1) {
-                    return new Message(200, "删除成功");
-                } else {
-                    return new Message(400, "删除失败");
-                }
-            } else {
+            if (!apply.getReleaseUid().equals(JwtUtil.getUserUid(request.getHeader("Authorization")))) {
                 return new Message(403, "只能删除自己提交的申请");
+            }
+            // 删除本条申请记录
+            int i = procurementSerivce.delete(uid);
+            if (i == 1) {
+                return new Message(200, "删除成功");
+            } else {
+                return new Message(400, "删除失败");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -131,19 +127,27 @@ public class ProcurementController {
     }
 
     // 更新采购申请
-    @RequestMapping(value = "/updateProcurement", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public Message updateProcurement(HttpServletRequest request, Procurement procurement) {
+    public Message update(HttpServletRequest request, Procurement newApply) {
         try {
+            // 通过接收到的 uid 查询本条申请记录
+            Procurement apply = procurementSerivce.findProcurementByUid(newApply.getUid());
+            if (apply.getStatus() != 0) {
+                return new Message(400, "当前状态不可修改");
+            }
             String releaseUid = JwtUtil.getUserUid(request.getHeader("Authorization"));
-            procurement.setCount(0);
-            procurement.setStatus(0);
-            procurement.setReleaseUid(releaseUid);
-            String nextProcessPerson = findNextProcessPerson(processUid, procurement.getReleaseUid(), null, null);
-            procurement.setNextUid(nextProcessPerson);
+            if (!Objects.equals(apply.getReleaseUid(), releaseUid)) {
+                return new Message(403, "只能修改自己提交的申请");
+            }
+            apply.setCount(0);
+            // 获取审批流程
+            String process = Process.getProcess(processName, releaseUid);
+            apply.setProcess(process);
+            apply.setNextUid(Process.getProcessFirst(process));
             // 修改数据库
-            int result = procurementSerivce.updateProcurement(procurement);
-            if (result == 1) {
+            int i = procurementSerivce.update(apply);
+            if (i == 1) {
                 return new Message(200, "修改成功");
             } else {
                 return new Message(400, "修改失败");
@@ -155,15 +159,14 @@ public class ProcurementController {
     }
 
     // 根据下一级审批人查询采购申请
-    @RequestMapping(value = "/findProcurementByNextUid", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/findWaitList", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public Message_body findProcurementByNextUid(HttpServletRequest request) {
+    public Message_body findWaitList(HttpServletRequest request) {
         try {
             // 解析 token，获取 uid
-            String token = request.getHeader("Authorization");
-            String nextUid = JwtUtil.getUserUid(token);
+            String nextUid = JwtUtil.getUserUid(request.getHeader("Authorization"));
             // 根据下一级审批人查询数据库
-            List<Procurement> list = procurementSerivce.findProcurementWaitList(nextUid);
+            List<Procurement> list = procurementSerivce.findWaitList(nextUid);
             // 遍历 list，将 releaseUid 通过 findRealeName.findName 转换成真实姓名
             for (Procurement procurement : list) {
                 procurement.setReleaseUid(findRealeName.findName(procurement.getReleaseUid()));
@@ -180,41 +183,40 @@ public class ProcurementController {
     }
 
     // 通过采购申请
-    @RequestMapping(value = "/resolveProcurement", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/resolve", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public Message resolveProcurement(HttpServletRequest request, String uid) {
+    public Message resolve(HttpServletRequest request, String uid) {
         try {
             // 解析 token，获取 uid
-            String token = request.getHeader("Authorization");
-            String nowUid = JwtUtil.getUserUid(token);
+            String nowUid = JwtUtil.getUserUid(request.getHeader("Authorization"));
             // 通过接收到的 uid 查询本条申请记录
-            Procurement procurement = procurementSerivce.findProcurementByUid(uid);
+            Procurement apply = procurementSerivce.findProcurementByUid(uid);
             // 判断是否为下一级审批人
-            if (!procurement.getNextUid().equals(nowUid)) {
+            if (!apply.getNextUid().equals(nowUid)) {
                 return new Message(403, "您不是当前审批人，无法审批");
             }
             // 查询审批流程
-            String[] props = getProcess(processUid, procurement.getReleaseUid(), teacherService.findDepartmentUid(procurement.getReleaseUid()));
+            String[] pros = apply.getProcess().split("\\|\\|");
             // 查询 nowUid 是不是 props 的最后一个
-            if (nowUid.equals(props[props.length - 1])) {
-                procurement.setStatus(1);
-                procurement.setNextUid(null);
-                int i = procurementSerivce.resolveProcurement(procurement);
-                if (i == 1) {
-                    return new Message(200, "审批成功");
-                } else {
-                    return new Message(400, "审批失败");
-                }
+            if (pros[pros.length - 1].equals(nowUid)) {
+                // 是最后一个，审批通过
+                apply.setStatus(1);
+                apply.setNextUid(null);
             } else {
-                String nextProcessPerson = findNextProcessPerson(processUid, procurement.getReleaseUid(), nowUid, null);
-                procurement.setNextUid(nextProcessPerson);
-                procurement.setCount(procurement.getCount() + 1);
-                int i = procurementSerivce.resolveProcurement(procurement);
-                if (i == 1) {
-                    return new Message(200, "审批成功");
-                } else {
-                    return new Message(400, "审批失败");
+                /// 在 pros 中查找下一个审批人
+                for (int i = 0; i < pros.length; i++) {
+                    if (pros[i].equals(nowUid)) {
+                        apply.setNextUid(pros[i + 1]);
+                        break;
+                    }
                 }
+                apply.setCount(apply.getCount() + 1);
+            }
+            int i = procurementSerivce.resolve(apply);
+            if (i == 1) {
+                return new Message(200, "审批成功");
+            } else {
+                return new Message(400, "审批失败");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -223,20 +225,19 @@ public class ProcurementController {
     }
 
     // 驳回采购申请
-    @RequestMapping(value = "/rejectProcurement", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/reject", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public Message rejectProcurement(HttpServletRequest request, Procurement procurement) {
+    public Message reject(HttpServletRequest request, Procurement apply) {
         try {
             // 解析 token，获取 uid
-            String token = request.getHeader("Authorization");
-            String nowUid = JwtUtil.getUserUid(token);
+            String nowUid = JwtUtil.getUserUid(request.getHeader("Authorization"));
             // 通过接收到的 uid 查询本条申请记录
-            Procurement apply = procurementSerivce.findProcurementByUid(procurement.getUid());
+            Procurement now = procurementSerivce.findProcurementByUid(apply.getUid());
             // 判断是否为下一级审批人
-            if (!apply.getNextUid().equals(nowUid)) {
+            if (!now.getNextUid().equals(nowUid)) {
                 return new Message(403, "您不是当前审批人，无法审批");
             }
-            int i = procurementSerivce.rejectProcurement(procurement);
+            int i = procurementSerivce.reject(apply);
             if (i == 1) {
                 return new Message(200, "驳回成功");
             } else {

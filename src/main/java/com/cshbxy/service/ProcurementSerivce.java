@@ -5,19 +5,19 @@ import com.cshbxy.dao.Procurement;
 import java.util.List;
 
 public interface ProcurementSerivce {
-    public int addProcurement(Procurement procurement);
+    public int add(Procurement procurement);
 
-    public int deleteProcurement(String uid);
+    public int delete(String uid);
 
-    public List<Procurement> findProcurementList(String releaseUid);
+    public List<Procurement> findApplyList(String releaseUid);
 
     public Procurement findProcurementByUid(String uid);
 
-    public int updateProcurement(Procurement procurement);
+    public int update(Procurement procurement);
 
-    public List<Procurement> findProcurementWaitList(String nextUid);
+    public List<Procurement> findWaitList(String nextUid);
 
-    public int resolveProcurement(Procurement procurement);
+    public int resolve(Procurement procurement);
 
-    public int rejectProcurement(Procurement procurement);
+    public int reject(Procurement procurement);
 }

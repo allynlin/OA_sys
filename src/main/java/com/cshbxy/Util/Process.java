@@ -53,6 +53,11 @@ public class Process {
         return pro;
     }
 
+    public static String getProcessFirst(String process) {
+        String[] processList = process.split("\\|\\|");
+        return processList[0];
+    }
+
     // 查找下一级审批人
     public static String findNextProcessPerson(String uid, String releaseUid, String nextUid) {
         try {

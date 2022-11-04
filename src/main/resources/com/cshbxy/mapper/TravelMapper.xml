@@ -2,12 +2,12 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.cshbxy.mapper.TravelReimbursementApplyMapper">
-    <insert id="addTravelReimbursement" parameterType="TravelReimbursement">
-        insert into oa_sys.travelreimbursement(uid, releaseUid, destination, expenses, reason, nextUid)
-        values (#{uid}, #{releaseUid}, #{destination}, #{expenses}, #{reason}, #{nextUid})
+<mapper namespace="com.cshbxy.mapper.TravelMapper">
+    <insert id="add" parameterType="TravelReimbursement">
+        insert into oa_sys.travel(uid, releaseUid, destination, expenses, reason, nextUid, process)
+        values (#{uid}, #{releaseUid}, #{destination}, #{expenses}, #{reason}, #{nextUid}, #{process})
     </insert>
-    <select id="findTravelReimbursementApplyList" resultType="TravelReimbursement">
+    <select id="findApplyList" resultType="TravelReimbursement">
         select uid,
                destination,
                expenses,
@@ -16,14 +16,15 @@
                count,
                nextUid,
                reject_reason,
+               process,
                create_time,
                update_time
-        from oa_sys.travelreimbursement
+        from oa_sys.travel
         where releaseUid = #{releaseUid}
           and status >= 0
         order by create_time desc
     </select>
-    <select id="findTravelProcess" resultType="TravelReimbursement">
+    <select id="findTravelByUid" resultType="TravelReimbursement">
         select uid,
                releaseUid,
                destination,
@@ -33,26 +34,18 @@
                count,
                nextUid,
                reject_reason,
+               process,
                create_time,
                update_time
-        from oa_sys.travelreimbursement
+        from oa_sys.travel
         where uid = #{uid}
     </select>
-    <update id="updateTravelReimbursementApply" parameterType="TravelReimbursement">
-        update oa_sys.travelreimbursement
-        set destination=#{destination},
-            expenses=#{expenses},
-            reason=#{reason},
-            nextUid=#{nextUid},
-            status=#{status}
-        where uid = #{uid}
-    </update>
-    <update id="deleteTravelReimbursementApply">
-        update oa_sys.travelreimbursement
+    <update id="delete">
+        update oa_sys.travel
         set status = -1
         where uid = #{uid}
     </update>
-    <select id="findTravelReimbursementWaitList" resultType="TravelReimbursement">
+    <select id="findWaitList" resultType="TravelReimbursement">
         select uid,
                releaseUid,
                destination,
@@ -60,22 +53,23 @@
                reason,
                status,
                reject_reason,
+               process,
                create_time,
                update_time
-        from oa_sys.travelreimbursement
+        from oa_sys.travel
         where nextUid = #{nextUid}
           and status = 0
         order by create_time desc
     </select>
-    <update id="resolveTravelReimbursement" parameterType="TravelReimbursement">
-        update oa_sys.travelreimbursement
+    <update id="resolve" parameterType="TravelReimbursement">
+        update oa_sys.travel
         set status = #{status},
             count  =#{count},
             nextUid= #{nextUid}
         where uid = #{uid}
     </update>
-    <update id="rejectTravelReimbursement" parameterType="TravelReimbursement">
-        update oa_sys.travelreimbursement
+    <update id="reject" parameterType="TravelReimbursement">
+        update oa_sys.travel
         set status        = 2,
             nextUid= null,
             reject_reason = #{reject_reason}

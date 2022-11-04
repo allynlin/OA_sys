@@ -1,6 +1,6 @@
 package com.cshbxy.dao;
 
-public class TravelReimbursement {
+public class Travel {
     String uid;
     String releaseUid;
     String destination;
@@ -10,6 +10,7 @@ public class TravelReimbursement {
     int count;
     String nextUid;
     String reject_reason;
+    String process;
     String create_time;
     String update_time;
 
@@ -85,6 +86,14 @@ public class TravelReimbursement {
         this.reject_reason = reject_reason;
     }
 
+    public String getProcess() {
+        return process;
+    }
+
+    public void setProcess(String process) {
+        this.process = process;
+    }
+
     public String getCreate_time() {
         return create_time;
     }
@@ -103,7 +112,7 @@ public class TravelReimbursement {
 
     @Override
     public String toString() {
-        return "TravelReimbursement{" +
+        return "Travel{" +
                 "uid='" + uid + '\'' +
                 ", releaseUid='" + releaseUid + '\'' +
                 ", destination='" + destination + '\'' +
@@ -113,6 +122,7 @@ public class TravelReimbursement {
                 ", count=" + count +
                 ", nextUid='" + nextUid + '\'' +
                 ", reject_reason='" + reject_reason + '\'' +
+                ", process='" + process + '\'' +
                 ", create_time='" + create_time + '\'' +
                 ", update_time='" + update_time + '\'' +
                 '}';

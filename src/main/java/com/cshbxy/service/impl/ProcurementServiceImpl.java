@@ -15,18 +15,18 @@ public class ProcurementServiceImpl implements ProcurementSerivce {
     private ProcurementMapper procurementMapper;
 
     @Override
-    public int addProcurement(Procurement procurement) {
-        return procurementMapper.addProcurement(procurement);
+    public int add(Procurement procurement) {
+        return procurementMapper.add(procurement);
     }
 
     @Override
-    public int deleteProcurement(String uid) {
-        return procurementMapper.deleteProcurement(uid);
+    public int delete(String uid) {
+        return procurementMapper.delete(uid);
     }
 
     @Override
-    public List<Procurement> findProcurementList(String releaseUid) {
-        return procurementMapper.findProcurementList(releaseUid);
+    public List<Procurement> findApplyList(String releaseUid) {
+        return procurementMapper.findApplyList(releaseUid);
     }
 
     @Override
@@ -35,22 +35,22 @@ public class ProcurementServiceImpl implements ProcurementSerivce {
     }
 
     @Override
-    public int updateProcurement(Procurement procurement) {
-        return procurementMapper.updateProcurement(procurement);
+    public int update(Procurement procurement) {
+        return procurementMapper.update(procurement);
     }
 
     @Override
-    public List<Procurement> findProcurementWaitList(String nextUid) {
-        return procurementMapper.findProcurementWaitList(nextUid);
+    public List<Procurement> findWaitList(String nextUid) {
+        return procurementMapper.findWaitList(nextUid);
     }
 
     @Override
-    public int resolveProcurement(Procurement procurement) {
-        return procurementMapper.resolveProcurement(procurement);
+    public int resolve(Procurement procurement) {
+        return procurementMapper.resolve(procurement);
     }
 
     @Override
-    public int rejectProcurement(Procurement procurement) {
-        return procurementMapper.rejectProcurement(procurement);
+    public int reject(Procurement procurement) {
+        return procurementMapper.reject(procurement);
     }
 }

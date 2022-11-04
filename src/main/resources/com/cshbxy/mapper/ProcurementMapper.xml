@@ -3,16 +3,16 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.cshbxy.mapper.ProcurementMapper">
-    <insert id="addProcurement" parameterType="Procurement">
-        insert into oa_sys.Procurement (uid, releaseUid, items, price, reason, nextUid)
-        values (#{uid}, #{releaseUid}, #{items}, #{price}, #{reason}, #{nextUid})
+    <insert id="add" parameterType="Procurement">
+        insert into oa_sys.Procurement (uid, releaseUid, items, price, reason, nextUid, process)
+        values (#{uid}, #{releaseUid}, #{items}, #{price}, #{reason}, #{nextUid}, #{process})
     </insert>
-    <update id="deleteProcurement">
+    <update id="delete">
         update oa_sys.Procurement
         set status = -1
         where uid = #{uid}
     </update>
-    <select id="findProcurementList" resultType="Procurement">
+    <select id="findApplyList" resultType="Procurement">
         select uid,
                items,
                price,
@@ -21,6 +21,7 @@
                count,
                nextUid,
                reject_reason,
+               process,
                create_time,
                update_time
         from oa_sys.Procurement
@@ -38,22 +39,24 @@
                count,
                nextUid,
                reject_reason,
+               process,
                create_time,
                update_time
         from oa_sys.Procurement
         where uid = #{uid}
     </select>
-    <update id="updateProcurement" parameterType="Procurement">
+    <update id="update" parameterType="Procurement">
         update oa_sys.Procurement
         set items  = #{items},
             price  = #{price},
             reason = #{reason},
             status = #{status},
             count  = #{count},
-            nextUid= #{nextUid}
+            nextUid= #{nextUid},
+            process= #{process}
         where uid = #{uid}
     </update>
-    <select id="findProcurementWaitList" resultType="Procurement">
+    <select id="findWaitList" resultType="Procurement">
         select uid,
                releaseUid,
                items,
@@ -62,6 +65,7 @@
                status,
                count,
                reject_reason,
+               process,
                create_time,
                update_time
         from oa_sys.Procurement
@@ -69,14 +73,14 @@
           and status = 0
         order by update_time desc
     </select>
-    <update id="resolveProcurement" parameterType="Procurement">
+    <update id="resolve" parameterType="Procurement">
         update oa_sys.Procurement
         set status = #{status},
             count  = #{count},
             nextUid= #{nextUid}
         where uid = #{uid}
     </update>
-    <update id="rejectProcurement" parameterType="Procurement">
+    <update id="reject" parameterType="Procurement">
         update oa_sys.Procurement
         set status        = 2,
             nextUid= null,

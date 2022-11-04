@@ -35,14 +35,12 @@ public class LeaveController {
     @ResponseBody
     public Message add(HttpServletRequest request, Leave apply) {
         try {
+            // 解析 token，获取 uid
             String releaseUid = JwtUtil.getUserUid(request.getHeader("Authorization"));
             // 获取审批流程
             String process = Process.getProcess(processName, releaseUid);
             apply.setProcess(process);
-            // 将查询到的流程按照 || 分割
-            String[] processList = process.split("\\|\\|");
-            // 取出流程中的第一个审批人,并将其设置为下一级审批人
-            apply.setNextUid(processList[0]);
+            apply.setNextUid(Process.getProcessFirst(process));
             // 生成 uuid
             String uid = UUID.randomUUID().toString();
             apply.setUid(uid);
@@ -170,10 +168,7 @@ public class LeaveController {
             // 获取审批流程
             String process = Process.getProcess(processName, releaseUid);
             apply.setProcess(process);
-            // 将查询到的流程按照 || 分割
-            String[] processList = process.split("\\|\\|");
-            // 取出流程中的第一个审批人,并将其设置为下一级审批人
-            apply.setNextUid(processList[0]);
+            apply.setNextUid(Process.getProcessFirst(process));
             // 修改数据库
             int i = leaveSerivce.update(apply);
             if (i == 1) {
