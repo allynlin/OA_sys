@@ -109,7 +109,7 @@ public class FileUploadController {
 
     @RequestMapping(value = "/deleteUploadFile", method = RequestMethod.POST)
     @ResponseBody
-    public Message deleteUploadFile(HttpServletRequest request, String fileName) {
+    public Message deleteUploadFile(String fileName) {
         try {
             String create_time = fileUploadService.findFileCreateTimeByFileName(fileName);
             // 分离 create_time 中的日期 yyyy-MM-dd

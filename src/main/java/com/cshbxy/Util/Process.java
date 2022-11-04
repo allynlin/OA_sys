@@ -21,9 +21,9 @@ public class Process {
         Process.teacherService = teacherService;
     }
 
-    public static String[] getProcess(String uid, String releaseUid, String departmentUid) {
+    public static String[] getDepartmentChangeProcess(String processName, String releaseUid, String departmentUid) {
         // 通过 uid 查询变更部门申请流程
-        com.cshbxy.dao.Process process = processService.processQueryByUid(uid);
+        com.cshbxy.dao.Process process = processService.processQueryByName(processName);
         String pro = process.getProcess();
         // 将查询到的数据分离，以 || 分隔
         String[] pros = pro.split("\\|\\|");
@@ -33,20 +33,30 @@ public class Process {
                 pros[i] = teacherService.findDepartmentUid(releaseUid);
                 continue;
             }
-            // 如果传递了 departmentUid,则执行后续判断
-            if (departmentUid != null) {
-                if (pros[i].equals("nextDepartment")) {
-                    pros[i] = departmentUid;
-                }
+            if (pros[i].equals("nextDepartment")) {
+                pros[i] = departmentUid;
             }
+
         }
         return pros;
     }
 
+    public static String getProcess(String processName, String releaseUid) {
+        // 通过 uid 查询变更部门申请流程
+        com.cshbxy.dao.Process process = processService.processQueryByName(processName);
+        String pro = process.getProcess();
+        // 如果字符串中有 nowDepartment
+        if (pro.contains("nowDepartment")) {
+            // 将 nowDepartment 替换为当前部门
+            pro = pro.replace("nowDepartment", teacherService.findDepartmentUid(releaseUid));
+        }
+        return pro;
+    }
+
     // 查找下一级审批人
-    public static String findNextProcessPerson(String uid, String releaseUid, String nextUid, String departmentUid) {
+    public static String findNextProcessPerson(String uid, String releaseUid, String nextUid) {
         try {
-            String[] pros = getProcess(uid, releaseUid, departmentUid);
+            String[] pros = getProcess(uid, releaseUid);
             if (nextUid == null) {
                 return pros[0];
             }

@@ -61,4 +61,33 @@ public class DeleteFiles {
         int i = fileUploadService.dropUploadFile(uid);
         return i > 0;
     }
+
+    /**
+     * 隐藏文件
+     *
+     * @param fileName
+     * @return 1:成功 0:失败
+     */
+    public static boolean hideFiles(String fileName) {
+        // 在 upload 目录下的所有文件夹中找到文件，移动到 C:\upload\hide 目录下
+        File file = new File("C:\\upload\\");
+        File[] files = file.listFiles();
+        assert files != null;
+        for (File file1 : files) {
+            File[] files1 = file1.listFiles();
+            assert files1 != null;
+            for (File file2 : files1) {
+                if (file2.getName().equals(fileName)) {
+                    File file3 = new File("C:\\upload\\hide\\" + fileName);
+                    file2.renameTo(file3);
+                    break;
+                }
+            }
+        }
+        // 将文件名后缀去除
+        String uid = fileName.substring(0, fileName.lastIndexOf("."));
+        // 删除数据库中的文件名
+        int i = fileUploadService.dropUploadFile(uid);
+        return i > 0;
+    }
 }

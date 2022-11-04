@@ -15,23 +15,23 @@ public class LeaveServiceImpl implements LeaveSerivce {
     private LeaveMapper leaveMapper;
 
     @Override
-    public int addLeave(Leave leave) {
-        return leaveMapper.addLeave(leave);
+    public int add(Leave leave) {
+        return leaveMapper.add(leave);
     }
 
     @Override
-    public Leave checkLastTimeLeave(String releaseUid) {
-        return leaveMapper.checkLastTimeLeave(releaseUid);
+    public Leave checkLastTime(String releaseUid) {
+        return leaveMapper.checkLastTime(releaseUid);
     }
 
     @Override
-    public int deleteLeave(String uid) {
-        return leaveMapper.deleteLeave(uid);
+    public int delete(String uid) {
+        return leaveMapper.delete(uid);
     }
 
     @Override
-    public List<Leave> findLeaveList(String releaseUid) {
-        return leaveMapper.findLeaveList(releaseUid);
+    public List<Leave> findApplyList(String releaseUid) {
+        return leaveMapper.findApplyList(releaseUid);
     }
 
     @Override
@@ -40,22 +40,22 @@ public class LeaveServiceImpl implements LeaveSerivce {
     }
 
     @Override
-    public int updateLeave(Leave leave) {
-        return leaveMapper.updateLeave(leave);
+    public int update(Leave leave) {
+        return leaveMapper.update(leave);
     }
 
     @Override
-    public List<Leave> findLeaveWaitList(String nextUid) {
-        return leaveMapper.findLeaveWaitList(nextUid);
+    public List<Leave> findWaitList(String nextUid) {
+        return leaveMapper.findWaitList(nextUid);
     }
 
     @Override
-    public int resolveLeave(Leave leave) {
-        return leaveMapper.resolveLeave(leave);
+    public int resolve(Leave leave) {
+        return leaveMapper.resolve(leave);
     }
 
     @Override
-    public int rejectLeave(Leave leave) {
-        return leaveMapper.rejectLeave(leave);
+    public int reject(Leave leave) {
+        return leaveMapper.reject(leave);
     }
 }

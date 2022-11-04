@@ -1,16 +1,15 @@
 package com.cshbxy.dao;
 
-public class Leave {
+public class DepartmentChange {
     String uid;
     String releaseUid;
-    String reason;
-    String start_time;
-    String end_time;
+    String departmentUid;
+    String changeReason;
     int status;
     int count;
     String nextUid;
-    String process;
     String reject_reason;
+    String process;
     String create_time;
     String update_time;
 
@@ -30,28 +29,20 @@ public class Leave {
         this.releaseUid = releaseUid;
     }
 
-    public String getReason() {
-        return reason;
+    public String getDepartmentUid() {
+        return departmentUid;
     }
 
-    public void setReason(String reason) {
-        this.reason = reason;
+    public void setDepartmentUid(String departmentUid) {
+        this.departmentUid = departmentUid;
     }
 
-    public String getStart_time() {
-        return start_time;
+    public String getChangeReason() {
+        return changeReason;
     }
 
-    public void setStart_time(String start_time) {
-        this.start_time = start_time;
-    }
-
-    public String getEnd_time() {
-        return end_time;
-    }
-
-    public void setEnd_time(String end_time) {
-        this.end_time = end_time;
+    public void setChangeReason(String changeReason) {
+        this.changeReason = changeReason;
     }
 
     public int getStatus() {
@@ -78,20 +69,20 @@ public class Leave {
         this.nextUid = nextUid;
     }
 
-    public String getProcess() {
-        return process;
-    }
-
-    public void setProcess(String process) {
-        this.process = process;
-    }
-
     public String getReject_reason() {
         return reject_reason;
     }
 
     public void setReject_reason(String reject_reason) {
         this.reject_reason = reject_reason;
+    }
+
+    public String getProcess() {
+        return process;
+    }
+
+    public void setProcess(String process) {
+        this.process = process;
     }
 
     public String getCreate_time() {
@@ -110,21 +101,18 @@ public class Leave {
         this.update_time = update_time;
     }
 
-
-
     @Override
     public String toString() {
-        return "Leave{" +
+        return "ChangeDepartmentByTeacher{" +
                 "uid='" + uid + '\'' +
                 ", releaseUid='" + releaseUid + '\'' +
-                ", reason='" + reason + '\'' +
-                ", start_time='" + start_time + '\'' +
-                ", end_time='" + end_time + '\'' +
+                ", departmentUid='" + departmentUid + '\'' +
+                ", changeReason='" + changeReason + '\'' +
                 ", status=" + status +
                 ", count=" + count +
                 ", nextUid='" + nextUid + '\'' +
-                ", process='" + process + '\'' +
                 ", reject_reason='" + reject_reason + '\'' +
+                ", process='" + process + '\'' +
                 ", create_time='" + create_time + '\'' +
                 ", update_time='" + update_time + '\'' +
                 '}';

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cshbxy.mapper.DepartmentChangeMapper">
+    <insert id="add" parameterType="ChangeDepartmentByTeacher">
+        insert into oa_sys.DepartmentChange(uid, releaseUid, departmentUid, changeReason, nextUid, process)
+        values (#{uid}, #{releaseUid}, #{departmentUid}, #{changeReason}, #{nextUid}, #{process})
+    </insert>
+    <select id="checkLastTime" parameterType="DepartmentChange" resultType="int">
+        select count(1)
+        from oa_sys.DepartmentChange
+        where releaseUid = #{releaseUid}
+          and status = 0
+        order by update_time desc
+        limit 1
+    </select>
+    <select id="findApplyList" resultType="DepartmentChange">
+        select uid,
+               departmentUid,
+               changeReason,
+               status,
+               count,
+               nextUid,
+               reject_reason,
+               process,
+               create_time,
+               update_time
+        from oa_sys.DepartmentChange
+        where releaseUid = #{releaseUid}
+          and status >= 0
+        order by create_time desc
+    </select>
+    <select id="findDepartmentChangeByUid" resultType="DepartmentChange">
+        select uid,
+               releaseUid,
+               departmentUid,
+               changeReason,
+               status,
+               count,
+               nextUid,
+               reject_reason,
+               process,
+               create_time,
+               update_time
+        from oa_sys.DepartmentChange
+        where uid = #{uid}
+    </select>
+    <update id="delete">
+        update oa_sys.DepartmentChange
+        set status = -1
+        where uid = #{uid}
+    </update>
+    <select id="findWaitList" resultType="DepartmentChange">
+        select uid,
+               releaseUid,
+               departmentUid,
+               changeReason,
+               status,
+               count,
+               process,
+               create_time,
+               update_time
+        from oa_sys.DepartmentChange
+        where status = 0
+          and nextUid = #{nextUid}
+        order by create_time desc
+    </select>
+    <update id="resolve" parameterType="DepartmentChange">
+        update oa_sys.DepartmentChange
+        set count   = #{count},
+            status  = #{status},
+            nextUid = #{nextUid}
+        where uid = #{uid}
+    </update>
+    <update id="reject" parameterType="DepartmentChange">
+        update oa_sys.DepartmentChange
+        set status        = 2,
+            reject_reason = #{reject_reason},
+            nextUid       = null
+        where uid = #{uid}
+    </update>
+</mapper>

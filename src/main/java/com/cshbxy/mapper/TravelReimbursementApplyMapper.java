@@ -1,6 +1,5 @@
 package com.cshbxy.mapper;
 
-import com.cshbxy.dao.Leave;
 import com.cshbxy.dao.TravelReimbursement;
 
 import java.util.List;

@@ -4,14 +4,15 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.cshbxy.mapper.ProcessMapper">
     <select id="processQueryByUid" resultType="Process">
-        select uid, name, process, create_time, update_time
+        select uid, name, process, Alias, status, create_time, update_time
         from oa_sys.process
         where uid = #{uid}
     </select>
     <select id="processQueryByName" resultType="Process">
-        select uid, name, process, create_time, update_time
+        select uid, name, process, Alias, create_time, update_time
         from oa_sys.process
         where name = #{name}
+          and status = 0
     </select>
     <update id="processUpdate" parameterType="Process">
         update oa_sys.process

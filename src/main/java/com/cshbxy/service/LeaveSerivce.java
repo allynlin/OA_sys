@@ -5,21 +5,21 @@ import com.cshbxy.dao.Leave;
 import java.util.List;
 
 public interface LeaveSerivce {
-    public int addLeave(Leave leave);
+    public int add(Leave leave);
 
-    public Leave checkLastTimeLeave(String releaseUid);
+    public Leave checkLastTime(String releaseUid);
 
-    public int deleteLeave(String uid);
+    public int delete(String uid);
 
-    public List<Leave> findLeaveList(String releaseUid);
+    public List<Leave> findApplyList(String releaseUid);
 
     public Leave findLeaveByUid(String uid);
 
-    public int updateLeave(Leave leave);
+    public int update(Leave leave);
 
-    public List<Leave> findLeaveWaitList(String nextUid);
+    public List<Leave> findWaitList(String nextUid);
 
-    public int resolveLeave(Leave leave);
+    public int resolve(Leave leave);
 
-    public int rejectLeave(Leave leave);
+    public int reject(Leave leave);
 }
