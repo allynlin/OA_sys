@@ -3,10 +3,7 @@ package com.cshbxy.controller;
 import com.cshbxy.Util.JwtUtil;
 import com.cshbxy.Util.Process;
 import com.cshbxy.Util.findRealeName;
-import com.cshbxy.dao.FileName;
-import com.cshbxy.dao.Message;
-import com.cshbxy.dao.Message_body;
-import com.cshbxy.dao.Travel;
+import com.cshbxy.dao.*;
 import com.cshbxy.service.FileUploadService;
 import com.cshbxy.service.TravelService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -245,6 +242,20 @@ public class TravelController {
         } catch (Exception e) {
             e.printStackTrace();
             return new Message(500, "未知错误");
+        }
+    }
+
+    // 刷新当前申请
+    @RequestMapping(value = "/refresh", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public Message_body refresh(String uid) {
+        try {
+            // 通过接收到的 uid 查询本条申请记录
+            Travel apply = travelService.findTravelByUid(uid);
+            return new Message_body(200, "刷新成功", apply);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Message_body(500, "未知错误");
         }
     }
 }

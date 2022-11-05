@@ -300,4 +300,19 @@ public class DepartmentChangeController {
             return new Message(500, "未知错误");
         }
     }
+
+    // 刷新当前申请
+    @RequestMapping(value = "/refesh", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public Message_body refesh(String uid) {
+        try {
+            // 通过接收到的 uid 查询本条申请记录
+            DepartmentChange apply = departmentChangeService.findDepartmentChangeByUid(uid);
+            apply.setDepartmentUid(findRealeName.findName(apply.getDepartmentUid()));
+            return new Message_body(200, "刷新成功", apply);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Message_body(500, "未知错误");
+        }
+    }
 }

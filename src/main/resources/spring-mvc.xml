@@ -82,26 +82,31 @@ http://www.springframework.org/schema/context/spring-context.xsd">
             <mvc:mapping path="/apply/departmentChange/checkLastTime"/>
             <mvc:mapping path="/apply/departmentChange/findApplyList"/>
             <mvc:mapping path="/apply/departmentChange/delete"/>
+            <mvc:mapping path="/apply/departmentChange/refesh"/>
             <!--请假模块-->
             <mvc:mapping path="/apply/leave/add"/>
             <mvc:mapping path="/apply/leave/findApplyList"/>
             <mvc:mapping path="/apply/leave/delete"/>
             <mvc:mapping path="/apply/leave/checkLastTime"/>
             <mvc:mapping path="/apply/leave/update"/>
+            <mvc:mapping path="/apply/leave/refesh"/>
             <!--采购申请模块-->
             <mvc:mapping path="/apply/procurement/add"/>
             <mvc:mapping path="/apply/procurement/findApplyList"/>
             <mvc:mapping path="/apply/procurement/delete"/>
             <mvc:mapping path="/apply/procurement/update"/>
+            <mvc:mapping path="/apply/procurement/refesh"/>
             <!--差旅报销模块-->
             <mvc:mapping path="/apply/travel/add"/>
             <mvc:mapping path="/apply/travel/findApplyList"/>
             <mvc:mapping path="/apply/travel/delete"/>
+            <mvc:mapping path="/apply/travel/refesh"/>
             <!--工作报告模块-->
             <mvc:mapping path="/apply/workReport/add"/>
             <mvc:mapping path="/apply/workReport/checkLastTime"/>
             <mvc:mapping path="/apply/workReport/findApplyList"/>
             <mvc:mapping path="/apply/workReport/delete"/>
+            <mvc:mapping path="/apply/workReport/refesh"/>
             <!--指定拦截器类路径-->
             <bean class="com.cshbxy.interceptor.Interceptor_Token_Employee"/>
         </mvc:interceptor>

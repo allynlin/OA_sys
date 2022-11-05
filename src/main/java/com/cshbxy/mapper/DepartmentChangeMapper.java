@@ -6,20 +6,20 @@ import java.util.List;
 
 public interface DepartmentChangeMapper {
 
-    public int add(DepartmentChange departmentChange);
+    int add(DepartmentChange departmentChange);
 
-    public int checkLastTime(String releaseUid);
+    int checkLastTime(String releaseUid);
 
-    public List<DepartmentChange> findApplyList(String releaseUid);
+    List<DepartmentChange> findApplyList(String releaseUid);
 
-    public DepartmentChange findDepartmentChangeByUid(String uid);
+    DepartmentChange findDepartmentChangeByUid(String uid);
 
-    public int delete(String uid);
+    int delete(String uid);
 
-    public List<DepartmentChange> findWaitList(String nextUid);
+    List<DepartmentChange> findWaitList(String nextUid);
 
-    public int resolve(DepartmentChange departmentChange);
+    int resolve(DepartmentChange departmentChange);
 
-    public int reject(DepartmentChange departmentChange);
+    int reject(DepartmentChange departmentChange);
 
 }
