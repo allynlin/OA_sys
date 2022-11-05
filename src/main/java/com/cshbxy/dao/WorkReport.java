@@ -7,6 +7,7 @@ public class WorkReport {
     int count;
     String nextUid;
     String reject_reason;
+    String process;
     String create_time;
     String update_time;
 
@@ -58,6 +59,14 @@ public class WorkReport {
         this.reject_reason = reject_reason;
     }
 
+    public String getProcess() {
+        return process;
+    }
+
+    public void setProcess(String process) {
+        this.process = process;
+    }
+
     public String getCreate_time() {
         return create_time;
     }
@@ -83,6 +92,7 @@ public class WorkReport {
                 ", count=" + count +
                 ", nextUid='" + nextUid + '\'' +
                 ", reject_reason='" + reject_reason + '\'' +
+                ", process='" + process + '\'' +
                 ", create_time='" + create_time + '\'' +
                 ", update_time='" + update_time + '\'' +
                 '}';

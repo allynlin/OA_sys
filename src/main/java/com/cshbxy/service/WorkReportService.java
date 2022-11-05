@@ -5,19 +5,19 @@ import com.cshbxy.dao.WorkReport;
 import java.util.List;
 
 public interface WorkReportService {
-    public int addWorkReport(WorkReport workReport);
+    public int add(WorkReport workReport);
 
-    public WorkReport checkLastWeekWorkReport(String releaseUid);
+    public WorkReport checkLastTime(String releaseUid);
 
-    public List<WorkReport> findWorkReportList(String releaseUid);
+    public List<WorkReport> findApplyList(String releaseUid);
 
     public WorkReport findWorkReportByUid(String uid);
 
-    public int deleteByUid(String uid);
+    public int delete(String uid);
 
-    public List<WorkReport> findWorkReportWaitList(String nextUid);
+    public List<WorkReport> findWaitList(String nextUid);
 
-    public int resolveWorkReport(WorkReport workReport);
+    public int resolve(WorkReport workReport);
 
-    public int rejectWorkReport(WorkReport workReport);
+    public int reject(WorkReport workReport);
 }

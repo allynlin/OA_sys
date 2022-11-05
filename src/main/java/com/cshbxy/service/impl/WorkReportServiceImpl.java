@@ -15,18 +15,18 @@ public class WorkReportServiceImpl implements WorkReportService {
     private WorkReportMapper workReportMapper;
 
     @Override
-    public int addWorkReport(WorkReport workReport) {
-        return workReportMapper.addWorkReport(workReport);
+    public int add(WorkReport workReport) {
+        return workReportMapper.add(workReport);
     }
 
     @Override
-    public WorkReport checkLastWeekWorkReport(String releaseUid) {
-        return workReportMapper.checkLastWeekWorkReport(releaseUid);
+    public WorkReport checkLastTime(String releaseUid) {
+        return workReportMapper.checkLastTime(releaseUid);
     }
 
     @Override
-    public List<WorkReport> findWorkReportList(String releaseUid) {
-        return workReportMapper.findWorkReportList(releaseUid);
+    public List<WorkReport> findApplyList(String releaseUid) {
+        return workReportMapper.findApplyList(releaseUid);
     }
 
     @Override
@@ -35,22 +35,22 @@ public class WorkReportServiceImpl implements WorkReportService {
     }
 
     @Override
-    public int deleteByUid(String uid) {
-        return workReportMapper.deleteByUid(uid);
+    public int delete(String uid) {
+        return workReportMapper.delete(uid);
     }
 
     @Override
-    public List<WorkReport> findWorkReportWaitList(String nextUid) {
-        return workReportMapper.findWorkReportWaitList(nextUid);
+    public List<WorkReport> findWaitList(String nextUid) {
+        return workReportMapper.findWaitList(nextUid);
     }
 
     @Override
-    public int resolveWorkReport(WorkReport workReport) {
-        return workReportMapper.resolveWorkReport(workReport);
+    public int resolve(WorkReport workReport) {
+        return workReportMapper.resolve(workReport);
     }
 
     @Override
-    public int rejectWorkReport(WorkReport workReport) {
-        return workReportMapper.rejectWorkReport(workReport);
+    public int reject(WorkReport workReport) {
+        return workReportMapper.reject(workReport);
     }
 }

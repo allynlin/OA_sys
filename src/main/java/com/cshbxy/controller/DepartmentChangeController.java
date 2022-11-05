@@ -19,7 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static com.cshbxy.Util.DeleteFiles.*;
+import static com.cshbxy.Util.DeleteFiles.hideFiles;
+import static com.cshbxy.Util.DeleteFiles.updateFiles;
 
 @Controller
 @RequestMapping("/apply/departmentChange")
