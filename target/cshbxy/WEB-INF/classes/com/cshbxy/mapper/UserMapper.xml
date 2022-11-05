@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cshbxy.mapper.UserMapper">
+    <select id="login" resultType="User" parameterType="User">
+        select uid,
+               username,
+               realeName,
+               gender,
+               tel,
+               email,
+               userType,
+               departmentUid,
+               status,
+               create_time,
+               update_time
+        from oa_sys.user
+        where username = #{username}
+          and password = #{password}
+          and userType = #{userType}
+    </select>
+    <select id="findRealeName" resultType="String">
+        select realeName
+        from oa_sys.user
+        where uid = #{uid}
+    </select>
+    <select id="checkUsername" parameterType="User" resultType="String">
+        select username
+        from oa_sys.user
+        where username = #{username}
+          and userType = #{userType}
+        limit 1
+    </select>
+    <insert id="add" parameterType="User">
+        insert into oa_sys.user (uid, username, password, realeName, gender, tel, email, userType, departmentUid)
+        values (#{uid}, #{username}, #{password}, #{realeName}, #{gender}, #{tel}, #{email}, #{userType},
+                #{departmentUid})
+    </insert>
+    <update id="update" parameterType="User">
+        update oa_sys.user
+        set realeName = #{realeName},
+            gender=#{gender},
+            tel=#{tel},
+            email=#{email}
+        where uid = #{uid}
+    </update>
+    <update id="delete">
+        update oa_sys.user
+        set status = -1
+        where uid = #{uid}
+    </update>
+    <select id="findUserByUid" resultType="User">
+        select uid,
+               username,
+               realeName,
+               gender,
+               tel,
+               email,
+               userType,
+               departmentUid,
+               status,
+               create_time,
+               update_time
+        from oa_sys.user
+        where uid = #{uid}
+    </select>
+    <update id="updatePassword" parameterType="User">
+        update oa_sys.user
+        set password = #{password}
+        where uid = #{uid}
+    </update>
+    <update id="updateUsername" parameterType="User">
+        update oa_sys.user
+        set username = #{username}
+        where uid = #{uid}
+    </update>
+    <update id="updateStatus" parameterType="User">
+        update oa_sys.user
+        set status = #{status}
+        where uid = #{uid}
+    </update>
+    <select id="findUserType" resultType="User">
+        select uid, realeName
+        from oa_sys.user
+        where userType = 'Department'
+    </select>
+    <select id="findDepartmentUid" resultType="String">
+        select departmentUid
+        from oa_sys.user
+        where uid = #{uid}
+    </select>
+    <update id="updateDepartment" parameterType="User">
+        update oa_sys.user
+        set departmentUid = #{departmentUid}
+        where uid = #{uid}
+    </update>
+</mapper>

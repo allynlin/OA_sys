@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cshbxy.mapper.WorkReportMapper">
+    <insert id="add" parameterType="WorkReport">
+        insert into oa_sys.workreport(uid, releaseUid, nextUid, process)
+        values (#{uid}, #{releaseUid}, #{nextUid}, #{process})
+    </insert>
+    <select id="checkLastTime" parameterType="WorkReport" resultType="WorkReport">
+        select uid, create_time, update_time
+        from oa_sys.workreport
+        where releaseUid = #{releaseUid}
+          and status = 0
+        order by create_time desc
+        limit 1
+    </select>
+    <select id="findApplyList" resultType="WorkReport">
+        select uid,
+               releaseUid,
+               status,
+               count,
+               nextUid,
+               reject_reason,
+               process,
+               create_time,
+               update_time
+        from oa_sys.workreport
+        where releaseUid = #{releaseUid}
+          and status >= 0
+        order by create_time desc
+    </select>
+    <select id="findWorkReportByUid" resultType="WorkReport">
+        select uid,
+               releaseUid,
+               status,
+               count,
+               nextUid,
+               reject_reason,
+               process,
+               create_time,
+               update_time
+        from oa_sys.workreport
+        where uid = #{uid}
+    </select>
+    <update id="delete">
+        update oa_sys.workreport
+        set status = -1
+        where uid = #{uid}
+    </update>
+    <select id="findWaitList" resultType="WorkReport">
+        select uid,
+               releaseUid,
+               status,
+               count,
+               nextUid,
+               reject_reason,
+               process,
+               create_time,
+               update_time
+        from oa_sys.workreport
+        where nextUid = #{nextUid}
+          and status = 0
+        order by create_time desc
+    </select>
+    <update id="resolve" parameterType="WorkReport">
+        update oa_sys.workreport
+        set status  = #{status},
+            count   = #{count},
+            nextUid = #{nextUid}
+        where uid = #{uid}
+    </update>
+    <update id="reject" parameterType="WorkReport">
+        update oa_sys.workreport
+        set status        = 2,
+            nextUid       = null,
+            reject_reason = #{reject_reason}
+        where uid = #{uid}
+    </update>
+</mapper>

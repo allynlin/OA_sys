@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cshbxy.mapper.ProcurementMapper">
+    <insert id="add" parameterType="Procurement">
+        insert into oa_sys.Procurement (uid, releaseUid, items, price, reason, nextUid, process)
+        values (#{uid}, #{releaseUid}, #{items}, #{price}, #{reason}, #{nextUid}, #{process})
+    </insert>
+    <update id="delete">
+        update oa_sys.Procurement
+        set status = -1
+        where uid = #{uid}
+    </update>
+    <select id="findApplyList" resultType="Procurement">
+        select uid,
+               items,
+               price,
+               reason,
+               status,
+               count,
+               nextUid,
+               reject_reason,
+               process,
+               create_time,
+               update_time
+        from oa_sys.Procurement
+        where releaseUid = #{releaseUid}
+          and status >= 0
+        order by update_time desc
+    </select>
+    <select id="findProcurementByUid" resultType="Procurement">
+        select uid,
+               releaseUid,
+               items,
+               price,
+               reason,
+               status,
+               count,
+               nextUid,
+               reject_reason,
+               process,
+               create_time,
+               update_time
+        from oa_sys.Procurement
+        where uid = #{uid}
+    </select>
+    <update id="update" parameterType="Procurement">
+        update oa_sys.Procurement
+        set items  = #{items},
+            price  = #{price},
+            reason = #{reason},
+            status = #{status},
+            count  = #{count},
+            nextUid= #{nextUid},
+            process= #{process}
+        where uid = #{uid}
+    </update>
+    <select id="findWaitList" resultType="Procurement">
+        select uid,
+               releaseUid,
+               items,
+               price,
+               reason,
+               status,
+               count,
+               reject_reason,
+               process,
+               create_time,
+               update_time
+        from oa_sys.Procurement
+        where nextUid = #{nextUid}
+          and status = 0
+        order by update_time desc
+    </select>
+    <update id="resolve" parameterType="Procurement">
+        update oa_sys.Procurement
+        set status = #{status},
+            count  = #{count},
+            nextUid= #{nextUid}
+        where uid = #{uid}
+    </update>
+    <update id="reject" parameterType="Procurement">
+        update oa_sys.Procurement
+        set status        = 2,
+            nextUid= null,
+            reject_reason = #{reject_reason}
+        where uid = #{uid}
+    </update>
+</mapper>

@@ -1,18 +1,18 @@
 package com.cshbxy.dao;
 
 public class Leave {
-    String uid;
-    String releaseUid;
-    String reason;
-    String start_time;
-    String end_time;
-    int status;
-    int count;
-    String nextUid;
-    String process;
-    String reject_reason;
-    String create_time;
-    String update_time;
+    private String uid;
+    private String releaseUid;
+    private String reason;
+    private String start_time;
+    private String end_time;
+    private int status;
+    private int count;
+    private String nextUid;
+    private String process;
+    private String reject_reason;
+    private String create_time;
+    private String update_time;
 
     public String getUid() {
         return uid;

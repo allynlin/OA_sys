@@ -10,8 +10,6 @@ public interface FileUploadService {
 
     public int dropUploadFile(String uid);
 
-    public int dropUploadFileByRowUid(FileName fileName);
-
     public int updateUploadFile(FileName fileName);
 
     public List<FileName> checkLastTimeUploadFiles(FileName fileName);

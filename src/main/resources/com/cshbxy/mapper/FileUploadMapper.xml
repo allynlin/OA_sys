@@ -7,23 +7,18 @@
         insert into oa_sys.filename(uid, ReleaseUid, TableUid, FileName, oldFileName, create_time)
         values (#{uid}, #{ReleaseUid}, #{TableUid}, #{FileName}, #{oldFileName}, #{create_time})
     </insert>
-    <delete id="dropUploadFile" parameterType="FileName">
-        delete
-        from oa_sys.filename
+    <update id="dropUploadFile" parameterType="FileName">
+        update oa_sys.filename
+        set status = -1
         where uid = #{uid}
-    </delete>
-    <delete id="dropUploadFileByRowUid" parameterType="FileName">
-        delete
-        from oa_sys.filename
-        where TableUid = #{TableUid}
-          and RowUid = #{RowUid}
-    </delete>
+    </update>
     <update id="updateUploadFile" parameterType="FileName">
         update oa_sys.filename
         set RowUid = #{RowUid}
         where TableUid = #{TableUid}
           and ReleaseUid = #{ReleaseUid}
           and RowUid is null
+          and status = 0
         order by create_time desc
     </update>
     <select id="checkLastTimeUploadFiles" parameterType="FileName" resultType="FileName">
@@ -32,6 +27,7 @@
         where ReleaseUid = #{ReleaseUid}
           and TableUid = #{TableUid}
           and RowUid is null
+          and status = 0
         order by create_time desc
     </select>
     <select id="findFileOldNameByFileName" resultType="String">
@@ -44,6 +40,7 @@
         from oa_sys.filename
         where TableUid = #{TableUid}
           and RowUid = #{RowUid}
+          and status = 0
     </select>
     <select id="findFileCreateTimeByFileName" resultType="String">
         select create_time

@@ -25,11 +25,6 @@ public class FileUploadServiceImpl implements FileUploadService {
     }
 
     @Override
-    public int dropUploadFileByRowUid(FileName fileName) {
-        return fileUploadMapper.dropUploadFileByRowUid(fileName);
-    }
-
-    @Override
     public int updateUploadFile(FileName fileName) {
         return fileUploadMapper.updateUploadFile(fileName);
     }

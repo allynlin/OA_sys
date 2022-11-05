@@ -1,7 +1,7 @@
 package com.cshbxy.Util;
 
 import com.cshbxy.service.ProcessService;
-import com.cshbxy.service.TeacherService;
+import com.cshbxy.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,11 +14,11 @@ public class Process {
         Process.processService = processService;
     }
 
-    private static TeacherService teacherService;
+    private static UserService userService;
 
     @Autowired
-    public void setTeacherService(TeacherService teacherService) {
-        Process.teacherService = teacherService;
+    public void setUserService(UserService userService) {
+        Process.userService = userService;
     }
 
     public static String getProcess(String processName, String releaseUid) {
@@ -28,7 +28,7 @@ public class Process {
         // 如果字符串中有 nowDepartment
         if (pro.contains("nowDepartment")) {
             // 将 nowDepartment 替换为当前部门
-            pro = pro.replace("nowDepartment", teacherService.findDepartmentUid(releaseUid));
+            pro = pro.replace("nowDepartment", userService.findDepartmentUid(releaseUid));
         }
         return pro;
     }

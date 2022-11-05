@@ -1,45 +1,20 @@
 package com.cshbxy.Util;
 
-import com.cshbxy.service.DepartmentService;
-import com.cshbxy.service.LeaderService;
-import com.cshbxy.service.TeacherService;
+import com.cshbxy.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class findRealeName {
 
-    private static DepartmentService departmentService;
+    private static UserService userService;
 
     @Autowired
-    public void setDepartmentService(DepartmentService departmentService) {
-        findRealeName.departmentService = departmentService;
-    }
-
-    private static TeacherService teacherService;
-
-    @Autowired
-    public void setTeacherService(TeacherService teacherService) {
-        findRealeName.teacherService = teacherService;
-    }
-
-    private static LeaderService leaderService;
-
-    @Autowired
-    public void setLeaderService(LeaderService leaderService) {
-        findRealeName.leaderService = leaderService;
+    public void setUserService(UserService userService) {
+        findRealeName.userService = userService;
     }
 
     public static String findName(String uid) {
-        // 将 uid 依次在 department, leader, teacher 表中查找，找到返回真实姓名，否则返回 null, 用于判断是否存在该用户
-        if (teacherService.findRealeName(uid) != null) {
-            return teacherService.findRealeName(uid);
-        } else if (departmentService.findRealeName(uid) != null) {
-            return departmentService.findRealeName(uid);
-        } else if (leaderService.findRealeName(uid) != null) {
-            return leaderService.findRealeName(uid);
-        } else {
-            return null;
-        }
+        return userService.findRealeName(uid);
     }
 }

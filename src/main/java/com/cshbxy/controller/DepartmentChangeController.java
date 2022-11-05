@@ -6,7 +6,7 @@ import com.cshbxy.Util.findRealeName;
 import com.cshbxy.dao.*;
 import com.cshbxy.service.DepartmentChangeService;
 import com.cshbxy.service.FileUploadService;
-import com.cshbxy.service.TeacherService;
+import com.cshbxy.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -33,7 +33,7 @@ public class DepartmentChangeController {
     private DepartmentChangeService departmentChangeService;
 
     @Autowired
-    private TeacherService teacherService;
+    private UserService userService;
 
     @Autowired
     private FileUploadService fileUploadService;
@@ -45,6 +45,11 @@ public class DepartmentChangeController {
         try {
             // 解析 token，获取 uid
             String releaseUid = JwtUtil.getUserUid(request.getHeader("Authorization"));
+            // 查看变更的部门是不是当前部门
+            String departmentUid = userService.findDepartmentUid(releaseUid);
+            if (departmentUid.equals(apply.getDepartmentUid())) {
+                return new Message(400, "不能变更到当前部门");
+            }
             // 检查是否有正在审批中的部门申请，如果有，不能再次提交
             int i = departmentChangeService.checkLastTime(releaseUid);
             if (i > 0) {
@@ -239,10 +244,10 @@ public class DepartmentChangeController {
                 apply.setNextUid(null);
                 int i = departmentChangeService.resolve(apply);
                 // 修改教师表中的部门
-                Teacher teacher = new Teacher();
-                teacher.setUid(apply.getReleaseUid());
-                teacher.setDepartmentUid(apply.getDepartmentUid());
-                int j = teacherService.updateDepartment(teacher);
+                User user = new User();
+                user.setUid(apply.getReleaseUid());
+                user.setDepartmentUid(apply.getDepartmentUid());
+                int j = userService.updateDepartment(user);
                 if (i > 0 && j > 0) {
                     return new Message(200, "审批通过");
                 } else if (i > 0) {

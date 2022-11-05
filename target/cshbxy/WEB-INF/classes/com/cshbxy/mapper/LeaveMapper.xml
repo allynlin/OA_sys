@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cshbxy.mapper.LeaveMapper">
+    <insert id="add" parameterType="Leave">
+        insert into oa_sys.leave (uid, start_time, end_time, reason, nextUid, releaseUid, process)
+        values (#{uid}, #{start_time}, #{end_time}, #{reason}, #{nextUid}, #{releaseUid}, #{process})
+    </insert>
+    <select id="checkLastTime" resultType="Leave">
+        select uid,
+               releaseUid,
+               reason,
+               start_time,
+               end_time,
+               status,
+               count,
+               nextUid,
+               reject_reason,
+               process,
+               create_time,
+               update_time
+        from oa_sys.leave
+        where releaseUid = #{releaseUid}
+          and status >= 0
+        order by update_time desc
+        limit 1
+    </select>
+    <update id="delete">
+        update oa_sys.leave
+        set status = -1
+        where uid = #{uid}
+    </update>
+    <select id="findApplyList" resultType="Leave">
+        select uid,
+               reason,
+               start_time,
+               end_time,
+               status,
+               count,
+               nextUid,
+               reject_reason,
+               process,
+               create_time,
+               update_time
+        from oa_sys.leave
+        where releaseUid = #{releaseUid}
+          and status >= 0
+        order by update_time desc
+    </select>
+    <select id="findLeaveByUid" resultType="Leave">
+        select uid,
+               releaseUid,
+               reason,
+               start_time,
+               end_time,
+               status,
+               count,
+               nextUid,
+               reject_reason,
+               process,
+               create_time,
+               update_time
+        from oa_sys.leave
+        where uid = #{uid}
+    </select>
+    <update id="update" parameterType="Leave">
+        update oa_sys.leave
+        set reason     = #{reason},
+            start_time = #{start_time},
+            end_time   = #{end_time},
+            status     = #{status},
+            count      = #{count},
+            nextUid= #{nextUid},
+            process    = #{process}
+        where uid = #{uid}
+    </update>
+    <select id="findWaitList" resultType="Leave">
+        select uid,
+               releaseUid,
+               reason,
+               start_time,
+               end_time,
+               status,
+               count,
+               process,
+               create_time,
+               update_time
+        from oa_sys.leave
+        where nextUid = #{nextUid}
+          and status = 0
+        order by update_time desc
+    </select>
+    <update id="resolve" parameterType="Leave">
+        update oa_sys.leave
+        set status = #{status},
+            count  =#{count},
+            nextUid= #{nextUid}
+        where uid = #{uid}
+    </update>
+    <update id="reject" parameterType="Leave">
+        update oa_sys.leave
+        set status        = 2,
+            nextUid= null,
+            reject_reason = #{reject_reason}
+        where uid = #{uid}
+    </update>
+</mapper>

@@ -114,10 +114,8 @@ public class FileUploadController {
             String create_time = fileUploadService.findFileCreateTimeByFileName(fileName);
             // 分离 create_time 中的日期 yyyy-MM-dd
             String substring = create_time.substring(0, 10);
-            // 获取存放文件在服务器中的路径,C 盘下的 upload 文件夹
-            String realPath = "C:\\upload\\" + substring;
-            // 在当前路径下删除文件
-            File file = new File(realPath + "\\" + fileName);
+            // 获取存放文件在服务器中的路径,C 盘下的 upload 文件夹,在当前路径下删除文件
+            File file = new File("C:\\upload\\" + substring + "\\" + fileName);
             if (file.exists()) {
                 file.delete();
             }

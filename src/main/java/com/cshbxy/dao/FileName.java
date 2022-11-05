@@ -7,6 +7,7 @@ public class FileName {
     String RowUid;
     String FileName;
     String oldFileName;
+    int status;
     String create_time;
     String update_time;
 
@@ -58,6 +59,14 @@ public class FileName {
         this.oldFileName = oldFileName;
     }
 
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
     public String getCreate_time() {
         return create_time;
     }
@@ -83,6 +92,7 @@ public class FileName {
                 ", RowUid='" + RowUid + '\'' +
                 ", FileName='" + FileName + '\'' +
                 ", oldFileName='" + oldFileName + '\'' +
+                ", status=" + status +
                 ", create_time='" + create_time + '\'' +
                 ", update_time='" + update_time + '\'' +
                 '}';

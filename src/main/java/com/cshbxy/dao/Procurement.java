@@ -1,18 +1,18 @@
 package com.cshbxy.dao;
 
 public class Procurement {
-    String uid;
-    String releaseUid;
-    String items;
-    String price;
-    String reason;
-    int status;
-    int count;
-    String nextUid;
-    String reject_reason;
-    String process;
-    String create_time;
-    String update_time;
+    private String uid;
+    private String releaseUid;
+    private String items;
+    private String price;
+    private String reason;
+    private int status;
+    private int count;
+    private String nextUid;
+    private String reject_reason;
+    private String process;
+    private String create_time;
+    private String update_time;
 
     public String getUid() {
         return uid;

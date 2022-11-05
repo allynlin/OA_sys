@@ -1,13 +1,13 @@
 package com.cshbxy.dao;
 
 public class Process {
-    String uid;
-    String name;
-    String process;
-    String Alias;
-    int status;
-    String create_time;
-    String update_time;
+    private String uid;
+    private String name;
+    private String process;
+    private String Alias;
+    private int status;
+    private String create_time;
+    private String update_time;
 
     public String getName() {
         return name;
