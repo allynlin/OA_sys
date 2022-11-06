@@ -252,6 +252,7 @@ public class TravelController {
         try {
             // 通过接收到的 uid 查询本条申请记录
             Travel apply = travelService.findTravelByUid(uid);
+            apply.setReleaseUid(findRealeName.findName(apply.getReleaseUid()));
             return new Message_body(200, "刷新成功", apply);
         } catch (Exception e) {
             e.printStackTrace();

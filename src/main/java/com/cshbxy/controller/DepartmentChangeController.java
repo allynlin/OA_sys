@@ -308,6 +308,7 @@ public class DepartmentChangeController {
         try {
             // 通过接收到的 uid 查询本条申请记录
             DepartmentChange apply = departmentChangeService.findDepartmentChangeByUid(uid);
+            apply.setReleaseUid(findRealeName.findName(apply.getReleaseUid()));
             apply.setDepartmentUid(findRealeName.findName(apply.getDepartmentUid()));
             return new Message_body(200, "刷新成功", apply);
         } catch (Exception e) {
