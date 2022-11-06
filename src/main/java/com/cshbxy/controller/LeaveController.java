@@ -169,6 +169,9 @@ public class LeaveController {
             String process = Process.getProcess(processName, releaseUid);
             apply.setProcess(process);
             apply.setNextUid(Process.getProcessFirst(process));
+            apply.setStart_time(newApply.getStart_time());
+            apply.setEnd_time(newApply.getEnd_time());
+            apply.setReason(newApply.getReason());
             // 修改数据库
             int i = leaveSerivce.update(apply);
             if (i == 1) {

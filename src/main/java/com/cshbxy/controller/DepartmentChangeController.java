@@ -302,9 +302,9 @@ public class DepartmentChangeController {
     }
 
     // 刷新当前申请
-    @RequestMapping(value = "/refesh", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/refresh", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public Message_body refesh(String uid) {
+    public Message_body refresh(String uid) {
         try {
             // 通过接收到的 uid 查询本条申请记录
             DepartmentChange apply = departmentChangeService.findDepartmentChangeByUid(uid);

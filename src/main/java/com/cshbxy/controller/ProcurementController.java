@@ -145,6 +145,9 @@ public class ProcurementController {
             String process = Process.getProcess(processName, releaseUid);
             apply.setProcess(process);
             apply.setNextUid(Process.getProcessFirst(process));
+            apply.setPrice(newApply.getPrice());
+            apply.setReason(newApply.getReason());
+            apply.setItems(newApply.getItems());
             // 修改数据库
             int i = procurementSerivce.update(apply);
             if (i == 1) {
