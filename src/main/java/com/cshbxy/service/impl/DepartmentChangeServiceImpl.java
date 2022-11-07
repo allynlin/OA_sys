@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service("ApplyService")
+@Service("DepartmentChangeService")
 public class DepartmentChangeServiceImpl implements DepartmentChangeService {
 
     @Autowired
