@@ -97,11 +97,11 @@ public class FileUploadController {
             if (!file.isEmpty()) {
                 String uploadResult = upload(userUid, tableUid, file);
                 if (uploadResult.equals("文件上传失败")) {
-                    return new Message_body(400, "文件上传失败", null);
+                    return new Message_body(400, I18nUtil.getMessage("uploadFail"), null);
                 }
-                return new Message_body(200, "文件上传成功", uploadResult);
+                return new Message_body(200, I18nUtil.getMessage("uploadSuccess"), uploadResult);
             }
-            return new Message_body(400, "文件上传失败");
+            return new Message_body(400, I18nUtil.getMessage("uploadFail"));
         } catch (Exception e) {
             e.printStackTrace();
             return new Message_body(500, I18nUtil.getMessage("systemError"));
@@ -125,9 +125,9 @@ public class FileUploadController {
             // 删除数据库中的文件名
             int i = fileUploadService.dropUploadFile(uid);
             if (i != 1) {
-                return new Message(400, "文件删除失败");
+                return new Message(400, I18nUtil.getMessage("deleteSuccess"));
             }
-            return new Message(200, "文件删除成功");
+            return new Message(200, I18nUtil.getMessage("deleteFail"));
         } catch (Exception e) {
             e.printStackTrace();
             return new Message(500, I18nUtil.getMessage("systemError"));
@@ -147,9 +147,9 @@ public class FileUploadController {
             fileName.setTableUid(tableUid);
             List<FileName> fileNames = fileUploadService.checkLastTimeUploadFiles(fileName);
             if (fileNames.size() > 0) {
-                return new Message_body(200, "已获取到上次上传的文件列表", fileNames);
+                return new Message_body(200, I18nUtil.getMessage("getFileListSuccess"), fileNames);
             } else {
-                return new Message_body(300, "上次没有上传文件");
+                return new Message_body(300, I18nUtil.getMessage("noFileList"));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -168,9 +168,9 @@ public class FileUploadController {
             fileName.setRowUid(RowUid);
             List<FileName> fileNames = fileUploadService.findUploadFilesByUid(fileName);
             if (fileNames.size() > 0) {
-                return new Message_body(200, "已获取到文件列表", fileNames);
+                return new Message_body(200, I18nUtil.getMessage("getFileListSuccess"), fileNames);
             } else {
-                return new Message_body(300, "没有文件");
+                return new Message_body(300, I18nUtil.getMessage("noFile"));
             }
         } catch (Exception e) {
             e.printStackTrace();
