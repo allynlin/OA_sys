@@ -1,5 +1,6 @@
 package com.cshbxy.controller;
 
+import com.cshbxy.Util.I18nUtil;
 import com.cshbxy.Util.JwtUtil;
 import com.cshbxy.Util.Process;
 import com.cshbxy.Util.findRealeName;
@@ -47,13 +48,13 @@ public class ProcurementController {
             apply.setReleaseUid(releaseUid);
             int result = procurementSerivce.add(apply);
             if (result == 1) {
-                return new Message(200, "提交成功");
+                return new Message(200, I18nUtil.getMessage("submitSuccess"));
             } else {
-                return new Message(400, "提交失败");
+                return new Message(400, I18nUtil.getMessage("submitFailed"));
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message(500, "未知错误");
+            return new Message(500, I18nUtil.getMessage("systemError"));
         }
     }
 
@@ -71,13 +72,13 @@ public class ProcurementController {
                 procurement.setNextUid(findRealeName.findName(procurement.getNextUid()));
             }
             if (list.size() != 0) {
-                return new Message_body(200, "查询采购记录成功", list);
+                return new Message_body(200, I18nUtil.getMessage("getProcurementListSuccess"), list);
             } else {
-                return new Message_body(300, "暂无采购记录");
+                return new Message_body(300, I18nUtil.getMessage("noProcurementList"));
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message_body(500, "未知错误");
+            return new Message_body(500, I18nUtil.getMessage("systemError"));
         }
     }
 
@@ -95,10 +96,10 @@ public class ProcurementController {
                 String name = findRealeName.findName(pro);
                 list.add(name);
             }
-            return new Message_body(200, "查询采购流程成功", list);
+            return new Message_body(200, I18nUtil.getMessage("getProcessSuccess"), list);
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message_body(500, "未知错误");
+            return new Message_body(500, I18nUtil.getMessage("systemError"));
         }
     }
 
@@ -111,18 +112,18 @@ public class ProcurementController {
             Procurement apply = procurementSerivce.findProcurementByUid(uid);
             // 判断是否为提交人
             if (!apply.getReleaseUid().equals(JwtUtil.getUserUid(request.getHeader("Authorization")))) {
-                return new Message(403, "只能删除自己提交的申请");
+                return new Message(403, I18nUtil.getMessage("stateCannotDelete"));
             }
             // 删除本条申请记录
             int i = procurementSerivce.delete(uid);
             if (i == 1) {
-                return new Message(200, "删除成功");
+                return new Message(200, I18nUtil.getMessage("deleteSuccess"));
             } else {
-                return new Message(400, "删除失败");
+                return new Message(400, I18nUtil.getMessage("deleteFail"));
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message(500, "未知错误");
+            return new Message(500, I18nUtil.getMessage("systemError"));
         }
     }
 
@@ -134,11 +135,11 @@ public class ProcurementController {
             // 通过接收到的 uid 查询本条申请记录
             Procurement apply = procurementSerivce.findProcurementByUid(newApply.getUid());
             if (apply.getStatus() != 0) {
-                return new Message(400, "当前状态不可修改");
+                return new Message(400, I18nUtil.getMessage("stateCannotUpdate"));
             }
             String releaseUid = JwtUtil.getUserUid(request.getHeader("Authorization"));
             if (!Objects.equals(apply.getReleaseUid(), releaseUid)) {
-                return new Message(403, "只能修改自己提交的申请");
+                return new Message(403, I18nUtil.getMessage("permissionDenied"));
             }
             apply.setCount(0);
             // 获取审批流程
@@ -151,13 +152,13 @@ public class ProcurementController {
             // 修改数据库
             int i = procurementSerivce.update(apply);
             if (i == 1) {
-                return new Message(200, "修改成功");
+                return new Message(200, I18nUtil.getMessage("updateSuccess"));
             } else {
-                return new Message(400, "修改失败");
+                return new Message(400, I18nUtil.getMessage("updateFail"));
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message(500, "未知错误");
+            return new Message(500, I18nUtil.getMessage("systemError"));
         }
     }
 
@@ -175,13 +176,13 @@ public class ProcurementController {
                 procurement.setReleaseUid(findRealeName.findName(procurement.getReleaseUid()));
             }
             if (list.size() != 0) {
-                return new Message_body(200, "查询采购申请成功", list);
+                return new Message_body(200, I18nUtil.getMessage("getProcurementListSuccess"), list);
             } else {
-                return new Message_body(300, "暂无采购申请");
+                return new Message_body(300, I18nUtil.getMessage("noProcurementList"));
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message_body(500, "未知错误");
+            return new Message_body(500, I18nUtil.getMessage("systemError"));
         }
     }
 
@@ -196,7 +197,7 @@ public class ProcurementController {
             Procurement apply = procurementSerivce.findProcurementByUid(uid);
             // 判断是否为下一级审批人
             if (!apply.getNextUid().equals(nowUid)) {
-                return new Message(403, "您不是当前审批人，无法审批");
+                return new Message(403, I18nUtil.getMessage("permissionDenied"));
             }
             // 查询审批流程
             String[] pros = apply.getProcess().split("\\|\\|");
@@ -217,13 +218,13 @@ public class ProcurementController {
             }
             int i = procurementSerivce.resolve(apply);
             if (i == 1) {
-                return new Message(200, "审批成功");
+                return new Message(200, I18nUtil.getMessage("resolveSuccess"));
             } else {
-                return new Message(400, "审批失败");
+                return new Message(400, I18nUtil.getMessage("resolveFail"));
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message(500, "未知错误");
+            return new Message(500, I18nUtil.getMessage("systemError"));
         }
     }
 
@@ -238,17 +239,17 @@ public class ProcurementController {
             Procurement now = procurementSerivce.findProcurementByUid(apply.getUid());
             // 判断是否为下一级审批人
             if (!now.getNextUid().equals(nowUid)) {
-                return new Message(403, "您不是当前审批人，无法审批");
+                return new Message(403, I18nUtil.getMessage("permissionDenied"));
             }
             int i = procurementSerivce.reject(apply);
             if (i == 1) {
-                return new Message(200, "驳回成功");
+                return new Message(200, I18nUtil.getMessage("rejectSuccess"));
             } else {
-                return new Message(400, "驳回失败");
+                return new Message(400, I18nUtil.getMessage("rejectFail"));
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message(500, "未知错误");
+            return new Message(500, I18nUtil.getMessage("systemError"));
         }
     }
 
@@ -260,10 +261,10 @@ public class ProcurementController {
             // 通过接收到的 uid 查询本条申请记录
             Procurement apply = procurementSerivce.findProcurementByUid(uid);
             apply.setReleaseUid(findRealeName.findName(apply.getReleaseUid()));
-            return new Message_body(200, "刷新成功", apply);
+            return new Message_body(200, I18nUtil.getMessage("refreshSuccess"), apply);
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message_body(500, "未知错误");
+            return new Message_body(500, I18nUtil.getMessage("systemError"));
         }
     }
 }

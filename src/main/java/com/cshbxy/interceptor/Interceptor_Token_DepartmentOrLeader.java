@@ -1,6 +1,7 @@
 package com.cshbxy.interceptor;
 
 import com.cshbxy.Util.CheckToken;
+import com.cshbxy.Util.I18nUtil;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,7 +19,7 @@ public class Interceptor_Token_DepartmentOrLeader extends HandlerInterceptorAdap
         // 判断是否 department
         if (CheckToken.checkIsDepartment(request.getHeader("Authorization"))) {
             if (CheckToken.checkIsLeader(request.getHeader("Authorization"))) {
-                response.getWriter().write("{\"code\":403,\"message\":\"token校验失败\"}");
+                response.getWriter().write("{\"code\":403,\"message\":\""+ I18nUtil.getMessage("tokenError")+"\"}");
                 return false;
             }
         }

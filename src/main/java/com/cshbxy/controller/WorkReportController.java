@@ -1,5 +1,6 @@
 package com.cshbxy.controller;
 
+import com.cshbxy.Util.I18nUtil;
 import com.cshbxy.Util.JwtUtil;
 import com.cshbxy.Util.Process;
 import com.cshbxy.Util.findRealeName;
@@ -85,15 +86,15 @@ public class WorkReportController {
             // 更新文件表
             boolean res = updateFiles(uid, tableUid, releaseUid);
             if (res && result == 1) {
-                return new Message(200, "提交成功");
+                return new Message(200, I18nUtil.getMessage("submitSuccess"));
             } else if (result == 1) {
-                return new Message(210, "提交成功，文件关联异常，请在申请记录中查看详情");
+                return new Message(210, I18nUtil.getMessage("submitSuccessFileFailed"));
             } else {
-                return new Message(400, "提交失败");
+                return new Message(400, I18nUtil.getMessage("submitFailed"));
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message(500, "未知错误");
+            return new Message(500, I18nUtil.getMessage("systemError"));
         }
     }
 
@@ -123,7 +124,7 @@ public class WorkReportController {
             return new Message(200, "本周未提交工作报告");
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message(500, "未知错误");
+            return new Message(500, I18nUtil.getMessage("systemError"));
         }
     }
 
@@ -141,13 +142,13 @@ public class WorkReportController {
                 workReport.setNextUid(findRealeName.findName(workReport.getNextUid()));
             }
             if (list.size() != 0) {
-                return new Message_body(200, "查询工作报告记录成功", list);
+                return new Message_body(200, I18nUtil.getMessage("getWorkReportListSuccess"), list);
             } else {
-                return new Message_body(300, "暂无工作报告记录");
+                return new Message_body(300, I18nUtil.getMessage("noWorkReportList"));
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message_body(500, "未知错误");
+            return new Message_body(500, I18nUtil.getMessage("systemError"));
         }
     }
 
@@ -166,10 +167,10 @@ public class WorkReportController {
                 String name = findRealeName.findName(pro);
                 list.add(name);
             }
-            return new Message_body(200, "查询审批流程成功", list);
+            return new Message_body(200, I18nUtil.getMessage("getProcessSuccess"), list);
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message_body(500, "未知错误");
+            return new Message_body(500, I18nUtil.getMessage("systemError"));
         }
     }
 
@@ -182,11 +183,11 @@ public class WorkReportController {
             // 通过接收到的 uid 查询本条申请记录
             WorkReport apply = workReportService.findWorkReportByUid(uid);
             if (apply.getStatus() != 0) {
-                return new Message(400, "当前状态不可删除");
+                return new Message(400, I18nUtil.getMessage("stateCannotDelete"));
             }
             // 判断是否为提交人
             if (!apply.getReleaseUid().equals(JwtUtil.getUserUid(request.getHeader("Authorization")))) {
-                return new Message(403, "只能删除自己提交的申请");
+                return new Message(403, I18nUtil.getMessage("permissionDenied"));
             }
             // 删除本条申请记录
             int i = workReportService.delete(uid);
@@ -203,15 +204,15 @@ public class WorkReportController {
                 }
             }
             if (i > 0 && result) {
-                return new Message(200, "删除成功");
+                return new Message(200, I18nUtil.getMessage("deleteSuccess"));
             } else if (i > 0) {
-                return new Message(200, "删除成功，附件删除失败");
+                return new Message(200, I18nUtil.getMessage("deleteFileListFail"));
             } else {
-                return new Message(300, "删除失败");
+                return new Message(300, I18nUtil.getMessage("deleteFail"));
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message(500, "未知错误");
+            return new Message(500, I18nUtil.getMessage("systemError"));
         }
     }
 
@@ -229,13 +230,13 @@ public class WorkReportController {
                 workReport.setReleaseUid(findRealeName.findName(workReport.getReleaseUid()));
             }
             if (list.size() != 0) {
-                return new Message_body(200, "查询工作报告记录成功", list);
+                return new Message_body(200, I18nUtil.getMessage("getWorkReportListSuccess"), list);
             } else {
-                return new Message_body(300, "暂无记录");
+                return new Message_body(300, I18nUtil.getMessage("noWorkReportList"));
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message_body(500, "未知错误");
+            return new Message_body(500, I18nUtil.getMessage("systemError"));
         }
     }
 
@@ -250,7 +251,7 @@ public class WorkReportController {
             WorkReport apply = workReportService.findWorkReportByUid(uid);
             // 判断是否为下一级审批人
             if (!apply.getNextUid().equals(nowUid)) {
-                return new Message(403, "只能审批自己的申请");
+                return new Message(403, I18nUtil.getMessage("permissionDenied"));
             }
             // 查询审批流程
             String[] pros = apply.getProcess().split("\\|\\|");
@@ -271,13 +272,13 @@ public class WorkReportController {
             }
             int i = workReportService.resolve(apply);
             if (i > 0) {
-                return new Message(200, "审批通过");
+                return new Message(200, I18nUtil.getMessage("resolveSuccess"));
             } else {
-                return new Message(400, "审批失败");
+                return new Message(400, I18nUtil.getMessage("resolveFail"));
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message(500, "未知错误");
+            return new Message(500, I18nUtil.getMessage("systemError"));
         }
     }
 
@@ -292,18 +293,18 @@ public class WorkReportController {
             WorkReport now = workReportService.findWorkReportByUid(apply.getUid());
             // 判断是否为下一级审批人
             if (!now.getNextUid().equals(nowUid)) {
-                return new Message(403, "只能审批自己的申请");
+                return new Message(403, I18nUtil.getMessage("permissionDenied"));
             }
             // 驳回
             int i = workReportService.reject(apply);
             if (i > 0) {
-                return new Message(200, "驳回成功");
+                return new Message(200, I18nUtil.getMessage("rejectSuccess"));
             } else {
-                return new Message(400, "驳回失败");
+                return new Message(400, I18nUtil.getMessage("rejectFail"));
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message(500, "未知错误");
+            return new Message(500, I18nUtil.getMessage("systemError"));
         }
     }
 
@@ -315,10 +316,10 @@ public class WorkReportController {
             // 通过接收到的 uid 查询本条申请记录
             WorkReport apply = workReportService.findWorkReportByUid(uid);
             apply.setReleaseUid(findRealeName.findName(apply.getReleaseUid()));
-            return new Message_body(200, "刷新成功", apply);
+            return new Message_body(200, I18nUtil.getMessage("refreshSuccess"), apply);
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message_body(500, "未知错误");
+            return new Message_body(500, I18nUtil.getMessage("systemError"));
         }
     }
 }

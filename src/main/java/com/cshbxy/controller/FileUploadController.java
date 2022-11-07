@@ -1,5 +1,6 @@
 package com.cshbxy.controller;
 
+import com.cshbxy.Util.I18nUtil;
 import com.cshbxy.Util.JwtUtil;
 import com.cshbxy.dao.FileName;
 import com.cshbxy.dao.Message;
@@ -103,7 +104,7 @@ public class FileUploadController {
             return new Message_body(400, "文件上传失败");
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message_body(500, "未知错误");
+            return new Message_body(500, I18nUtil.getMessage("systemError"));
         }
     }
 
@@ -129,7 +130,7 @@ public class FileUploadController {
             return new Message(200, "文件删除成功");
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message(500, "未知错误");
+            return new Message(500, I18nUtil.getMessage("systemError"));
         }
     }
 
@@ -152,7 +153,7 @@ public class FileUploadController {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message_body(500, "未知错误");
+            return new Message_body(500, I18nUtil.getMessage("systemError"));
         }
     }
 
@@ -173,7 +174,7 @@ public class FileUploadController {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message_body(500, "未知错误");
+            return new Message_body(500, I18nUtil.getMessage("systemError"));
         }
     }
 

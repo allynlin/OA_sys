@@ -1,5 +1,6 @@
 package com.cshbxy.controller;
 
+import com.cshbxy.Util.I18nUtil;
 import com.cshbxy.Util.JwtUtil;
 import com.cshbxy.dao.*;
 import com.cshbxy.service.UserService;
@@ -33,17 +34,17 @@ public class UserController {
                     case 0:
                         user.setDepartmentUid(userService.findRealeName(user.getDepartmentUid()));
                         String token = JwtUtil.sign(user.getUid(), user.getUserType());
-                        return new Message_all(200, "登录成功", user, token);
+                        return new Message_all(200, I18nUtil.getMessage("loginSuccess"), user, token);
                     case -1:
-                        return new Message_all(400, "用户已被禁用");
+                        return new Message_all(400, I18nUtil.getMessage("userDisabled"));
                     default:
-                        return new Message_all(400, "状态异常");
+                        return new Message_all(400, I18nUtil.getMessage("stateError"));
                 }
             }
-            return new Message_all(400, "用户名或密码错误", null);
+            return new Message_all(400, I18nUtil.getMessage("loginFail"), null);
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message_all(500, "未知错误");
+            return new Message_all(500, I18nUtil.getMessage("systemError"));
         }
     }
 
@@ -59,17 +60,17 @@ public class UserController {
                     case 0:
                         user.setDepartmentUid(userService.findRealeName(user.getDepartmentUid()));
                         String token = JwtUtil.sign(user.getUid(), user.getUserType());
-                        return new Message_all(200, "自动登录成功", user, token);
+                        return new Message_all(200, I18nUtil.getMessage("autoLoginSuccess"), user, token);
                     case -1:
-                        return new Message_all(400, "用户已被禁用");
+                        return new Message_all(400, I18nUtil.getMessage("userDisabled"));
                     default:
-                        return new Message_all(400, "状态异常");
+                        return new Message_all(400, I18nUtil.getMessage("stateError"));
                 }
             }
-            return new Message_all(400, "用户不存在");
+            return new Message_all(400, I18nUtil.getMessage("noUser"));
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message_all(500, "未知错误");
+            return new Message_all(500, I18nUtil.getMessage("systemError"));
         }
     }
 
@@ -82,12 +83,12 @@ public class UserController {
             apply.setUid(UUID.randomUUID().toString());
             int result = userService.add(apply);
             if (result != 1) {
-                return new Message(400, "注册失败");
+                return new Message(400, I18nUtil.getMessage("registerFail"));
             }
-            return new Message(200, "注册成功");
+            return new Message(200, I18nUtil.getMessage("registerSuccess"));
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message(500, "未知错误");
+            return new Message(500, I18nUtil.getMessage("systemError"));
         }
     }
 
@@ -98,12 +99,12 @@ public class UserController {
         try {
             String realName = userService.findRealeName(uid);
             if (realName != null) {
-                return new Message_body(200, "获取成功", realName);
+                return new Message_body(200, I18nUtil.getMessage("getSuccess"), realName);
             }
-            return new Message_body(400, "获取失败");
+            return new Message_body(400, I18nUtil.getMessage("getFail"));
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message_body(500, "未知错误");
+            return new Message_body(500, I18nUtil.getMessage("systemError"));
         }
     }
 
@@ -114,12 +115,12 @@ public class UserController {
         try {
             String username = userService.checkUsername(apply);
             if (username != null) {
-                return new Message(400, "用户名已存在");
+                return new Message(400, I18nUtil.getMessage("usernameExists"));
             }
-            return new Message(200, "用户名可用");
+            return new Message(200, I18nUtil.getMessage("usernameCanUse"));
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message(500, "未知错误");
+            return new Message(500, I18nUtil.getMessage("systemError"));
         }
     }
 
@@ -130,12 +131,12 @@ public class UserController {
         try {
             int result = userService.update(apply);
             if (result != 1) {
-                return new Message(400, "更新失败");
+                return new Message(400, I18nUtil.getMessage("updateFail"));
             }
-            return new Message(200, "更新成功");
+            return new Message(200, I18nUtil.getMessage("updateSuccess"));
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message(500, "未知错误");
+            return new Message(500, I18nUtil.getMessage("systemError"));
         }
     }
 
@@ -146,12 +147,12 @@ public class UserController {
         try {
             int result = userService.delete(uid);
             if (result != 1) {
-                return new Message(400, "删除失败");
+                return new Message(400, I18nUtil.getMessage("deleteFail"));
             }
-            return new Message(200, "删除成功");
+            return new Message(200, I18nUtil.getMessage("deleteSuccess"));
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message(500, "未知错误");
+            return new Message(500, I18nUtil.getMessage("systemError"));
         }
     }
 
@@ -162,12 +163,12 @@ public class UserController {
         try {
             int result = userService.updatePassword(apply);
             if (result != 1) {
-                return new Message(400, "更新失败");
+                return new Message(400, I18nUtil.getMessage("updateFail"));
             }
-            return new Message(200, "更新成功");
+            return new Message(200, I18nUtil.getMessage("updateSuccess"));
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message(500, "未知错误");
+            return new Message(500, I18nUtil.getMessage("systemError"));
         }
     }
 
@@ -178,16 +179,16 @@ public class UserController {
         try {
             String username = userService.checkUsername(apply);
             if (username != null) {
-                return new Message(400, "用户名已存在");
+                return new Message(400, I18nUtil.getMessage("usernameExists"));
             }
             int result = userService.updateUsername(apply);
             if (result != 1) {
-                return new Message(400, "更新失败");
+                return new Message(400, I18nUtil.getMessage("updateFail"));
             }
-            return new Message(200, "更新成功");
+            return new Message(200, I18nUtil.getMessage("updateSuccess"));
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message(500, "未知错误");
+            return new Message(500, I18nUtil.getMessage("systemError"));
         }
     }
 
@@ -198,12 +199,12 @@ public class UserController {
         try {
             int result = userService.updateStatus(apply);
             if (result != 1) {
-                return new Message(400, "更新失败");
+                return new Message(400, I18nUtil.getMessage("updateFail"));
             }
-            return new Message(200, "更新成功");
+            return new Message(200, I18nUtil.getMessage("updateSuccess"));
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message(500, "未知错误");
+            return new Message(500, I18nUtil.getMessage("systemError"));
         }
     }
 
@@ -214,12 +215,12 @@ public class UserController {
         try {
             List<User> list = userService.findUserType();
             if (list != null) {
-                return new Message_body(200, "获取成功", list);
+                return new Message_body(200, I18nUtil.getMessage("getSuccess"), list);
             }
-            return new Message_body(400, "获取失败");
+            return new Message_body(400, I18nUtil.getMessage("getFail"));
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message_body(500, "未知错误");
+            return new Message_body(500, I18nUtil.getMessage("systemError"));
         }
     }
 }

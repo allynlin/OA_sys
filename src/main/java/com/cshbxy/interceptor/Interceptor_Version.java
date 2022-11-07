@@ -1,5 +1,6 @@
 package com.cshbxy.interceptor;
 
+import com.cshbxy.Util.I18nUtil;
 import com.cshbxy.Util.Version;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -19,12 +20,12 @@ public class Interceptor_Version extends HandlerInterceptorAdapter {
         String version = request.getHeader("version");
         // 判断 version 是否为空
         if (version == null) {
-            response.getWriter().write("{\"code\":101,\"message\":\"版本校验失败\"}");
+            response.getWriter().write("{\"code\":101,\"message\":\"" + I18nUtil.getMessage("versionFail") + "\"}");
             return false;
         }
         // 判断 version 是否低于 lowVersion
         if (version.compareTo(Version.getLowVersion()) < 0) {
-            response.getWriter().write("{\"code\":103,\"message\":\"版本过低\"}");
+            response.getWriter().write("{\"code\":103,\"message\":\"" + I18nUtil.getMessage("versionLow") + "\"}");
             return true;
         }
         return true;
