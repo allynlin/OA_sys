@@ -32,4 +32,10 @@ public interface UserService {
     public String findDepartmentUid(String uid);
 
     public int updateDepartment(User user);
+
+    public List<User> findAllUser();
+
+    public List<User> findAllUserByDepartmentUid(String departmentUid);
+
+    public List<User> findProcessUser();
 }

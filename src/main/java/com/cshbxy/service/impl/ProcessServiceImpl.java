@@ -6,16 +6,13 @@ import com.cshbxy.service.ProcessService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service("ProcessService")
 public class ProcessServiceImpl implements ProcessService {
 
     @Autowired
     private ProcessMapper processMapper;
-
-    @Override
-    public Process processQueryByUid(String uid) {
-        return processMapper.processQueryByUid(uid);
-    }
 
     @Override
     public Process processQueryByName(String name) {
@@ -28,12 +25,12 @@ public class ProcessServiceImpl implements ProcessService {
     }
 
     @Override
-    public int processInsert(Process process) {
-        return processMapper.processInsert(process);
+    public int processAliasUpdate(Process process) {
+        return processMapper.processAliasUpdate(process);
     }
 
     @Override
-    public int processDelete(String uid) {
-        return processMapper.processDelete(uid);
+    public List<Process> findAllProcess() {
+        return processMapper.findAllProcess();
     }
 }

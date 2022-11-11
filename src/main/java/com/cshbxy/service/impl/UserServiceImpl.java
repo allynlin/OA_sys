@@ -78,4 +78,19 @@ public class UserServiceImpl implements UserService {
     public int updateDepartment(User user) {
         return userMapper.updateDepartment(user);
     }
+
+    @Override
+    public List<User> findAllUser() {
+        return userMapper.findAllUser();
+    }
+
+    @Override
+    public List<User> findAllUserByDepartmentUid(String departmentUid) {
+        return userMapper.findAllUserByDepartmentUid(departmentUid);
+    }
+
+    @Override
+    public List<User> findProcessUser() {
+        return userMapper.findProcessUser();
+    }
 }

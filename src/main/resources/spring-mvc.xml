@@ -74,6 +74,36 @@ http://www.springframework.org/schema/context/spring-context.xsd">
             <!--指定拦截器类路径-->
             <bean class="com.cshbxy.interceptor.Interceptor_Token"/>
         </mvc:interceptor>
+        <!--权限拦截，如果没有 department 或 leader 权限，不能继续-->
+        <mvc:interceptor>
+            <!--配置要拦截的路径-->
+            <!--部门变更模块-->
+            <mvc:mapping path="/apply/departmentChange/findWaitList"/>
+            <mvc:mapping path="/apply/departmentChange/resolve"/>
+            <mvc:mapping path="/apply/departmentChange/reject"/>
+            <!--请假模块-->
+            <mvc:mapping path="/apply/leave/findWaitList"/>
+            <mvc:mapping path="/apply/leave/resolve"/>
+            <mvc:mapping path="/apply/leave/reject"/>
+            <!--采购申请模块-->
+            <mvc:mapping path="/apply/procurement/findWaitList"/>
+            <mvc:mapping path="/apply/procurement/resolve"/>
+            <mvc:mapping path="/apply/procurement/reject"/>
+            <!--差旅报销模块-->
+            <mvc:mapping path="/apply/travel/findWaitList"/>
+            <mvc:mapping path="/apply/travel/resolve"/>
+            <mvc:mapping path="/apply/travel/reject"/>
+            <!--工作报告模块-->
+            <mvc:mapping path="/apply/workReport/findWaitList"/>
+            <mvc:mapping path="/apply/workReport/resolve"/>
+            <mvc:mapping path="/apply/workReport/reject"/>
+            <!--用户模块-->
+            <mvc:mapping path="/api/user/delete"/>
+            <mvc:mapping path="/api/user/updateStatus"/>
+            <mvc:mapping path="/api/user/findAllUser"/>
+            <!--指定拦截器类路径-->
+            <bean class="com.cshbxy.interceptor.Interceptor_Token_DepartmentOrLeader"/>
+        </mvc:interceptor>
         <!--权限拦截，如果没有 employee 权限，不能继续-->
         <mvc:interceptor>
             <!--配置要拦截的路径-->
@@ -109,34 +139,6 @@ http://www.springframework.org/schema/context/spring-context.xsd">
             <mvc:mapping path="/apply/workReport/refesh"/>
             <!--指定拦截器类路径-->
             <bean class="com.cshbxy.interceptor.Interceptor_Token_Employee"/>
-        </mvc:interceptor>
-        <mvc:interceptor>
-            <!--配置要拦截的路径-->
-            <!--部门变更模块-->
-            <mvc:mapping path="/apply/departmentChange/findWaitList"/>
-            <mvc:mapping path="/apply/departmentChange/resolve"/>
-            <mvc:mapping path="/apply/departmentChange/reject"/>
-            <!--请假模块-->
-            <mvc:mapping path="/apply/leave/findWaitList"/>
-            <mvc:mapping path="/apply/leave/resolve"/>
-            <mvc:mapping path="/apply/leave/reject"/>
-            <!--采购申请模块-->
-            <mvc:mapping path="/apply/procurement/findWaitList"/>
-            <mvc:mapping path="/apply/procurement/resolve"/>
-            <mvc:mapping path="/apply/procurement/reject"/>
-            <!--差旅报销模块-->
-            <mvc:mapping path="/apply/travel/findWaitList"/>
-            <mvc:mapping path="/apply/travel/resolve"/>
-            <mvc:mapping path="/apply/travel/reject"/>
-            <!--工作报告模块-->
-            <mvc:mapping path="/apply/workReport/findWaitList"/>
-            <mvc:mapping path="/apply/workReport/resolve"/>
-            <mvc:mapping path="/apply/workReport/reject"/>
-            <!--用户模块-->
-            <mvc:mapping path="/api/user/delete"/>
-            <mvc:mapping path="/api/user/updateStatus"/>
-            <!--指定拦截器类路径-->
-            <bean class="com.cshbxy.interceptor.Interceptor_Token_DepartmentOrLeader"/>
         </mvc:interceptor>
     </mvc:interceptors>
 

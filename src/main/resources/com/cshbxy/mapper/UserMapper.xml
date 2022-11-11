@@ -45,11 +45,11 @@
             email=#{email}
         where uid = #{uid}
     </update>
-    <update id="delete">
-        update oa_sys.user
-        set status = -1
+    <delete id="delete">
+        delete
+        from oa_sys.user
         where uid = #{uid}
-    </update>
+    </delete>
     <select id="findUserByUid" resultType="User">
         select uid,
                username,
@@ -95,4 +95,40 @@
         set departmentUid = #{departmentUid}
         where uid = #{uid}
     </update>
+    <select id="findAllUser" resultType="User">
+        select uid,
+               username,
+               realeName,
+               gender,
+               tel,
+               email,
+               userType,
+               departmentUid,
+               status,
+               create_time,
+               update_time
+        from oa_sys.user
+    </select>
+    <select id="findAllUserByDepartmentUid" resultType="User">
+        select uid,
+               username,
+               realeName,
+               gender,
+               tel,
+               email,
+               userType,
+               status,
+               create_time,
+               update_time
+        from oa_sys.user
+        where departmentUid = #{departmentUid}
+    </select>
+    <select id="findProcessUser" resultType="User">
+        select uid,
+               realeName
+        from oa_sys.user
+        where status = 0
+            and userType = 'Department'
+           or userType = 'Leader'
+    </select>
 </mapper>

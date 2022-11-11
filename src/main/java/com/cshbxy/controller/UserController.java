@@ -223,4 +223,55 @@ public class UserController {
             return new Message_body(500, I18nUtil.getMessage("systemError"));
         }
     }
+
+    // 获取所有用户
+    @RequestMapping(value = "/findAllUser", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public Message_body findAllUser() {
+        try {
+            List<User> list = userService.findAllUser();
+            if (list != null) {
+                for (User user : list) {
+                    user.setDepartmentUid(userService.findRealeName(user.getDepartmentUid()));
+                }
+                return new Message_body(200, I18nUtil.getMessage("getSuccess"), list);
+            }
+            return new Message_body(400, I18nUtil.getMessage("getFail"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Message_body(500, I18nUtil.getMessage("systemError"));
+        }
+    }
+
+    // 获取部门下的所有员工
+    @RequestMapping(value = "/findAllUserByDepartmentUid", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public Message_body findAllUserByDepartmentUid(String departmentUid) {
+        try {
+            List<User> list = userService.findAllUserByDepartmentUid(departmentUid);
+            if (list != null) {
+                return new Message_body(200, I18nUtil.getMessage("getSuccess"), list);
+            }
+            return new Message_body(400, I18nUtil.getMessage("getFail"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Message_body(500, I18nUtil.getMessage("systemError"));
+        }
+    }
+
+    // 获取所有审批人
+    @RequestMapping(value = "/findProcessUser", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public Message_body findProcessUser() {
+        try {
+            List<User> list = userService.findProcessUser();
+            if (list != null) {
+                return new Message_body(200, I18nUtil.getMessage("getSuccess"), list);
+            }
+            return new Message_body(400, I18nUtil.getMessage("getFail"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Message_body(500, I18nUtil.getMessage("systemError"));
+        }
+    }
 }
