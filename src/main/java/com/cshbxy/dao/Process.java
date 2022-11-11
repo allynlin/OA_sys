@@ -4,10 +4,18 @@ public class Process {
     private String uid;
     private String name;
     private String process;
-    private String Alias;
+    private String processRealName;
     private int status;
     private String create_time;
     private String update_time;
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
 
     public String getName() {
         return name;
@@ -25,12 +33,12 @@ public class Process {
         this.process = process;
     }
 
-    public String getAlias() {
-        return Alias;
+    public String getProcessRealName() {
+        return processRealName;
     }
 
-    public void setAlias(String alias) {
-        Alias = alias;
+    public void setProcessRealName(String processRealName) {
+        this.processRealName = processRealName;
     }
 
     public int getStatus() {
@@ -57,21 +65,13 @@ public class Process {
         this.update_time = update_time;
     }
 
-    public String getUid() {
-        return uid;
-    }
-
-    public void setUid(String uid) {
-        this.uid = uid;
-    }
-
     @Override
     public String toString() {
         return "Process{" +
                 "uid='" + uid + '\'' +
                 ", name='" + name + '\'' +
                 ", process='" + process + '\'' +
-                ", Alias='" + Alias + '\'' +
+                ", processRealName='" + processRealName + '\'' +
                 ", status=" + status +
                 ", create_time='" + create_time + '\'' +
                 ", update_time='" + update_time + '\'' +

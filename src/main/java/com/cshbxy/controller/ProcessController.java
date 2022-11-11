@@ -37,7 +37,7 @@ public class ProcessController {
                         processList[i] = realName;
                     }
                 }
-                process.setProcess(String.join("||", processList));
+                process.setProcessRealName(String.join("||", processList));
             }
             return new Message_body(200, I18nUtil.getMessage("getSuccess"), list);
         } catch (Exception e) {
@@ -52,23 +52,6 @@ public class ProcessController {
     public Message_body updateProcess(Process process) {
         try {
             int result = processService.processUpdate(process);
-            if (result == 1) {
-                return new Message_body(200, I18nUtil.getMessage("updateSuccess"));
-            } else {
-                return new Message_body(500, I18nUtil.getMessage("updateFail"));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new Message_body(500, I18nUtil.getMessage("systemError"));
-        }
-    }
-
-    // 更新流程别名
-    @RequestMapping(value = "/updateProcessAlias", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    @ResponseBody
-    public Message_body updateProcessAlias(Process process) {
-        try {
-            int result = processService.processAliasUpdate(process);
             if (result == 1) {
                 return new Message_body(200, I18nUtil.getMessage("updateSuccess"));
             } else {
