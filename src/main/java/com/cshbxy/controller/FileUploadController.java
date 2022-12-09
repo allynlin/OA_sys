@@ -125,9 +125,9 @@ public class FileUploadController {
             // 删除数据库中的文件名
             int i = fileUploadService.dropUploadFile(uid);
             if (i != 1) {
-                return new Message(400, I18nUtil.getMessage("deleteSuccess"));
+                return new Message(400, I18nUtil.getMessage("deleteFail"));
             }
-            return new Message(200, I18nUtil.getMessage("deleteFail"));
+            return new Message(200, I18nUtil.getMessage("deleteSuccess"));
         } catch (Exception e) {
             e.printStackTrace();
             return new Message(500, I18nUtil.getMessage("systemError"));
