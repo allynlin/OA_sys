@@ -27,8 +27,8 @@ http://www.springframework.org/schema/context/spring-context.xsd">
           class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
         <!--设置请求编码格式，必须与JSP中的pageEncoding属性一致-->
         <property name="defaultEncoding" value="UTF-8"/>
-        <!--限制文件上传大小 20M -->
-        <property name="maxUploadSize" value="20971520"/>
+        <!--限制文件上传大小 500M -->
+        <property name="maxUploadSize" value="524288000"/>
     </bean>
 
     <!-- 拦截器 -->
