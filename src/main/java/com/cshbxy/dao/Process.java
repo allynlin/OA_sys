@@ -6,8 +6,17 @@ public class Process {
     private String process;
     private String processRealName;
     private int status;
+    private String realeName;
     private String create_time;
     private String update_time;
+
+    public String getRealeName() {
+        return realeName;
+    }
+
+    public void setRealeName(String realeName) {
+        this.realeName = realeName;
+    }
 
     public String getUid() {
         return uid;
@@ -73,6 +82,7 @@ public class Process {
                 ", process='" + process + '\'' +
                 ", processRealName='" + processRealName + '\'' +
                 ", status=" + status +
+                ", realeName='" + realeName + '\'' +
                 ", create_time='" + create_time + '\'' +
                 ", update_time='" + update_time + '\'' +
                 '}';

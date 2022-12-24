@@ -128,7 +128,6 @@
                realeName
         from oa_sys.user
         where status = 0
-            and userType = 'Department'
-           or userType = 'Leader'
+          and userType = 'Leader'
     </select>
 </mapper>

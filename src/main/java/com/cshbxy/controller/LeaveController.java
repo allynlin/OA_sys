@@ -151,41 +151,6 @@ public class LeaveController {
         }
     }
 
-    // 更新请假申请
-    @RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    @ResponseBody
-    public Message update(HttpServletRequest request, Leave newApply) {
-        try {
-            // 通过接收到的 uid 查询本条申请记录
-            Leave apply = leaveSerivce.findLeaveByUid(newApply.getUid());
-            if (apply.getStatus() != 0) {
-                return new Message(400, I18nUtil.getMessage("stateCannotUpdate"));
-            }
-            String releaseUid = JwtUtil.getUserUid(request.getHeader("Authorization"));
-            if (!Objects.equals(apply.getReleaseUid(), releaseUid)) {
-                return new Message(403, I18nUtil.getMessage("permissionDenied"));
-            }
-            apply.setCount(0);
-            // 获取审批流程
-            String process = Process.getProcess(processName, releaseUid);
-            apply.setProcess(process);
-            apply.setNextUid(Process.getProcessFirst(process));
-            apply.setStart_time(newApply.getStart_time());
-            apply.setEnd_time(newApply.getEnd_time());
-            apply.setReason(newApply.getReason());
-            // 修改数据库
-            int i = leaveSerivce.update(apply);
-            if (i == 1) {
-                return new Message(200, I18nUtil.getMessage("updateSuccess"));
-            } else {
-                return new Message(400, I18nUtil.getMessage("updateFail"));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new Message(500, I18nUtil.getMessage("systemError"));
-        }
-    }
-
     // 根据下一级审批人查询请假记录
     @RequestMapping(value = "/findWaitList", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
