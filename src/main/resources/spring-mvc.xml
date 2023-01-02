@@ -34,22 +34,6 @@ http://www.springframework.org/schema/context/spring-context.xsd">
     <!-- 拦截器 -->
     <!--自定义拦截器-->
     <mvc:interceptors>
-        <!--版本拦截，如果版本过低，不能继续-->
-        <mvc:interceptor>
-            <!--配置要拦截的路径-->
-            <mvc:mapping path="/**"/>
-            <!--配置不拦截的路径-->
-            <!--api 接口-->
-            <mvc:exclude-mapping path="/api/getUUID"/>
-            <mvc:exclude-mapping path="/api/getVersion"/>
-            <mvc:exclude-mapping path="/api/getLowVersion"/>
-            <mvc:exclude-mapping path="/api/downloadFile"/>
-            <!--静态资源放行-->
-            <mvc:exclude-mapping path="/*.html"/>
-            <mvc:exclude-mapping path="/css/**"/>
-            <!--指定拦截器类路径-->
-            <bean class="com.cshbxy.interceptor.Interceptor_Version"/>
-        </mvc:interceptor>
         <!--token 拦截，如果没有 token，不能继续-->
         <mvc:interceptor>
             <!--配置要拦截的路径-->

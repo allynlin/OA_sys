@@ -2,7 +2,10 @@ package com.cshbxy.controller;
 
 import com.cshbxy.Util.I18nUtil;
 import com.cshbxy.Util.JwtUtil;
-import com.cshbxy.dao.*;
+import com.cshbxy.dao.Message;
+import com.cshbxy.dao.Message_all;
+import com.cshbxy.dao.Message_body;
+import com.cshbxy.dao.User;
 import com.cshbxy.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -214,10 +217,10 @@ public class UserController {
     public Message_body findUserType() {
         try {
             List<User> list = userService.findUserType();
-            if (list != null) {
+            if (list.size() != 0) {
                 return new Message_body(200, I18nUtil.getMessage("getSuccess"), list);
             }
-            return new Message_body(400, I18nUtil.getMessage("getFail"));
+            return new Message_body(400, I18nUtil.getMessage("noUserList"));
         } catch (Exception e) {
             e.printStackTrace();
             return new Message_body(500, I18nUtil.getMessage("systemError"));
@@ -230,13 +233,13 @@ public class UserController {
     public Message_body findAllUser() {
         try {
             List<User> list = userService.findAllUser();
-            if (list != null) {
+            if (list.size() != 0) {
                 for (User user : list) {
                     user.setDepartmentUid(userService.findRealeName(user.getDepartmentUid()));
                 }
                 return new Message_body(200, I18nUtil.getMessage("getSuccess"), list);
             }
-            return new Message_body(400, I18nUtil.getMessage("getFail"));
+            return new Message_body(300, I18nUtil.getMessage("noUserList"));
         } catch (Exception e) {
             e.printStackTrace();
             return new Message_body(500, I18nUtil.getMessage("systemError"));
@@ -249,10 +252,10 @@ public class UserController {
     public Message_body findAllUserByDepartmentUid(String departmentUid) {
         try {
             List<User> list = userService.findAllUserByDepartmentUid(departmentUid);
-            if (list != null) {
+            if (list.size() != 0) {
                 return new Message_body(200, I18nUtil.getMessage("getSuccess"), list);
             }
-            return new Message_body(400, I18nUtil.getMessage("getFail"));
+            return new Message_body(300, I18nUtil.getMessage("noUserList"));
         } catch (Exception e) {
             e.printStackTrace();
             return new Message_body(500, I18nUtil.getMessage("systemError"));

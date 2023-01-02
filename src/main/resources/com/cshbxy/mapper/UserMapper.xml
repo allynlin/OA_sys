@@ -84,6 +84,7 @@
         select uid, realeName
         from oa_sys.user
         where userType = 'Department'
+          and uid != "520e96fd-0250-4594-ae9e-1af4a421893b"
     </select>
     <select id="findDepartmentUid" resultType="String">
         select departmentUid
@@ -108,6 +109,8 @@
                create_time,
                update_time
         from oa_sys.user
+        where uid != "520e96fd-0250-4594-ae9e-1af4a421893b"
+        ORDER BY `userType`, `status`, `realeName`
     </select>
     <select id="findAllUserByDepartmentUid" resultType="User">
         select uid,

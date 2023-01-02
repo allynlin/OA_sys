@@ -19,7 +19,7 @@ public class Interceptor_Token_DepartmentOrLeader extends HandlerInterceptorAdap
         // 判断是否 department
         if (CheckToken.checkIsDepartment(request.getHeader("Authorization"))) {
             if (CheckToken.checkIsLeader(request.getHeader("Authorization"))) {
-                response.getWriter().write("{\"code\":403,\"message\":\""+ I18nUtil.getMessage("tokenError")+"\"}");
+                response.getWriter().write("{\"code\":403,\"message\":\"" + I18nUtil.getMessage("tokenError") + "\"}");
                 return false;
             }
         }

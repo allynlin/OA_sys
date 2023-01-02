@@ -1,7 +1,6 @@
 package com.cshbxy.controller;
 
 import com.cshbxy.Util.I18nUtil;
-import com.cshbxy.Util.Version;
 import com.cshbxy.dao.Message_body;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -22,18 +21,5 @@ public class APIController {
     public Message_body getUUID(HttpServletRequest request) {
         String lang = request.getHeader("language");
         return new Message_body(200, I18nUtil.getMessage("getUUIDSuccess"), UUID.randomUUID().toString());
-    }
-
-    @RequestMapping(value = "/getVersion", method = RequestMethod.GET)
-    @ResponseBody
-    public Message_body getVersion(HttpServletRequest request) {
-        String lang = request.getHeader("Content-Language");
-        return new Message_body(200, I18nUtil.getMessage("getServerVersionSuccess"), Version.getVersion());
-    }
-
-    @RequestMapping(value = "/getLowVersion", method = RequestMethod.GET)
-    @ResponseBody
-    public Message_body getLowVersion() {
-        return new Message_body(200, I18nUtil.getMessage("getServerLowVersionSuccess"), Version.getLowVersion());
     }
 }

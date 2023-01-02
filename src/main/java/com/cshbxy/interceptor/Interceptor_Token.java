@@ -25,7 +25,7 @@ public class Interceptor_Token extends HandlerInterceptorAdapter {
         }
         // 判断 token 是否正确
         if (!JwtUtil.isTokenTrue(token)) {
-            response.getWriter().write("{\"code\":403,\"message\":\""+I18nUtil.getMessage("tokenError")+"\"}");
+            response.getWriter().write("{\"code\":403,\"message\":\"" + I18nUtil.getMessage("tokenError") + "\"}");
             return false;
         }
         return true;

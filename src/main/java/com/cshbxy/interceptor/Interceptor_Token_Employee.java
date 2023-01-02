@@ -18,7 +18,7 @@ public class Interceptor_Token_Employee extends HandlerInterceptorAdapter {
         response.setCharacterEncoding("utf-8");
         // 判断是否 employee
         if (CheckToken.checkIsEmployee(request.getHeader("Authorization"))) {
-            response.getWriter().write("{\"code\":403,\"message\":\""+ I18nUtil.getMessage("tokenError")+"\"}");
+            response.getWriter().write("{\"code\":403,\"message\":\"" + I18nUtil.getMessage("tokenError") + "\"}");
             return false;
         }
         return true;
