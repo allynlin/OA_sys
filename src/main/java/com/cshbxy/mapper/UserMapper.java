@@ -37,4 +37,12 @@ public interface UserMapper {
     public List<User> findAllUserByDepartmentUid(String departmentUid);
 
     public List<User> findProcessUser();
+
+    public String findDepartmentKey(String departmentUid);
+
+    public List<User> findAllLeaderByDepartmentUid(String departmentUid);
+
+    public int updateDepartmentLeader(User user);
+
+    public int deleteDepartmentKey(String departmentUid);
 }

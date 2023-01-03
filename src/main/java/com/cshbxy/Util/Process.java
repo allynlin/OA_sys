@@ -27,8 +27,10 @@ public class Process {
         String pro = process.getProcess();
         // 如果字符串中有 nowDepartment
         if (pro.contains("nowDepartment")) {
+            // 通过提交人查询所在部门
+            String departmentUid = userService.findDepartmentUid(releaseUid);
             // 将 nowDepartment 替换为当前部门
-            pro = pro.replace("nowDepartment", userService.findDepartmentUid(releaseUid));
+            pro = pro.replace("nowDepartment", userService.findDepartmentKey(departmentUid));
         }
         return pro;
     }

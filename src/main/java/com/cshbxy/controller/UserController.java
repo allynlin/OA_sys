@@ -246,7 +246,7 @@ public class UserController {
         }
     }
 
-    // 获取部门下的所有员工
+    // 获取部门下的所有用户
     @RequestMapping(value = "/findAllUserByDepartmentUid", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public Message_body findAllUserByDepartmentUid(String departmentUid) {
@@ -259,6 +259,39 @@ public class UserController {
         } catch (Exception e) {
             e.printStackTrace();
             return new Message_body(500, I18nUtil.getMessage("systemError"));
+        }
+    }
+
+    // 获取部门下的所有领导
+    @RequestMapping(value = "/findAllLeaderByDepartmentUid", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public Message_body findAllLeaderByDepartmentUid(String departmentUid) {
+        try {
+            List<User> list = userService.findAllLeaderByDepartmentUid(departmentUid);
+            if (list.size() != 0) {
+                return new Message_body(200, I18nUtil.getMessage("getSuccess"), list);
+            }
+            return new Message_body(300, I18nUtil.getMessage("noUserList"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Message_body(500, I18nUtil.getMessage("systemError"));
+        }
+    }
+
+    // 修改部门直属领导
+    @RequestMapping(value = "/updateDepartmentLeader", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public Message updateDepartmentLeader(User apply) {
+        try {
+            userService.deleteDepartmentKey(apply.getDepartmentUid());
+            int result = userService.updateDepartmentLeader(apply);
+            if (result != 1) {
+                return new Message(400, I18nUtil.getMessage("updateFail"));
+            }
+            return new Message(200, I18nUtil.getMessage("updateSuccess"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Message(500, I18nUtil.getMessage("systemError"));
         }
     }
 

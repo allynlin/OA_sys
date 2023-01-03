@@ -93,4 +93,24 @@ public class UserServiceImpl implements UserService {
     public List<User> findProcessUser() {
         return userMapper.findProcessUser();
     }
+
+    @Override
+    public String findDepartmentKey(String departmentUid) {
+        return userMapper.findDepartmentKey(departmentUid);
+    }
+
+    @Override
+    public List<User> findAllLeaderByDepartmentUid(String departmentUid) {
+        return userMapper.findAllLeaderByDepartmentUid(departmentUid);
+    }
+
+    @Override
+    public int updateDepartmentLeader(User user) {
+        return userMapper.updateDepartmentLeader(user);
+    }
+
+    @Override
+    public int deleteDepartmentKey(String departmentUid) {
+        return userMapper.deleteDepartmentKey(departmentUid);
+    }
 }

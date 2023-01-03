@@ -106,6 +106,7 @@
                userType,
                departmentUid,
                status,
+               departmentKey,
                create_time,
                update_time
         from oa_sys.user
@@ -121,10 +122,12 @@
                email,
                userType,
                status,
+               departmentKey,
                create_time,
                update_time
         from oa_sys.user
         where departmentUid = #{departmentUid}
+        ORDER BY `userType`, `status`, `realeName`
     </select>
     <select id="findProcessUser" resultType="User">
         select uid,
@@ -133,4 +136,35 @@
         where status = 0
           and userType = 'Leader'
     </select>
+    <select id="findDepartmentKey" resultType="String">
+        select uid
+        from oa_sys.user
+        where departmentUid = #{departmentUid}
+          and departmentKey = 1
+    </select>
+    <select id="findAllLeaderByDepartmentUid" resultType="User">
+        select uid,
+               username,
+               realeName,
+               gender,
+               tel,
+               email,
+               userType,
+               status,
+               create_time,
+               update_time
+        from oa_sys.user
+        where departmentUid = #{departmentUid}
+          and userType = 'Leader'
+    </select>
+    <update id="deleteDepartmentKey" parameterType="User">
+        update oa_sys.user
+        set departmentKey = 0
+        where departmentUid = #{departmentUid}
+    </update>
+    <update id="updateDepartmentLeader" parameterType="User">
+        update oa_sys.user
+        set departmentKey = 1
+        where uid = #{uid}
+    </update>
 </mapper>
