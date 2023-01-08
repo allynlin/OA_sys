@@ -2,10 +2,9 @@ package com.cshbxy.controller;
 
 import com.cshbxy.Util.I18nUtil;
 import com.cshbxy.Util.JwtUtil;
-import com.cshbxy.dao.Message;
-import com.cshbxy.dao.Message_all;
-import com.cshbxy.dao.Message_body;
-import com.cshbxy.dao.User;
+import com.cshbxy.Util.LoginAnnal;
+import com.cshbxy.dao.*;
+import com.cshbxy.service.LoginRecordService;
 import com.cshbxy.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -26,13 +25,17 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private LoginRecordService loginRecordService;
+
     // 用户登录
     @RequestMapping(value = "/login", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public Message_all login(User apply) {
+    public Message_all login(HttpServletRequest request, User apply) {
         try {
             User user = userService.login(apply);
             if (user != null) {
+                LoginAnnal.setLoginAnnal(request, user.getUid(), 1);
                 switch (user.getStatus()) {
                     case 0:
                         user.setDepartmentUid(userService.findRealeName(user.getDepartmentUid()));
@@ -59,6 +62,7 @@ public class UserController {
             String uid = JwtUtil.getUserUid(request.getHeader("Authorization"));
             User user = userService.findUserByUid(uid);
             if (user != null) {
+                LoginAnnal.setLoginAnnal(request, user.getUid(), 2);
                 switch (user.getStatus()) {
                     case 0:
                         user.setDepartmentUid(userService.findRealeName(user.getDepartmentUid()));
@@ -262,22 +266,6 @@ public class UserController {
         }
     }
 
-    // 获取部门下的所有领导
-    @RequestMapping(value = "/findAllLeaderByDepartmentUid", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    @ResponseBody
-    public Message_body findAllLeaderByDepartmentUid(String departmentUid) {
-        try {
-            List<User> list = userService.findAllLeaderByDepartmentUid(departmentUid);
-            if (list.size() != 0) {
-                return new Message_body(200, I18nUtil.getMessage("getSuccess"), list);
-            }
-            return new Message_body(300, I18nUtil.getMessage("noUserList"));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new Message_body(500, I18nUtil.getMessage("systemError"));
-        }
-    }
-
     // 修改部门直属领导
     @RequestMapping(value = "/updateDepartmentLeader", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
@@ -301,6 +289,22 @@ public class UserController {
     public Message_body findProcessUser() {
         try {
             List<User> list = userService.findProcessUser();
+            if (list != null) {
+                return new Message_body(200, I18nUtil.getMessage("getSuccess"), list);
+            }
+            return new Message_body(400, I18nUtil.getMessage("getFail"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Message_body(500, I18nUtil.getMessage("systemError"));
+        }
+    }
+
+    // 获取登录记录
+    @RequestMapping(value = "/findLoginRecord", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public Message_body findLoginRecord(String userUid) {
+        try {
+            List<LoginRecord> list = loginRecordService.findUserList(userUid);
             if (list != null) {
                 return new Message_body(200, I18nUtil.getMessage("getSuccess"), list);
             }
