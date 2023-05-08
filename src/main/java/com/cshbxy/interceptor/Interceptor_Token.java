@@ -1,6 +1,5 @@
 package com.cshbxy.interceptor;
 
-import com.cshbxy.Util.I18nUtil;
 import com.cshbxy.Util.JwtUtil;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -20,12 +19,12 @@ public class Interceptor_Token extends HandlerInterceptorAdapter {
         String token = request.getHeader("Authorization");
         // 判断 token 是否为空
         if (token == null) {
-            response.getWriter().write("{\"code\":401,\"message\":\"" + I18nUtil.getMessage("noLogin") + "\"}");
+            response.getWriter().write("{\"code\":401,\"message\":\"" + "未登录" + "\"}");
             return false;
         }
         // 判断 token 是否正确
         if (!JwtUtil.isTokenTrue(token)) {
-            response.getWriter().write("{\"code\":403,\"message\":\"" + I18nUtil.getMessage("tokenError") + "\"}");
+            response.getWriter().write("{\"code\":403,\"message\":\"" + "token校验失败" + "\"}");
             return false;
         }
         return true;

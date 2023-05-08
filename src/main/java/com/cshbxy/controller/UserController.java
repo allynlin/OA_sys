@@ -1,10 +1,10 @@
 package com.cshbxy.controller;
 
-import com.cshbxy.Util.I18nUtil;
 import com.cshbxy.Util.JwtUtil;
-import com.cshbxy.Util.LoginAnnal;
-import com.cshbxy.dao.*;
-import com.cshbxy.service.LoginRecordService;
+import com.cshbxy.dao.Message;
+import com.cshbxy.dao.Message_all;
+import com.cshbxy.dao.Message_body;
+import com.cshbxy.dao.User;
 import com.cshbxy.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,59 +24,28 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private LoginRecordService loginRecordService;
-
     // 用户登录
     @RequestMapping(value = "/login", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public Message_all login(HttpServletRequest request, User apply) {
+    public Message_all login(User apply) {
         try {
             User user = userService.login(apply);
             if (user != null) {
-                LoginAnnal.setLoginAnnal(request, user.getUid(), 1);
                 switch (user.getStatus()) {
                     case 0:
                         user.setDepartmentUid(userService.findRealeName(user.getDepartmentUid()));
                         String token = JwtUtil.sign(user.getUid(), user.getUserType());
-                        return new Message_all(200, I18nUtil.getMessage("loginSuccess"), user, token);
+                        return new Message_all(200, "登录成功", user, token);
                     case -1:
-                        return new Message_all(400, I18nUtil.getMessage("userDisabled"));
+                        return new Message_all(400, "用户已被禁用");
                     default:
-                        return new Message_all(400, I18nUtil.getMessage("stateError"));
+                        return new Message_all(400, "状态异常");
                 }
             }
-            return new Message_all(400, I18nUtil.getMessage("loginFail"), null);
+            return new Message_all(400, "用户名或密码错误", null);
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message_all(500, I18nUtil.getMessage("systemError"));
-        }
-    }
-
-    // 校验用户，用于用户在 token 有效期内免重新登录
-    @RequestMapping(value = "/checkUser", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    @ResponseBody
-    public Message_all checkUser(HttpServletRequest request) {
-        try {
-            String uid = JwtUtil.getUserUid(request.getHeader("Authorization"));
-            User user = userService.findUserByUid(uid);
-            if (user != null) {
-                LoginAnnal.setLoginAnnal(request, user.getUid(), 2);
-                switch (user.getStatus()) {
-                    case 0:
-                        user.setDepartmentUid(userService.findRealeName(user.getDepartmentUid()));
-                        String token = JwtUtil.sign(user.getUid(), user.getUserType());
-                        return new Message_all(200, I18nUtil.getMessage("autoLoginSuccess"), user, token);
-                    case -1:
-                        return new Message_all(400, I18nUtil.getMessage("userDisabled"));
-                    default:
-                        return new Message_all(400, I18nUtil.getMessage("stateError"));
-                }
-            }
-            return new Message_all(400, I18nUtil.getMessage("noUser"));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new Message_all(500, I18nUtil.getMessage("systemError"));
+            return new Message_all(500, "系统错误");
         }
     }
 
@@ -90,28 +58,12 @@ public class UserController {
             apply.setUid(UUID.randomUUID().toString());
             int result = userService.add(apply);
             if (result != 1) {
-                return new Message(400, I18nUtil.getMessage("registerFail"));
+                return new Message(400, "注册失败");
             }
-            return new Message(200, I18nUtil.getMessage("registerSuccess"));
+            return new Message(200, "注册成功");
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message(500, I18nUtil.getMessage("systemError"));
-        }
-    }
-
-    // 获取真实姓名
-    @RequestMapping(value = "/findRealeName", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    @ResponseBody
-    public Message_body findRealeName(String uid) {
-        try {
-            String realName = userService.findRealeName(uid);
-            if (realName != null) {
-                return new Message_body(200, I18nUtil.getMessage("getSuccess"), realName);
-            }
-            return new Message_body(400, I18nUtil.getMessage("getFail"));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new Message_body(500, I18nUtil.getMessage("systemError"));
+            return new Message(500, "系统错误");
         }
     }
 
@@ -122,12 +74,12 @@ public class UserController {
         try {
             String username = userService.checkUsername(apply);
             if (username != null) {
-                return new Message(400, I18nUtil.getMessage("usernameExists"));
+                return new Message(400, "用户名已存在");
             }
-            return new Message(200, I18nUtil.getMessage("usernameCanUse"));
+            return new Message(200, "用户名可用");
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message(500, I18nUtil.getMessage("systemError"));
+            return new Message(500, "系统错误");
         }
     }
 
@@ -138,12 +90,12 @@ public class UserController {
         try {
             int result = userService.update(apply);
             if (result != 1) {
-                return new Message(400, I18nUtil.getMessage("updateFail"));
+                return new Message(400, "修改失败");
             }
-            return new Message(200, I18nUtil.getMessage("updateSuccess"));
+            return new Message(200, "修改成功");
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message(500, I18nUtil.getMessage("systemError"));
+            return new Message(500, "系统错误");
         }
     }
 
@@ -154,12 +106,12 @@ public class UserController {
         try {
             int result = userService.delete(uid);
             if (result != 1) {
-                return new Message(400, I18nUtil.getMessage("deleteFail"));
+                return new Message(400, "删除失败");
             }
-            return new Message(200, I18nUtil.getMessage("deleteSuccess"));
+            return new Message(200, "删除成功");
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message(500, I18nUtil.getMessage("systemError"));
+            return new Message(500, "系统错误");
         }
     }
 
@@ -170,12 +122,12 @@ public class UserController {
         try {
             int result = userService.updatePassword(apply);
             if (result != 1) {
-                return new Message(400, I18nUtil.getMessage("updateFail"));
+                return new Message(400, "修改失败");
             }
-            return new Message(200, I18nUtil.getMessage("updateSuccess"));
+            return new Message(200, "修改成功");
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message(500, I18nUtil.getMessage("systemError"));
+            return new Message(500, "系统错误");
         }
     }
 
@@ -186,16 +138,16 @@ public class UserController {
         try {
             String username = userService.checkUsername(apply);
             if (username != null) {
-                return new Message(400, I18nUtil.getMessage("usernameExists"));
+                return new Message(400, "用户名已存在");
             }
             int result = userService.updateUsername(apply);
             if (result != 1) {
-                return new Message(400, I18nUtil.getMessage("updateFail"));
+                return new Message(400, "修改失败");
             }
-            return new Message(200, I18nUtil.getMessage("updateSuccess"));
+            return new Message(200, "修改成功");
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message(500, I18nUtil.getMessage("systemError"));
+            return new Message(500, "系统错误");
         }
     }
 
@@ -206,12 +158,12 @@ public class UserController {
         try {
             int result = userService.updateStatus(apply);
             if (result != 1) {
-                return new Message(400, I18nUtil.getMessage("updateFail"));
+                return new Message(400, "修改失败");
             }
-            return new Message(200, I18nUtil.getMessage("updateSuccess"));
+            return new Message(200, "修改成功");
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message(500, I18nUtil.getMessage("systemError"));
+            return new Message(500, "系统错误");
         }
     }
 
@@ -222,12 +174,12 @@ public class UserController {
         try {
             List<User> list = userService.findUserType();
             if (list.size() != 0) {
-                return new Message_body(200, I18nUtil.getMessage("getSuccess"), list);
+                return new Message_body(200, "获取成功", list);
             }
-            return new Message_body(400, I18nUtil.getMessage("noUserList"));
+            return new Message_body(400, "暂无用户");
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message_body(500, I18nUtil.getMessage("systemError"));
+            return new Message_body(500, "系统错误");
         }
     }
 
@@ -241,12 +193,12 @@ public class UserController {
                 for (User user : list) {
                     user.setDepartmentUid(userService.findRealeName(user.getDepartmentUid()));
                 }
-                return new Message_body(200, I18nUtil.getMessage("getSuccess"), list);
+                return new Message_body(200, "获取成功", list);
             }
-            return new Message_body(300, I18nUtil.getMessage("noUserList"));
+            return new Message_body(300, "暂无用户");
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message_body(500, I18nUtil.getMessage("systemError"));
+            return new Message_body(500, "系统错误");
         }
     }
 
@@ -257,12 +209,12 @@ public class UserController {
         try {
             List<User> list = userService.findAllUserByDepartmentUid(departmentUid);
             if (list.size() != 0) {
-                return new Message_body(200, I18nUtil.getMessage("getSuccess"), list);
+                return new Message_body(200, "获取成功", list);
             }
-            return new Message_body(300, I18nUtil.getMessage("noUserList"));
+            return new Message_body(300, "暂无用户");
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message_body(500, I18nUtil.getMessage("systemError"));
+            return new Message_body(500, "系统错误");
         }
     }
 
@@ -274,12 +226,12 @@ public class UserController {
             userService.deleteDepartmentKey(apply.getDepartmentUid());
             int result = userService.updateDepartmentLeader(apply);
             if (result != 1) {
-                return new Message(400, I18nUtil.getMessage("updateFail"));
+                return new Message(400, "修改失败");
             }
-            return new Message(200, I18nUtil.getMessage("updateSuccess"));
+            return new Message(200, "修改成功");
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message(500, I18nUtil.getMessage("systemError"));
+            return new Message(500, "系统错误");
         }
     }
 
@@ -290,28 +242,12 @@ public class UserController {
         try {
             List<User> list = userService.findProcessUser();
             if (list != null) {
-                return new Message_body(200, I18nUtil.getMessage("getSuccess"), list);
+                return new Message_body(200, "获取成功", list);
             }
-            return new Message_body(400, I18nUtil.getMessage("getFail"));
+            return new Message_body(400, "获取失败");
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message_body(500, I18nUtil.getMessage("systemError"));
-        }
-    }
-
-    // 获取登录记录
-    @RequestMapping(value = "/findLoginRecord", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    @ResponseBody
-    public Message_body findLoginRecord(String userUid) {
-        try {
-            List<LoginRecord> list = loginRecordService.findUserList(userUid);
-            if (list != null) {
-                return new Message_body(200, I18nUtil.getMessage("getSuccess"), list);
-            }
-            return new Message_body(400, I18nUtil.getMessage("getFail"));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new Message_body(500, I18nUtil.getMessage("systemError"));
+            return new Message_body(500, "系统错误");
         }
     }
 }

@@ -8,8 +8,6 @@ public interface LeaveMapper {
 
     public int add(Leave leave);
 
-    public Leave checkLastTime(String releaseUid);
-
     public int delete(String uid);
 
     public List<Leave> findApplyList(String releaseUid);

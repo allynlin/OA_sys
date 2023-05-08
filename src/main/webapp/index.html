@@ -10,30 +10,12 @@
 <div class="container">
     <div class="row">
         <div class="alert alert-info" role="alert" style="margin-top: 16px;text-align: center">
-            后端程序将不再内置前端页面，请点击右侧按钮或等地自动跳转访问前端页面
+            后端程序将不再内置前端页面，请点击右侧按钮跳转访问前端页面
             <button type="button" class="btn btn-success"
                     onclick="window.location.replace('https://allynlin.netlify.app')">netlify
             </button>
-        </div>
-        <div class="progress">
-            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75"
-                 aria-valuemin="0" aria-valuemax="100" style="width: 0%" id="pro">5s 后自动跳转
-            </div>
         </div>
     </div>
 </div>
 </body>
 </html>
-<script>
-    // 每秒更新进度条
-    let i = 0;
-    let timer = setInterval(() => {
-        i++;
-        document.getElementById('pro').style.width = i + '%';
-        document.getElementById('pro').innerText = `自动跳转${i}%`;
-        if (i === 100) {
-            clearInterval(timer);
-            window.location.replace('https://allynlin.netlify.app');
-        }
-    }, 50);
-</script>

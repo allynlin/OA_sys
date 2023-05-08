@@ -18,8 +18,6 @@ public interface UserMapper {
 
     public int delete(String uid);
 
-    public User findUserByUid(String uid);
-
     public int updatePassword(User user);
 
     public int updateUsername(User user);

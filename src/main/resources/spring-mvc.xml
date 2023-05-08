@@ -38,8 +38,6 @@ http://www.springframework.org/schema/context/spring-context.xsd">
         <mvc:interceptor>
             <!--配置要拦截的路径-->
             <!-- 用户模块-->
-            <mvc:mapping path="/api/user/checkUser"/>
-            <mvc:mapping path="/api/user/findRealeName"/>
             <mvc:mapping path="/api/user/update"/>
             <mvc:mapping path="/api/user/updatePassword"/>
             <mvc:mapping path="/api/user/updateUsername"/>
@@ -101,7 +99,6 @@ http://www.springframework.org/schema/context/spring-context.xsd">
             <mvc:mapping path="/apply/leave/add"/>
             <mvc:mapping path="/apply/leave/findApplyList"/>
             <mvc:mapping path="/apply/leave/delete"/>
-            <mvc:mapping path="/apply/leave/checkLastTime"/>
             <mvc:mapping path="/apply/leave/update"/>
             <mvc:mapping path="/apply/leave/refesh"/>
             <!--采购申请模块-->
@@ -117,7 +114,6 @@ http://www.springframework.org/schema/context/spring-context.xsd">
             <mvc:mapping path="/apply/travel/refesh"/>
             <!--工作报告模块-->
             <mvc:mapping path="/apply/workReport/add"/>
-            <mvc:mapping path="/apply/workReport/checkLastTime"/>
             <mvc:mapping path="/apply/workReport/findApplyList"/>
             <mvc:mapping path="/apply/workReport/delete"/>
             <mvc:mapping path="/apply/workReport/refesh"/>

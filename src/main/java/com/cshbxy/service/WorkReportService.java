@@ -7,8 +7,6 @@ import java.util.List;
 public interface WorkReportService {
     public int add(WorkReport workReport);
 
-    public WorkReport checkLastTime(String releaseUid);
-
     public List<WorkReport> findApplyList(String releaseUid);
 
     public WorkReport findWorkReportByUid(String uid);

@@ -19,10 +19,6 @@ public class LeaveServiceImpl implements LeaveSerivce {
         return leaveMapper.add(leave);
     }
 
-    @Override
-    public Leave checkLastTime(String releaseUid) {
-        return leaveMapper.checkLastTime(releaseUid);
-    }
 
     @Override
     public int delete(String uid) {

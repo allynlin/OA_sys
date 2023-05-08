@@ -7,25 +7,6 @@
         insert into oa_sys.leave (uid, start_time, end_time, reason, nextUid, releaseUid, process)
         values (#{uid}, #{start_time}, #{end_time}, #{reason}, #{nextUid}, #{releaseUid}, #{process})
     </insert>
-    <select id="checkLastTime" resultType="Leave">
-        select uid,
-               releaseUid,
-               reason,
-               start_time,
-               end_time,
-               status,
-               count,
-               nextUid,
-               reject_reason,
-               process,
-               create_time,
-               update_time
-        from oa_sys.leave
-        where releaseUid = #{releaseUid}
-          and status >= 0
-        order by update_time desc
-        limit 1
-    </select>
     <update id="delete">
         update oa_sys.leave
         set status = -1

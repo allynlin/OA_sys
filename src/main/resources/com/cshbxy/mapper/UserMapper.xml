@@ -50,21 +50,6 @@
         from oa_sys.user
         where uid = #{uid}
     </delete>
-    <select id="findUserByUid" resultType="User">
-        select uid,
-               username,
-               realeName,
-               gender,
-               tel,
-               email,
-               userType,
-               departmentUid,
-               status,
-               create_time,
-               update_time
-        from oa_sys.user
-        where uid = #{uid}
-    </select>
     <update id="updatePassword" parameterType="User">
         update oa_sys.user
         set password = #{password}

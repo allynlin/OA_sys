@@ -1,6 +1,5 @@
 package com.cshbxy.controller;
 
-import com.cshbxy.Util.I18nUtil;
 import com.cshbxy.Util.JwtUtil;
 import com.cshbxy.dao.FileName;
 import com.cshbxy.dao.Message;
@@ -97,14 +96,14 @@ public class FileUploadController {
             if (!file.isEmpty()) {
                 String uploadResult = upload(userUid, tableUid, file);
                 if (uploadResult.equals("文件上传失败")) {
-                    return new Message_body(400, I18nUtil.getMessage("uploadFail"), null);
+                    return new Message_body(400, "文件上传失败", null);
                 }
-                return new Message_body(200, I18nUtil.getMessage("uploadSuccess"), uploadResult);
+                return new Message_body(200, "文件上传成功", uploadResult);
             }
-            return new Message_body(400, I18nUtil.getMessage("uploadFail"));
+            return new Message_body(400, "文件上传失败");
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message_body(500, I18nUtil.getMessage("systemError"));
+            return new Message_body(500, "系统错误");
         }
     }
 
@@ -125,12 +124,12 @@ public class FileUploadController {
             // 删除数据库中的文件名
             int i = fileUploadService.dropUploadFile(uid);
             if (i != 1) {
-                return new Message(400, I18nUtil.getMessage("deleteFail"));
+                return new Message(400, "删除失败");
             }
-            return new Message(200, I18nUtil.getMessage("deleteSuccess"));
+            return new Message(200, "删除成功");
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message(500, I18nUtil.getMessage("systemError"));
+            return new Message(500, "系统错误");
         }
     }
 
@@ -147,13 +146,13 @@ public class FileUploadController {
             fileName.setTableUid(tableUid);
             List<FileName> fileNames = fileUploadService.checkLastTimeUploadFiles(fileName);
             if (fileNames.size() > 0) {
-                return new Message_body(200, I18nUtil.getMessage("getFileListSuccess"), fileNames);
+                return new Message_body(200, "已获取到文件列表", fileNames);
             } else {
-                return new Message_body(300, I18nUtil.getMessage("noFileList"));
+                return new Message_body(300, "没有获取到文件列表");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message_body(500, I18nUtil.getMessage("systemError"));
+            return new Message_body(500, "系统错误");
         }
     }
 
@@ -168,13 +167,13 @@ public class FileUploadController {
             fileName.setRowUid(RowUid);
             List<FileName> fileNames = fileUploadService.findUploadFilesByUid(fileName);
             if (fileNames.size() > 0) {
-                return new Message_body(200, I18nUtil.getMessage("getFileListSuccess"), fileNames);
+                return new Message_body(200, "已获取到文件列表", fileNames);
             } else {
-                return new Message_body(300, I18nUtil.getMessage("noFile"));
+                return new Message_body(300, "没有文件");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message_body(500, I18nUtil.getMessage("systemError"));
+            return new Message_body(500, "系统错误");
         }
     }
 

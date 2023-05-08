@@ -7,14 +7,6 @@
         insert into oa_sys.workreport(uid, releaseUid, nextUid, process)
         values (#{uid}, #{releaseUid}, #{nextUid}, #{process})
     </insert>
-    <select id="checkLastTime" parameterType="WorkReport" resultType="WorkReport">
-        select uid, create_time, update_time
-        from oa_sys.workreport
-        where releaseUid = #{releaseUid}
-          and status = 0
-        order by create_time desc
-        limit 1
-    </select>
     <select id="findApplyList" resultType="WorkReport">
         select uid,
                releaseUid,

@@ -1,6 +1,5 @@
 package com.cshbxy.controller;
 
-import com.cshbxy.Util.I18nUtil;
 import com.cshbxy.Util.findRealeName;
 import com.cshbxy.dao.Message_body;
 import com.cshbxy.dao.Process;
@@ -39,10 +38,10 @@ public class ProcessController {
                 }
                 process.setProcessRealName(String.join("||", processList));
             }
-            return new Message_body(200, I18nUtil.getMessage("getSuccess"), list);
+            return new Message_body(200, "获取成功", list);
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message_body(500, I18nUtil.getMessage("systemError"));
+            return new Message_body(500, "系统错误");
         }
     }
 
@@ -53,13 +52,13 @@ public class ProcessController {
         try {
             int result = processService.processUpdate(process);
             if (result == 1) {
-                return new Message_body(200, I18nUtil.getMessage("updateSuccess"));
+                return new Message_body(200, "修改成功");
             } else {
-                return new Message_body(500, I18nUtil.getMessage("updateFail"));
+                return new Message_body(500, "修改失败");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message_body(500, I18nUtil.getMessage("systemError"));
+            return new Message_body(500, "系统错误");
         }
     }
 }

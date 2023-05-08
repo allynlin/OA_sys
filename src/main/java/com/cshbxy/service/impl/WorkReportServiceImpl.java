@@ -20,11 +20,6 @@ public class WorkReportServiceImpl implements WorkReportService {
     }
 
     @Override
-    public WorkReport checkLastTime(String releaseUid) {
-        return workReportMapper.checkLastTime(releaseUid);
-    }
-
-    @Override
     public List<WorkReport> findApplyList(String releaseUid) {
         return workReportMapper.findApplyList(releaseUid);
     }

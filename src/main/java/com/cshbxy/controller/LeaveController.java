@@ -1,6 +1,5 @@
 package com.cshbxy.controller;
 
-import com.cshbxy.Util.I18nUtil;
 import com.cshbxy.Util.JwtUtil;
 import com.cshbxy.Util.Process;
 import com.cshbxy.Util.findRealeName;
@@ -47,13 +46,13 @@ public class LeaveController {
             apply.setReleaseUid(releaseUid);
             int result = leaveSerivce.add(apply);
             if (result == 1) {
-                return new Message(200, I18nUtil.getMessage("submitSuccess"));
+                return new Message(200, "提交成功");
             } else {
-                return new Message(400, I18nUtil.getMessage("submitFailed"));
+                return new Message(400, "提交失败");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message(500, I18nUtil.getMessage("systemError"));
+            return new Message(500, "系统错误");
         }
     }
 
@@ -71,13 +70,13 @@ public class LeaveController {
                 leave.setNextUid(findRealeName.findName(leave.getNextUid()));
             }
             if (list.size() != 0) {
-                return new Message_body(200, I18nUtil.getMessage("getLeaveListSuccess"), list);
+                return new Message_body(200, "查询请假记录成功", list);
             } else {
-                return new Message_body(300, I18nUtil.getMessage("noLeaveList"));
+                return new Message_body(300, "暂无请假记录");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message_body(500, I18nUtil.getMessage("systemError"));
+            return new Message_body(500, "系统错误");
         }
     }
 
@@ -96,10 +95,10 @@ public class LeaveController {
                 String name = findRealeName.findName(pro);
                 list.add(name);
             }
-            return new Message_body(200, I18nUtil.getMessage("getProcessSuccess"), list);
+            return new Message_body(200, "查询审批流程成功", list);
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message_body(500, I18nUtil.getMessage("systemError"));
+            return new Message_body(500, "系统错误");
         }
     }
 
@@ -111,42 +110,22 @@ public class LeaveController {
             // 通过接收到的 uid 查询本条申请记录
             Leave apply = leaveSerivce.findLeaveByUid(uid);
             if (apply.getStatus() != 0) {
-                return new Message(400, I18nUtil.getMessage("stateCannotDelete"));
+                return new Message(400, "当前状态不可删除");
             }
             // 判断是否为提交人
             if (!apply.getReleaseUid().equals(JwtUtil.getUserUid(request.getHeader("Authorization")))) {
-                return new Message(403, I18nUtil.getMessage("permissionDenied"));
+                return new Message(403, "没有权限");
             }
             // 删除本条申请记录
             int i = leaveSerivce.delete(uid);
             if (i == 1) {
-                return new Message(200, I18nUtil.getMessage("deleteSuccess"));
+                return new Message(200, "删除成功");
             } else {
-                return new Message(400, I18nUtil.getMessage("deleteFail"));
+                return new Message(400, "删除失败");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message(500, I18nUtil.getMessage("systemError"));
-        }
-    }
-
-    // 检查上一次提交的请假申请
-    @RequestMapping(value = "/checkLastTime", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    @ResponseBody
-    public Message_body checkLastTime(HttpServletRequest request) {
-        try {
-            // 解析 token，获取 uid
-            String releaseUid = JwtUtil.getUserUid(request.getHeader("Authorization"));
-            // 查询数据库
-            Leave apply = leaveSerivce.checkLastTime(releaseUid);
-            if (apply != null) {
-                return new Message_body(200, I18nUtil.getMessage("getLeaveListSuccess"), apply);
-            } else {
-                return new Message_body(300, I18nUtil.getMessage("noLeaveList"));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new Message_body(500, I18nUtil.getMessage("systemError"));
+            return new Message(500, "系统错误");
         }
     }
 
@@ -164,13 +143,13 @@ public class LeaveController {
                 leave.setReleaseUid(findRealeName.findName(leave.getReleaseUid()));
             }
             if (list.size() != 0) {
-                return new Message_body(200, I18nUtil.getMessage("getLeaveListSuccess"), list);
+                return new Message_body(200, "查询请假记录成功", list);
             } else {
-                return new Message_body(300, I18nUtil.getMessage("noLeaveList"));
+                return new Message_body(300, "暂无请假记录");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message_body(500, I18nUtil.getMessage("systemError"));
+            return new Message_body(500, "系统错误");
         }
     }
 
@@ -185,7 +164,7 @@ public class LeaveController {
             Leave apply = leaveSerivce.findLeaveByUid(uid);
             // 判断是否为下一步审批人
             if (!apply.getNextUid().equals(nowUid)) {
-                return new Message(403, I18nUtil.getMessage("permissionDenied"));
+                return new Message(403, "没有权限");
             }
             // 查询审批流程
             String[] pros = apply.getProcess().split("\\|\\|");
@@ -207,13 +186,13 @@ public class LeaveController {
             // 修改数据库
             int i = leaveSerivce.resolve(apply);
             if (i == 1) {
-                return new Message(200, I18nUtil.getMessage("resolveSuccess"));
+                return new Message(200, "审批通过");
             } else {
-                return new Message(400, I18nUtil.getMessage("resolveFail"));
+                return new Message(400, "审批失败");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message(500, I18nUtil.getMessage("systemError"));
+            return new Message(500, "系统错误");
         }
     }
 
@@ -228,18 +207,18 @@ public class LeaveController {
             Leave now = leaveSerivce.findLeaveByUid(apply.getUid());
             // 判断是否为下一步审批人
             if (!now.getNextUid().equals(nowUid)) {
-                return new Message(403, I18nUtil.getMessage("permissionDenied"));
+                return new Message(403, "没有权限");
             }
             // 修改数据库
             int i = leaveSerivce.reject(apply);
             if (i == 1) {
-                return new Message(200, I18nUtil.getMessage("rejectSuccess"));
+                return new Message(200, "驳回成功");
             } else {
-                return new Message(400, I18nUtil.getMessage("rejectFail"));
+                return new Message(400, "驳回失败");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message(500, I18nUtil.getMessage("systemError"));
+            return new Message(500, "系统错误");
         }
     }
 
@@ -251,10 +230,10 @@ public class LeaveController {
             // 通过接收到的 uid 查询本条申请记录
             Leave apply = leaveSerivce.findLeaveByUid(uid);
             apply.setReleaseUid(findRealeName.findName(apply.getReleaseUid()));
-            return new Message_body(200, I18nUtil.getMessage("refreshSuccess"), apply);
+            return new Message_body(200, "刷新成功", apply);
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message_body(500, I18nUtil.getMessage("systemError"));
+            return new Message_body(500, "系统错误");
         }
     }
 }

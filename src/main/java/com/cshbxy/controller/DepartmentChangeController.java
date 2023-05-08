@@ -1,6 +1,5 @@
 package com.cshbxy.controller;
 
-import com.cshbxy.Util.I18nUtil;
 import com.cshbxy.Util.JwtUtil;
 import com.cshbxy.Util.Process;
 import com.cshbxy.Util.findRealeName;
@@ -49,12 +48,12 @@ public class DepartmentChangeController {
             // 查看变更的部门是不是当前部门
             String departmentUid = userService.findDepartmentUid(releaseUid);
             if (departmentUid.equals(apply.getDepartmentUid())) {
-                return new Message(400, I18nUtil.getMessage("canNotChangeThisDepartment"));
+                return new Message(400, "不能变更到当前部门");
             }
             // 检查是否有正在审批中的部门申请，如果有，不能再次提交
             int i = departmentChangeService.checkLastTime(releaseUid);
             if (i > 0) {
-                return new Message(401, I18nUtil.getMessage("doNotSubmitRepeat"));
+                return new Message(401, "您已提交过部门变更申请，请勿重复提交");
             }
             apply.setReleaseUid(releaseUid);
             String tableUid = request.getHeader("tableUid");
@@ -73,15 +72,15 @@ public class DepartmentChangeController {
             // 更新文件表
             boolean res = updateFiles(uid, tableUid, releaseUid);
             if (res && result == 1) {
-                return new Message(200, I18nUtil.getMessage("submitSuccess"));
+                return new Message(200, "提交成功");
             } else if (result == 1) {
-                return new Message(210, I18nUtil.getMessage("submitSuccessFileFailed"));
+                return new Message(210, "提交成功，文件关联异常，请在申请记录中查看详情");
             } else {
-                return new Message(400, I18nUtil.getMessage("submitFailed"));
+                return new Message(400, "提交失败");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message(500, I18nUtil.getMessage("systemError"));
+            return new Message(500, "系统错误");
         }
     }
 
@@ -94,13 +93,13 @@ public class DepartmentChangeController {
             String releaseUid = JwtUtil.getUserUid(request.getHeader("Authorization"));
             int i = departmentChangeService.checkLastTime(releaseUid);
             if (i > 0) {
-                return new Message(300, I18nUtil.getMessage("departmentChangeCanNotSubmit"));
+                return new Message(300, "当前有正在审批的部门变更记录，不能再次提交");
             } else {
-                return new Message(200, I18nUtil.getMessage("departmentChangeCanSubmit"));
+                return new Message(200, "没有正在审批的部门变更记录");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message(500, I18nUtil.getMessage("systemError"));
+            return new Message(500, "系统错误");
         }
     }
 
@@ -122,13 +121,13 @@ public class DepartmentChangeController {
                 departmentChange.setNextUid(findRealeName.findName(departmentChange.getNextUid()));
             }
             if (list.size() != 0) {
-                return new Message_body(200, I18nUtil.getMessage("getDepartmentChangeListSuccess"), list);
+                return new Message_body(200, "查询部门变更申请成功", list);
             } else {
-                return new Message_body(300, I18nUtil.getMessage("noDepartmentChangeList"));
+                return new Message_body(300, "暂无部门变更申请");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message_body(500, I18nUtil.getMessage("systemError"));
+            return new Message_body(500, "系统错误");
         }
     }
 
@@ -147,10 +146,10 @@ public class DepartmentChangeController {
                 String name = findRealeName.findName(pro);
                 list.add(name);
             }
-            return new Message_body(200, I18nUtil.getMessage("getProcessSuccess"), list);
+            return new Message_body(200, "查询审批流程成功", list);
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message_body(500, I18nUtil.getMessage("systemError"));
+            return new Message_body(500, "系统错误");
         }
     }
 
@@ -163,10 +162,10 @@ public class DepartmentChangeController {
             // 通过接收到的 uid 查询本条申请记录
             DepartmentChange apply = departmentChangeService.findDepartmentChangeByUid(uid);
             if (apply.getStatus() != 0)
-                return new Message(400, I18nUtil.getMessage("stateCannotDelete"));
+                return new Message(400, "当前状态不可删除");
             // 判断是否为提交人
             if (!apply.getReleaseUid().equals(JwtUtil.getUserUid(request.getHeader("Authorization")))) {
-                return new Message(403, I18nUtil.getMessage("permissionDenied"));
+                return new Message(403, "没有权限");
             }
             // 删除本条申请记录
             int i = departmentChangeService.delete(uid);
@@ -183,15 +182,15 @@ public class DepartmentChangeController {
                 }
             }
             if (i > 0 && result) {
-                return new Message(200, I18nUtil.getMessage("deleteSuccess"));
+                return new Message(200, "删除成功");
             } else if (i > 0) {
-                return new Message(200, I18nUtil.getMessage("deleteFileListFail"));
+                return new Message(200, "删除成功，附件删除失败");
             } else {
-                return new Message(300, I18nUtil.getMessage("deleteFail"));
+                return new Message(300, "删除失败");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message(500, I18nUtil.getMessage("systemError"));
+            return new Message(500, "系统错误");
         }
     }
 
@@ -213,13 +212,13 @@ public class DepartmentChangeController {
                 departmentChange.setReleaseUid(findRealeName.findName(departmentChange.getReleaseUid()));
             }
             if (list.size() != 0) {
-                return new Message_body(200, I18nUtil.getMessage("getDepartmentChangeListSuccess"), list);
+                return new Message_body(200, "查询部门变更申请成功", list);
             } else {
-                return new Message_body(300, I18nUtil.getMessage("noDepartmentChangeList"));
+                return new Message_body(300, "暂无部门变更申请");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message_body(500, I18nUtil.getMessage("systemError"));
+            return new Message_body(500, "系统错误");
         }
     }
 
@@ -234,7 +233,7 @@ public class DepartmentChangeController {
             DepartmentChange apply = departmentChangeService.findDepartmentChangeByUid(uid);
             // 如果不是下一级审人，不能审批
             if (!apply.getNextUid().equals(nowUid)) {
-                return new Message(403, I18nUtil.getMessage("permissionDenied"));
+                return new Message(403, "没有权限");
             }
             // 查询审批流程
             String[] pros = apply.getProcess().split("\\|\\|");
@@ -250,11 +249,11 @@ public class DepartmentChangeController {
                 user.setDepartmentUid(apply.getDepartmentUid());
                 int j = userService.updateDepartment(user);
                 if (i > 0 && j > 0) {
-                    return new Message(200, I18nUtil.getMessage("resolveSuccess"));
+                    return new Message(200, "审批通过");
                 } else if (i > 0) {
-                    return new Message(200, I18nUtil.getMessage("departmentChangeFail"));
+                    return new Message(200, "审批通过，修改部门失败");
                 } else {
-                    return new Message(400, I18nUtil.getMessage("resolveFail"));
+                    return new Message(400, "审批失败");
                 }
             } else {
                 // 在 pros 中查找下一个审批人
@@ -267,14 +266,14 @@ public class DepartmentChangeController {
                 apply.setCount(apply.getCount() + 1);
                 int i = departmentChangeService.resolve(apply);
                 if (i > 0) {
-                    return new Message(200, I18nUtil.getMessage("resolveSuccess"));
+                    return new Message(200, "审批通过");
                 } else {
-                    return new Message(300, I18nUtil.getMessage("resolveFail"));
+                    return new Message(300, "审批失败");
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message(500, I18nUtil.getMessage("systemError"));
+            return new Message(500, "系统错误");
         }
     }
 
@@ -289,16 +288,16 @@ public class DepartmentChangeController {
             DepartmentChange now = departmentChangeService.findDepartmentChangeByUid(apply.getUid());
             // 如果不是下一级审人，不能审批
             if (!now.getNextUid().equals(nowUid)) {
-                return new Message(403, I18nUtil.getMessage("permissionDenied"));
+                return new Message(403, "没有权限");
             }
             int i = departmentChangeService.reject(apply);
             if (i > 0) {
-                return new Message(200, I18nUtil.getMessage("rejectSuccess"));
+                return new Message(200, "驳回成功");
             }
-            return new Message(400, I18nUtil.getMessage("rejectFail"));
+            return new Message(400, "驳回失败");
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message(500, I18nUtil.getMessage("systemError"));
+            return new Message(500, "系统错误");
         }
     }
 
@@ -311,10 +310,10 @@ public class DepartmentChangeController {
             DepartmentChange apply = departmentChangeService.findDepartmentChangeByUid(uid);
             apply.setReleaseUid(findRealeName.findName(apply.getReleaseUid()));
             apply.setDepartmentUid(findRealeName.findName(apply.getDepartmentUid()));
-            return new Message_body(200, I18nUtil.getMessage("refreshSuccess"), apply);
+            return new Message_body(200, "刷新成功", apply);
         } catch (Exception e) {
             e.printStackTrace();
-            return new Message_body(500, I18nUtil.getMessage("systemError"));
+            return new Message_body(500, "系统错误");
         }
     }
 }

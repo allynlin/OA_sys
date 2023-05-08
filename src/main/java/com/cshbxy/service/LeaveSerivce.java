@@ -7,7 +7,6 @@ import java.util.List;
 public interface LeaveSerivce {
     public int add(Leave leave);
 
-    public Leave checkLastTime(String releaseUid);
 
     public int delete(String uid);
 
